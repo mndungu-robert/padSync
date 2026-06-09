@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('username');
+            $table->enum('role', ['Admin', 'Program Manager', 'Coordinator', 'Donor']);
+            $table->enum('status', ['Pending', 'Approved', 'Rejected'])->default('Approved');
+
             $table->rememberToken();
             $table->timestamps();
         });
