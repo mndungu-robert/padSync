@@ -32,7 +32,7 @@ class PublicDonationController extends Controller
         Donation::create([
             'donor_id' => $donor->id,
             'pad_count' => $request->quantity_pledged,
-            'pledge_status' => 'pledged',
+            'pledge_status' => 'Pledged',
             'pledge_date' => now(),
         ]);
 
