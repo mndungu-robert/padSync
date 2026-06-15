@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('donations', function (Blueprint $table) {
             $table->id('donation_id');
-            $table->foreignId('donor_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('donor_id')->constrained('donors')->onDelete('cascade');
             $table->integer('pad_count');
             $table->date('pledge_date');
             $table->enum('pledge_status', ['Pledged', 'Partially Received', 'Fully Received', 'Cancelled'])->default('Pledged');
-            $table->date('fulfillment_date')->nullable(); // Tracked when the physical items arrive
+            $table->date('fulfillment_date')->nullable(); // Tracked when the physical items arrived
+            $table->integer('received_count')->default(0);
+            $table->date('expected_delivery_date')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

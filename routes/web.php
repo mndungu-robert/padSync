@@ -1,12 +1,22 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DonationController;
+use App\Http\Controllers\DonorController;
 use App\Http\Controllers\PublicDonationController;
 use Illuminate\Support\Facades\Route;
 
 // 1. Open Public Routes
-Route::get('/', function () { return view('welcome'); });
-Route::post('/pledge', [PublicDonationController::class, 'store'])->name('public.pledge');
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// Donation form page
+Route::get('/donate', [PublicDonationController::class, 'create'])
+    ->name('donate.form');
+// Submit donation
+Route::post('/donate', [PublicDonationController::class, 'store'])
+    ->name('donate.store');
 
 // 2. Base Centralized Shared Dashboard Access Route
 Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -15,8 +25,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 // 3. Isolated Private Role Routing Guard Enclaves
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
-    // You work here! Place all your specific Admin management views/routes inside this group
-    // Route::get('/managers', [AdminManagerController::class, 'index'])->name('managers.index');
+    Route::resource('donors', DonorController::class);
+    Route::resource('donations', DonationController::class);
 });
 
 Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('manager.')->group(function () {
@@ -28,4 +38,3 @@ Route::middleware(['auth', 'role:Coordinator'])->prefix('coordinator')->name('co
 });
 
 require __DIR__.'/auth.php';
-

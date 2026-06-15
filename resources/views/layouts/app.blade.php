@@ -1,36 +1,123 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'PadSync')</title>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f7f4f8;
+        }
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+        /* NAVBAR */
+        nav {
+            background: #422c50;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
-        </div>
-    </body>
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 6px 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* CONTAINER */
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* BUTTON */
+        .btn {
+            background: #4427ae;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .btn:hover {
+            background: #219150;
+        }
+
+        /* ALERT */
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 5px;
+        }
+
+        /* RESPONSIVE RULES */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                width: 100%;
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 10px;
+            }
+
+            .container {
+                margin: 15px;
+                padding: 15px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <div style="color:white; font-weight:bold;">PadSync</div>
+
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/donate">Take Action</a>
+    </div>
+</nav>
+
+<div class="container">
+    @yield('content')
+</div>
+
+</body>
 </html>
