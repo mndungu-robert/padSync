@@ -21,7 +21,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        $schools = School::orderBy('name', 'asc')->get();
+        $schools = School::orderBy('school_name', 'asc')->get();
         return view('auth.register', compact('schools'));
     }
 
@@ -36,7 +36,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
-            'school_id' => ['required', 'exists:schools,id'],
+            'school_id' => ['required', 'exists:schools,school_id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -44,8 +44,9 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'username' => $request->username,
-            'school_id' => $request->school_id,
+            'password' => Hash::make($request->password),
             'role' => 'Coordinator', // Role is forced strictly on the backend system side
+            'status' => 'Pending',
         ]);
 
         event(new Registered($user));

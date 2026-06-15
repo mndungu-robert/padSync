@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\DonorController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicDonationController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,10 +32,20 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
 
 Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('manager.')->group(function () {
     // She works here! Manager approval matrices, school updates, inventory dispatches
+    // TODO: Partner workflow - Coordinator Assignments
+    // TODO: Partner workflow - Inventory allocations
 });
 
 Route::middleware(['auth', 'role:Coordinator'])->prefix('coordinator')->name('coordinator.')->group(function () {
     // School coordinator enrollment posts, shortfall ticket reports, delivery checkmarks
+    // TODO: Partner workflow - Shortfall reporting
+    // TODO: Partner workflow - Distribution event logging
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';

@@ -34,8 +34,8 @@
                 required>
                 <option value="" disabled selected>-- Select Your School --</option>
                 @foreach($schools as $school)
-                    <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>
-                        {{ $school->name }}
+                    <option value="{{ $school->school_id }}" {{ old('school_id') == $school->school_id ? 'selected' : '' }}>
+                        {{ $school->school_name }}
                     </option>
                 @endforeach
             </select>
