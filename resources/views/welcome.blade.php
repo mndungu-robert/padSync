@@ -30,7 +30,7 @@
         <p class="mt-4 text-lg text-indigo-700 max-w-2xl mx-auto">PadSync automates sanitary pad distribution tracking across participating schools.</p>
     </header>
 
-    <!-- Public Donor Pledge Form Section -->
+    {{-- <!-- Public Donor Pledge Form Section -->
     <section class="max-w-md mx-auto my-12 bg-white p-8 rounded-lg shadow-md">
         <h3 class="text-2xl font-bold text-gray-800 text-center mb-6">Make a Donation Pledge</h3>
         
@@ -56,4 +56,4 @@
         </form>
     </section>
 </body>
-</html>
+</html> --}}

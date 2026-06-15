@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('pledge_date');
             $table->enum('pledge_status', ['Pledged', 'Partially Received', 'Fully Received', 'Cancelled'])->default('Pledged');
             $table->date('fulfillment_date')->nullable(); // Tracked when the physical items arrived
-            $table->integer('received_count')->default(0);
+            $table->integer('quantity_amount')->default(0);
             $table->date('expected_delivery_date')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();

@@ -15,14 +15,14 @@ class DonorSeeder extends Seeder
         Donor::create([
             'name' => 'Jane Doe',
             'email' => 'jane.doe@example.com',
-            'phone' => '123-456-7890',
+            'pad_count' => 100,
             'donor_type' => 'Individual',
             'organization_name' => null,
         ]);
         Donor::create([
             'name' => 'Rotary Club Nairobi',
             'email' => 'rotary@example.com',
-            'phone' => '0711000000',
+            'pad_count' => 500,
             'donor_type' => 'Organization',
             'organization_name' => 'Rotary Club',
         ]);

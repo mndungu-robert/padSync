@@ -39,13 +39,13 @@ class PublicDonationController extends Controller
         );
 
         // 2. Create donation record
-        Donation::create([
-            'donor_id' => $donor->id,
-            'pad_count' => $request->quantity_pledged,
-            'pledge_date' => now(),
-            'pledge_status' => 'Pledged',
-            'received_count' => 0,
-        ]);
+        // Donation::create([
+        //     'donor_id' => $donor->id,
+        //     'pad_count' => $request->quantity_pledged,
+        //     'pledge_date' => now(),
+        //     'pledge_status' => 'Pledged',
+        //     'received_count' => 0,
+        // ]);
 
         return redirect()->back()->with('success', 'Your donation has been recorded. Thank you for your support.');
     }
