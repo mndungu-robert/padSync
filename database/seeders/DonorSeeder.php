@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Donor;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DonorSeeder extends Seeder
 {
@@ -25,6 +25,8 @@ class DonorSeeder extends Seeder
             'pad_count' => 500,
             'donor_type' => 'Organization',
             'organization_name' => 'Rotary Club',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 }

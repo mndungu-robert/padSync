@@ -2,12 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Donor;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -19,10 +16,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
         $this->call([
             UserSeeder::class,
+            SchoolSeeder::class,
+            EnrollmentSeeder::class,
+            InventorySeeder::class,
             DonorSeeder::class,
+            DonationSeeder::class,
+            DistributionSeeder::class,
+            ShortfallReportSeeder::class,
+            AuditLogSeeder::class,
         ]);
 
         // 2. Second Admin Account
