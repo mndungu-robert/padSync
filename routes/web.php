@@ -18,14 +18,20 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
     // You work here! Place all your specific Admin management views/routes inside this group
     // Route::get('/managers', [AdminManagerController::class, 'index'])->name('managers.index');
+    // TODO: Add Admin User CRUD routes here
+    // TODO: Add School Master Management routes here
 });
 
 Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('manager.')->group(function () {
     // She works here! Manager approval matrices, school updates, inventory dispatches
+    // TODO: Partner workflow - Coordinator Assignments
+    // TODO: Partner workflow - Inventory allocations
 });
 
 Route::middleware(['auth', 'role:Coordinator'])->prefix('coordinator')->name('coordinator.')->group(function () {
     // School coordinator enrollment posts, shortfall ticket reports, delivery checkmarks
+    // TODO: Partner workflow - Shortfall reporting
+    // TODO: Partner workflow - Distribution event logging
 });
 
 Route::middleware('auth')->group(function () {

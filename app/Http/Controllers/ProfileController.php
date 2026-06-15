@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -46,11 +47,15 @@ class ProfileController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        $user = $request->user();
+        $authUser = $request->user();
+        abort_unless($authUser, 403);
+
+        /** @var User $user */
+        $user = User::query()->findOrFail($authUser->getAuthIdentifier());
 
         Auth::logout();
 
-        $user->delete();
+        $user->deleteOrFail();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
