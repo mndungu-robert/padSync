@@ -33,7 +33,6 @@ class DonorController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:donors,email',
-            'phone' => 'nullable|string|max:20',
             'donor_type' => 'required|in:Individual,Organization',
             'organization_name' => 'nullable|required_if:donor_type,Organization|string|max:255',
         ]);

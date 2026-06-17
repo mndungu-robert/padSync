@@ -6,101 +6,161 @@
 
     <style>
         * {
-            box-sizing: border-box;
-        }
+    box-sizing: border-box;
+}
 
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background: #f7f4f8;
-        }
+html {
+    font-size: 14px; /* reduces overall scale */
+}
 
-        /* NAVBAR */
-        nav {
-            background: #422c50;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f7f7fb;
+    color: #1f2937;
+    line-height: 1.5;
+}
 
-        .nav-links {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
+/* NAVBAR */
+nav {
+    background: #4f46e5;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 6px 10px;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
+/* BRAND */
+nav div {
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
 
-        nav a:hover {
-            background: rgba(255,255,255,0.15);
-        }
+/* LINKS */
+.nav-links {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
 
-        /* CONTAINER */
-        .container {
-            width: 100%;
-            max-width: 900px;
-            margin: 30px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-        }
+/* NAV LINKS */
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
 
-        /* BUTTON */
-        .btn {
-            background: #4427ae;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: auto;
-        }
+nav a:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
 
-        .btn:hover {
-            background: #219150;
-        }
+/* CONTAINER */
+.container {
+    width: min(92%, 800px);
+    margin: 20px auto;
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
 
-        /* ALERT */
-        .alert {
-            padding: 10px;
-            margin-bottom: 15px;
-            background: #d4edda;
-            color: #155724;
-            border-radius: 5px;
-        }
+/* BUTTON */
+.btn {
+    background: #4f46e5;
+    color: white;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-align: center;
+}
 
-        /* RESPONSIVE RULES */
-        @media (max-width: 768px) {
-            nav {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+.btn:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+}
 
-            .nav-links {
-                width: 100%;
-                flex-direction: column;
-                gap: 8px;
-                margin-top: 10px;
-            }
+/* ALERT */
+.alert {
+    padding: 12px;
+    margin-bottom: 15px;
+    background: #ecfdf5;
+    color: #065f46;
+    border-left: 5px solid #10b981;
+    border-radius: 6px;
+}
 
-            .container {
-                margin: 15px;
-                padding: 15px;
-            }
+/* FORM ELEMENTS */
+input, select, textarea {
+    border: 1px solid #d1d5db;
+    padding: 10px;
+    border-radius: 6px;
+    width: 100%;
+    font-size: 14px;
+}
 
-            .btn {
-                width: 100%;
-            }
-        }
+/* ===== MOBILE (phones) ===== */
+@media (max-width: 768px) {
+
+      html {
+        font-size: 13px;
+    }
+
+    nav {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .nav-links {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    nav a {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .container {
+        width: 95%;
+        margin: 12px auto;
+        padding: 14px;
+        border-radius: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        font-size: 14px;
+    }
+}
+
+/* ===== SMALL PHONES ===== */
+@media (max-width: 480px) {
+
+    nav div {
+        font-size: 16px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    nav a {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
     </style>
 </head>
 
@@ -111,7 +171,7 @@
 
     <div class="nav-links">
         <a href="/">Home</a>
-        <a href="/donate">Take Action</a>
+       
     </div>
 </nav>
 

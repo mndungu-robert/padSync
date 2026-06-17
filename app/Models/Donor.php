@@ -13,7 +13,6 @@ class Donor extends Model
     protected $fillable = [
         'name',
         'email',
-        'phone',
         'donor_type',
         'organization_name',
     ];

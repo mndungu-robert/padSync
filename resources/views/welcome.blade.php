@@ -28,7 +28,84 @@
     <header class="text-center py-16 bg-indigo-50 px-4">
         <h2 class="text-4xl font-extrabold text-indigo-900">Keeping Girls in School, One Pack at a Time</h2>
         <p class="mt-4 text-lg text-indigo-700 max-w-2xl mx-auto">PadSync automates sanitary pad distribution tracking across participating schools.</p>
+
+    
+    {{-- <!-- Statistics -->
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mt-16 max-w-4xl mx-auto">
+
+        <div>
+
+            <h3 class="text-5xl font-bold text-purple-900">
+
+                8
+
+            </h3>
+
+            <p class="mt-2 text-indigo-600">
+
+                Schools Supported
+
+            </p>
+
+        </div>
+
+        <div>
+
+            <h3 class="text-5xl font-bold text-purple-900">
+
+                1,024
+
+            </h3>
+
+            <p class="mt-2 text-indigo-600">
+
+                Girls Enrolled
+
+            </p>
+
+        </div>
+
+        <div>
+
+            <h3 class="text-5xl font-bold text-pink-500">
+
+                342
+
+            </h3>
+
+            <p class="mt-2 text-indigo-600">
+
+                Pads Still Needed
+
+            </p>
+
+        </div>
+
+    </div> --}}
+
+    <!-- Buttons -->
+
+    <div class="mt-14 flex justify-center gap-4">
+
+        <a href="{{ route('donate.form') }}"
+           class="bg-indigo-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-indigo-700 transition">
+
+            Take Action
+
+        </a>
+
+        <a href="#"
+           class="border-2 border-indigo-600 text-indigo-600 px-8 py-4 rounded-lg font-bold hover:bg-indigo-600 hover:text-white transition">
+
+            Learn More
+
+        </a>
+
+    </div>    
     </header>
+
+
 
     {{-- <!-- Public Donor Pledge Form Section -->
     <section class="max-w-md mx-auto my-12 bg-white p-8 rounded-lg shadow-md">
