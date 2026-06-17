@@ -35,10 +35,10 @@
         <input type="email" name="email" required>
     </p>
 
-    <p>
+    {{-- <p>
         <label>Phone</label><br>
         <input type="text" name="phone">
-    </p>
+    </p> --}}
 
     <p>
         <label>Donor Type</label><br>

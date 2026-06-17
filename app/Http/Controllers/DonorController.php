@@ -12,9 +12,9 @@ class DonorController extends Controller
      */
     public function index()
     {
-        $donors = Donor::latest()->get();
+        $donors = Donor::query()->orderBy('created_at', 'desc')->get();
 
-        return view('donors.index', compact('donors'));
+        return view('admin.donors.index', compact('donors'));
     }
 
     /**
@@ -22,7 +22,7 @@ class DonorController extends Controller
      */
     public function create()
     {
-        return view('donors.create');
+        return view('admin.donors.create');
     }
 
     /**
@@ -40,7 +40,7 @@ class DonorController extends Controller
 
         Donor::create($request->all());
 
-        return redirect()->route('donors.index')->with('success', 'Donor added successfully.');
+        return redirect()->route('admin.donors.index')->with('success', 'Donor added successfully.');
     }
 
     /**
@@ -48,9 +48,7 @@ class DonorController extends Controller
      */
     public function show(Donor $donor)
     {
-        $donor = Donor::findOrFail($donor->id);
-
-        return view('donors.show', compact('donor'));
+        return view('admin.donors.show', compact('donor'));
     }
 
     /**
@@ -58,9 +56,7 @@ class DonorController extends Controller
      */
     public function edit(Donor $donor)
     {
-        $donor = Donor::findOrFail($donor->id);
-
-        return view('donors.edit', compact('donor'));
+        return view('admin.donors.edit', compact('donor'));
     }
 
     /**
@@ -68,10 +64,17 @@ class DonorController extends Controller
      */
     public function update(Request $request, Donor $donor)
     {
-        $donor = Donor::findOrFail($id);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:donors,email,'.$donor->id,
+            'phone' => 'nullable|string|max:20',
+            'donor_type' => 'required|in:Individual,Organization',
+            'organization_name' => 'nullable|required_if:donor_type,Organization|string|max:255',
+        ]);
+
         $donor->update($request->all());
 
-        return redirect()->route('donors.index')
+        return redirect()->route('admin.donors.index')
             ->with('success', 'Donor updated successfully');
     }
 
@@ -80,9 +83,8 @@ class DonorController extends Controller
      */
     public function destroy(Donor $donor)
     {
-        $donor = Donor::findOrFail($id);
-        $donor->delete();
+        Donor::destroy($donor->id);
 
-        return redirect()->route('donors.index')->with('success', 'Donor deleted successfully.');
+        return redirect()->route('admin.donors.index')->with('success', 'Donor deleted successfully.');
     }
 }

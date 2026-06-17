@@ -26,20 +26,24 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 // 3. Isolated Private Role Routing Guard Enclaves
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+
     Route::resource('donors', DonorController::class);
     Route::resource('donations', DonationController::class);
 });
 
 Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('manager.')->group(function () {
-    // She works here! Manager approval matrices, school updates, inventory dispatches
-    // TODO: Partner workflow - Coordinator Assignments
-    // TODO: Partner workflow - Inventory allocations
+    Route::get('/dashboard', function () {
+        return view('manager.dashboard');
+    })->name('dashboard');
 });
 
 Route::middleware(['auth', 'role:Coordinator'])->prefix('coordinator')->name('coordinator.')->group(function () {
-    // School coordinator enrollment posts, shortfall ticket reports, delivery checkmarks
-    // TODO: Partner workflow - Shortfall reporting
-    // TODO: Partner workflow - Distribution event logging
+    Route::get('/dashboard', function () {
+        return view('coordinator.dashboard');
+    })->name('dashboard');
 });
 
 Route::middleware('auth')->group(function () {

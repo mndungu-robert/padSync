@@ -1,76 +1,84 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-[#F3F4F6]">
+        <!-- Main Form Card Container Enclave -->
+        <div class="w-full sm:max-w-md mt-6 px-10 py-10 bg-white shadow-md overflow-hidden sm:rounded-lg border border-gray-100 text-center">
+            
+            <!-- Branding Headers -->
+            <h1 class="text-3xl font-extrabold text-[#1E3A8A] tracking-tight mb-1">PadSync</h1>
+            <p class="text-sm font-medium text-gray-400 mb-6">Coordinator Registration Portal</p>
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required
-                autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <form method="POST" action="{{ route('register') }}" class="text-left">
+                @csrf
+
+                <!-- Full Name -->
+                <div>
+                    <label for="name" class="block text-sm font-semibold text-gray-700">Full Name <span class="text-red-500">*</span></label>
+                    <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" placeholder="John Doe"
+                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] text-sm">
+                    @error('name') <p class="text-xs text-red-600 mt-1 font-medium">{{ $message }}</p> @enderror
+                </div>
+
+                <!-- Username -->
+                <div class="mt-4">
+                    <label for="username" class="block text-sm font-semibold text-gray-700">Username <span class="text-red-500">*</span></label>
+                    <input id="username" type="text" name="username" value="{{ old('username') }}" required placeholder="johndoe12"
+                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] text-sm">
+                    @error('username') <p class="text-xs text-red-600 mt-1 font-medium">{{ $message }}</p> @enderror
+                </div>
+
+                <!-- Email Address -->
+                <div class="mt-4">
+                    <label for="email" class="block text-sm font-semibold text-gray-700">Email Address <span class="text-red-500">*</span></label>
+                    <input id="email" type="email" name="email" value="{{ old('email') }}" required placeholder="coordinator@example.com"
+                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] text-sm">
+                    @error('email') <p class="text-xs text-red-600 mt-1 font-medium">{{ $message }}</p> @enderror
+                </div>
+
+                <!-- Dynamic School Selection Dropdown Menu Component -->
+                <div class="mt-4">
+                    <label for="school_id" class="block text-sm font-semibold text-gray-700">Assigned School Site <span class="text-red-500">*</span></label>
+                    <select id="school_id" name="school_id" required 
+                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] bg-white text-sm">
+                        <option value="" disabled selected>-- Select your school site --</option>
+                        @foreach($schools as $school)
+                            <option value="{{ $school->school_id }}" {{ old('school_id') == $school->school_id ? 'selected' : '' }}>
+                                {{ $school->school_name }} ({{ $school->school_location }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('school_id') <p class="text-xs text-red-600 mt-1 font-medium">{{ $message }}</p> @enderror
+                </div>
+
+                <!-- Password -->
+                <div class="mt-4">
+                    <label for="password" class="block text-sm font-semibold text-gray-700">Password <span class="text-red-500">*</span></label>
+                    <input id="password" type="password" name="password" required autocomplete="new-password" placeholder="********"
+                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] text-sm">
+                    @error('password') <p class="text-xs text-red-600 mt-1 font-medium">{{ $message }}</p> @enderror
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="mt-4">
+                    <label for="password_confirmation" class="block text-sm font-semibold text-gray-700">Confirm Password <span class="text-red-500">*</span></label>
+                    <input id="password_confirmation" type="password" name="password_confirmation" required placeholder="********"
+                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] text-sm">
+                </div>
+
+                <!-- Action Button Container -->
+                <div class="mt-6">
+                    <button type="submit" class="w-32 py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-[#1E3A8A] hover:bg-[#152A66] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1E3A8A] transition duration-150 ease-in-out transform active:scale-95">
+                        Register
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-gray-100 text-xs text-gray-500">
+                Already registered? <a href="{{ route('login') }}" class="font-bold text-[#1E3A8A] hover:underline">Sign In instead</a>
+            </div>
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')"
-                required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Username -->
-        <div class="mt-4">
-            <x-input-label for="username" :value="__('Username')" />
-            <x-text-input id="username" class="block mt-1 w-full" type="text" name="username" :value="old('username')"
-                required autocomplete="username" />
-            <x-input-error :messages="$errors->get('username')" class="mt-2" />
-        </div>
-
-        <!-- Assigned School Selection -->
-        <div class="mt-4">
-            <x-input-label for="school_id" :value="__('Assigned School')" />
-            <select id="school_id" name="school_id"
-                class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                required>
-                <option value="" disabled selected>-- Select Your School --</option>
-                @foreach($schools as $school)
-                    <option value="{{ $school->school_id }}" {{ old('school_id') == $school->school_id ? 'selected' : '' }}>
-                        {{ $school->school_name }}
-                    </option>
-                @endforeach
-            </select>
-            <x-input-error :messages="$errors->get('school_id')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required
-                autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password"
-                name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
+        <footer class="mt-8 text-xs text-gray-400 text-center font-medium tracking-wide">
+            PadSync · Macheo Programme · ICS3 Group E · Strathmore University 2026
+        </footer>
+    </div>
 </x-guest-layout>

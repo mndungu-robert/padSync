@@ -13,9 +13,9 @@ class DashboardController extends Controller
 
         // Branch your layout response cleanly based on the database column string
         return match($user->role) {
-            'Admin'           => view('dashboards.admin'),
-            'Program Manager' => view('dashboards.manager'),
-            'Coordinator'     => view('dashboards.coordinator'),
+            'Admin'           => view('admin.dashboard'),
+            'Program Manager' => view('manager.dashboard'),
+            'Coordinator'     => view('coordinator.dashboard'),
             default           => redirect('/'),
         };
     }

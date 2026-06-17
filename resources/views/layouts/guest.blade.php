@@ -8,23 +8,28 @@
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://bunny.net">
+        <link href="https://bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+        <!-- Main flex column container that controls full-viewport layout centering -->
+        <div class="min-h-screen flex flex-col justify-between items-center bg-[#F3F4F6] py-12 px-4">
+            
+            <!-- Spacer to push content down cleanly -->
+            <div></div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <!-- This is where your login card renders -->
+            <div class="w-full flex justify-center items-center">
                 {{ $slot }}
             </div>
+
+            <!-- Sticky, centered page footer -->
+            <footer class="text-[11px] text-gray-400 text-center font-medium tracking-wide mt-8">
+                PadSync · Macheo Programme · ICS3 Group E · Strathmore University 2026
+            </footer>
         </div>
     </body>
 </html>
