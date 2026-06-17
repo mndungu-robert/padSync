@@ -19,7 +19,6 @@
         <th>Donor</th>
         <th>Pads</th>
         <th>Pledge Date</th>
-        <th>Status</th>
         <th>Actions</th>
     </tr>
 
@@ -28,7 +27,6 @@
             <td>{{ $donation->donor?->name ?? 'Unknown' }}</td>
             <td>{{ $donation->pad_count }}</td>
             <td>{{ $donation->pledge_date }}</td>
-            <td>{{ $donation->pledge_status }}</td>
             <td>
                 <a href="{{ route('admin.donations.show', $donation) }}">View</a> |
                 <a href="{{ route('admin.donations.edit', $donation) }}">Edit</a> |

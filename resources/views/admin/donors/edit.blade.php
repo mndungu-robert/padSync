@@ -20,7 +20,8 @@
 
     <input type="text" name="name" value="{{ old('name', $donor->name) }}"><br><br>
     <input type="email" name="email" value="{{ old('email', $donor->email) }}"><br><br>
-    <input type="text" name="phone" value="{{ old('phone', $donor->phone) }}"><br><br>
+    <label>Pad Count</label><br>
+    <input type="number" name="pad_count" min="0" value="{{ old('pad_count', $donor->pad_count) }}"><br><br>
 
     <select name="donor_type">
         <option value="Individual" @selected(old('donor_type', $donor->donor_type) === 'Individual')>Individual</option>

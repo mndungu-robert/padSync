@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\DonorController;
@@ -26,12 +27,13 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 // 3. Isolated Private Role Routing Guard Enclaves
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::patch('/users/{user}/coordinator-status', [AdminUserController::class, 'updateCoordinatorStatus'])->name('users.coordinator-status');
+    Route::post('/users/program-managers', [AdminUserController::class, 'storeProgramManager'])->name('users.program-managers.store');
 
-    Route::resource('donors', DonorController::class);
-    Route::resource('donations', DonationController::class);
+    // Route::resource('donors', DonorController::class);
+    // Route::resource('donations', DonationController::class);
 });
 
 Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('manager.')->group(function () {

@@ -8,7 +8,6 @@
 <p><strong>Pad Count:</strong> {{ $donation->pad_count }}</p>
 <p><strong>Pledge Date:</strong> {{ $donation->pledge_date }}</p>
 <p><strong>Expected Delivery:</strong> {{ $donation->expected_delivery_date ?? 'N/A' }}</p>
-<p><strong>Status:</strong> {{ $donation->pledge_status }}</p>
 <p><strong>Notes:</strong> {{ $donation->notes ?? 'N/A' }}</p>
 
 <p>

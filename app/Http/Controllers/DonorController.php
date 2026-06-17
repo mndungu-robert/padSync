@@ -12,7 +12,7 @@ class DonorController extends Controller
      */
     public function index()
     {
-        $donors = Donor::query()->orderBy('created_at', 'desc')->get();
+        $donors = Donor::query()->orderBy('name', 'asc')->get();
 
         return view('admin.donors.index', compact('donors'));
     }
@@ -33,6 +33,7 @@ class DonorController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:donors,email',
+            'pad_count' => 'required|integer|min:0',
             'donor_type' => 'required|in:Individual,Organization',
             'organization_name' => 'nullable|required_if:donor_type,Organization|string|max:255',
         ]);
@@ -66,7 +67,7 @@ class DonorController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:donors,email,'.$donor->id,
-            'phone' => 'nullable|string|max:20',
+            'pad_count' => 'required|integer|min:0',
             'donor_type' => 'required|in:Individual,Organization',
             'organization_name' => 'nullable|required_if:donor_type,Organization|string|max:255',
         ]);

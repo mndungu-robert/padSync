@@ -20,8 +20,6 @@ class DonationSeeder extends Seeder
             'donor_id' => $donorOneId,
             'pad_count' => 200,
             'pledge_date' => now()->toDateString(),
-            'pledge_status' => 'Pledged',
-            'quantity_amount' => 0,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -30,8 +28,6 @@ class DonationSeeder extends Seeder
             'donor_id' => $donorTwoId,
             'pad_count' => 450,
             'pledge_date' => now()->subDays(2)->toDateString(),
-            'pledge_status' => 'Partially Received',
-            'quantity_amount' => 150,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

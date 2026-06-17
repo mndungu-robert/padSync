@@ -17,9 +17,7 @@ class Donation extends Model
         'pad_count',
         'pledge_date',
         'expected_delivery_date',
-        'pledge_status',
         'fulfillment_date',
-        'received_count',
         'notes',
     ];
 

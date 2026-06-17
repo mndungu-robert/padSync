@@ -2,63 +2,59 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class AdminUserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $allUsers = User::query()
+            ->with('school')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.users.index', compact('allUsers'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function updateCoordinatorStatus(Request $request, User $user)
     {
-        //
+        if ($user->role !== 'Coordinator') {
+            return redirect()->route('admin.users.index')->with('error', 'Only coordinator accounts can be approved or rejected here.');
+        }
+
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(['Approved', 'Rejected'])],
+        ]);
+
+        $user->update([
+            'status' => $validated['status'],
+        ]);
+
+        return redirect()->route('admin.users.index')->with('success', 'Coordinator status updated successfully.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function storeProgramManager(Request $request)
     {
-        //
-    }
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        User::create([
+            'name' => $validated['name'],
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => 'Program Manager',
+            'status' => 'Approved',
+            'school_id' => null,
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('admin.users.index')->with('success', 'Program Manager account created successfully.');
     }
 }

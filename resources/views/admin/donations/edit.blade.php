@@ -34,9 +34,6 @@
     <label>Expected Delivery Date</label><br>
     <input type="date" name="expected_delivery_date" value="{{ old('expected_delivery_date', $donation->expected_delivery_date) }}"><br><br>
 
-    <label>Status</label><br>
-    <input type="text" name="pledge_status" value="{{ old('pledge_status', $donation->pledge_status) }}" required><br><br>
-
     <label>Notes</label><br>
     <textarea name="notes" rows="3">{{ old('notes', $donation->notes) }}</textarea><br><br>
 

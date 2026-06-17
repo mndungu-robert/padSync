@@ -23,8 +23,8 @@
     <label>Email</label><br>
     <input type="email" name="email" value="{{ old('email') }}"><br><br>
 
-    <label>Phone</label><br>
-    <input type="text" name="phone" value="{{ old('phone') }}"><br><br>
+    <label>Pad Count</label><br>
+    <input type="number" name="pad_count" min="0" value="{{ old('pad_count', 0) }}"><br><br>
 
     <label>Donor Type</label><br>
     <select name="donor_type">

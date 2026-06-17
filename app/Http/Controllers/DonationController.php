@@ -8,6 +8,17 @@ use Illuminate\Http\Request;
 
 class DonationController extends Controller
 {
+    private function refreshDonorPadCount(int $donorId): void
+    {
+        $totalPads = Donation::query()
+            ->where('donor_id', '=', $donorId)
+            ->sum('pad_count');
+
+        Donor::query()->where('id', '=', $donorId)->update([
+            'pad_count' => $totalPads,
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -38,11 +49,11 @@ class DonationController extends Controller
             'pad_count' => 'required|integer|min:1',
             'pledge_date' => 'required|date',
             'expected_delivery_date' => 'nullable|date|after_or_equal:pledge_date',
-            'pledge_status' => 'required|string|max:255',
             'notes' => 'nullable|string',
         ]);
 
-        Donation::create($validated);
+        $donation = Donation::create($validated);
+        $this->refreshDonorPadCount((int) $donation->donor_id);
 
         return redirect()->route('admin.donations.index')->with('success', 'Donation added successfully.');
     }
@@ -77,11 +88,18 @@ class DonationController extends Controller
             'pad_count' => 'required|integer|min:1',
             'pledge_date' => 'required|date',
             'expected_delivery_date' => 'nullable|date|after_or_equal:pledge_date',
-            'pledge_status' => 'required|string|max:255',
             'notes' => 'nullable|string',
         ]);
 
+        $oldDonorId = (int) $donation->donor_id;
+
         $donation->update($validated);
+
+        $this->refreshDonorPadCount((int) $donation->donor_id);
+
+        if ($oldDonorId !== (int) $donation->donor_id) {
+            $this->refreshDonorPadCount($oldDonorId);
+        }
 
         return redirect()->route('admin.donations.index')->with('success', 'Donation updated successfully.');
     }
@@ -91,7 +109,9 @@ class DonationController extends Controller
      */
     public function destroy(Donation $donation)
     {
+        $donorId = (int) $donation->donor_id;
         Donation::destroy($donation->donation_id);
+        $this->refreshDonorPadCount($donorId);
 
         return redirect()->route('admin.donations.index')->with('success', 'Donation deleted successfully.');
     }
