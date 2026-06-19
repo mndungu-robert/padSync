@@ -26,21 +26,7 @@
     <!-- Workspace Main Frame Layout -->
     <div class="flex flex-row flex-grow min-h-0">
         
-        <!-- Left Sidebar Sidebar Component Drawer -->
-        <aside class="w-64 bg-slate-100 border-r border-gray-200 p-4 space-y-1">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 rounded-lg bg-[#1E3A8A] font-bold text-white transition">
-                <span class="text-sm">Dashboard</span>
-            </a>
-            <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-200 text-gray-700 font-medium text-sm transition">
-                <span>Manage Users</span>
-            </a>
-            <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-200 text-gray-700 font-medium text-sm transition">
-                <span>Audit Logs</span>
-            </a>
-            <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-200 text-gray-700 font-medium text-sm transition">
-                <span>Settings</span>
-            </a>
-        </aside>
+        @include('admin.partials.sidebar', ['active' => 'dashboard'])
 
         <!-- Right View Workspace Panel Frame -->
         <main class="flex-grow p-8 overflow-y-auto space-y-6">

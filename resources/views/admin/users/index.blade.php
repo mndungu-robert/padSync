@@ -22,14 +22,7 @@
     </header>
 
     <div class="flex flex-row flex-grow min-h-0">
-        <aside class="w-64 bg-slate-100 border-r border-gray-200 p-4 space-y-1">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-200 text-gray-700 font-medium text-sm transition">
-                <span>Dashboard</span>
-            </a>
-            <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 rounded-lg bg-[#1E3A8A] font-bold text-white transition">
-                <span class="text-sm">Manage Users</span>
-            </a>
-        </aside>
+        @include('admin.partials.sidebar', ['active' => 'users'])
 
         <main class="flex-grow p-8 overflow-y-auto space-y-6">
             @if (session('success'))
@@ -130,7 +123,7 @@
                     <div class="rounded-xl bg-white border border-gray-200 shadow-xl p-6">
                         <div class="flex items-start justify-between">
                             <div>
-                                <h3 class="font-bold text-sm text-gray-800">Add User</h3>
+                                <h3 class="font-bold text-sm text-gray-800">Add Program Manager</h3>
                                 <p class="text-xs text-gray-400 mt-1">Create a Program Manager account.</p>
                             </div>
                             <button type="button" id="close-add-user-modal" class="text-gray-400 hover:text-gray-700 text-xl leading-none">&times;</button>
