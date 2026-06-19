@@ -1,15 +1,11 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Coordinator Requests') }}
-        </h2>
-    </x-slot>
+@extends('layouts.manager', ['active' => 'coordinators'])
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 text-gray-900 dark:text-gray-100">
-                {{ __('Pending coordinator approvals and assignment workflows will be added here.') }}
-            </div>
-        </div>
+@section('title', 'Coordinator Requests - PadSync')
+@section('page_title', 'Coordinator Requests')
+@section('page_subtitle', 'Approve, reject, and manage school coordinator assignments.')
+
+@section('content')
+    <div class="bg-white border border-gray-200 overflow-hidden shadow-sm rounded-lg p-6 text-gray-900">
+        {{ __('Pending coordinator approvals and assignment workflows will be added here.') }}
     </div>
-</x-app-layout>
+@endsection

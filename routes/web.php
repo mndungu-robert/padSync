@@ -40,12 +40,32 @@ Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('ma
     Route::get('/dashboard', function () {
         return view('manager.dashboard');
     })->name('dashboard');
+
+    Route::get('/schools', function () {
+        return view('manager.schools.index');
+    })->name('schools.index');
+
+    Route::get('/coordinators', function () {
+        return view('manager.coordinators.index');
+    })->name('coordinators.index');
+
+    Route::get('/inventory', function () {
+        return view('manager.inventory.index');
+    })->name('inventory.index');
 });
 
 Route::middleware(['auth', 'role:Coordinator'])->prefix('coordinator')->name('coordinator.')->group(function () {
     Route::get('/dashboard', function () {
         return view('coordinator.dashboard');
     })->name('dashboard');
+
+    Route::get('/enrollments', function () {
+        return view('coordinator.enrollments.index');
+    })->name('enrollments.index');
+
+    Route::get('/shortfalls', function () {
+        return view('coordinator.shortfalls.index');
+    })->name('shortfalls.index');
 });
 
 Route::middleware('auth')->group(function () {

@@ -1,0 +1,15 @@
+@php
+    $active = $active ?? 'dashboard';
+@endphp
+
+<aside class="w-64 bg-slate-100 border-r border-gray-200 p-4 space-y-1">
+    <a href="{{ route('coordinator.dashboard') }}" class="flex items-center px-4 py-3 rounded-lg {{ $active === 'dashboard' ? 'bg-[#7C2D12] font-bold text-white' : 'hover:bg-slate-200 text-gray-700 font-medium' }} text-sm transition">
+        <span>Dashboard</span>
+    </a>
+    <a href="{{ route('coordinator.enrollments.index') }}" class="flex items-center px-4 py-3 rounded-lg {{ $active === 'enrollments' ? 'bg-[#7C2D12] font-bold text-white' : 'hover:bg-slate-200 text-gray-700 font-medium' }} text-sm transition">
+        <span>Enrollments</span>
+    </a>
+    <a href="{{ route('coordinator.shortfalls.index') }}" class="flex items-center px-4 py-3 rounded-lg {{ $active === 'shortfalls' ? 'bg-[#7C2D12] font-bold text-white' : 'hover:bg-slate-200 text-gray-700 font-medium' }} text-sm transition">
+        <span>Shortfall Reports</span>
+    </a>
+</aside>
