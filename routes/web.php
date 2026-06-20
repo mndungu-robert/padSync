@@ -51,6 +51,7 @@ Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('ma
     Route::post('/coordinators/{id}/status', [ManagerCoordinatorController::class, 'update'])->name('coordinators.status');
 //inventory routes
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+    Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
 });
 
 Route::middleware(['auth', 'role:Coordinator'])->prefix('coordinator')->name('coordinator.')->group(function () {
