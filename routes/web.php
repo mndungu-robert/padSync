@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\DonorController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\ManagerCoordinatorController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicDonationController;
 use App\Http\Controllers\SchoolController;
@@ -38,17 +39,17 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     // Route::resource('donations', DonationController::class);
 });
 
+            // PROGRAM MANAGER ROUTES
 Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('manager.')->group(function () {
     Route::get('/dashboard', function () {
         return view('manager.dashboard');
     })->name('dashboard');
-
+//school routes
     Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
-
-    Route::get('/coordinators', function () {
-        return view('manager.coordinators.index');
-    })->name('coordinators.index');
-
+//coordinator routes
+    Route::get('/coordinators', [ManagerCoordinatorController::class, 'index'])->name('coordinators.index');
+    Route::post('/coordinators/{id}/status', [ManagerCoordinatorController::class, 'update'])->name('coordinators.status');
+//inventory routes
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
 });
 
