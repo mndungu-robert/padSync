@@ -46,6 +46,7 @@ Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('ma
     })->name('dashboard');
 //school routes
     Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
+    Route::post('/schools', [SchoolController::class, 'store'])->name('schools.store');
 //coordinator routes
     Route::get('/coordinators', [ManagerCoordinatorController::class, 'index'])->name('coordinators.index');
     Route::post('/coordinators/{id}/status', [ManagerCoordinatorController::class, 'update'])->name('coordinators.status');
