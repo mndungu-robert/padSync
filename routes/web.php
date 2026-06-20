@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\DonorController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicDonationController;
 use Illuminate\Support\Facades\Route;
@@ -49,9 +50,7 @@ Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('ma
         return view('manager.coordinators.index');
     })->name('coordinators.index');
 
-    Route::get('/inventory', function () {
-        return view('manager.inventory.index');
-    })->name('inventory.index');
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
 });
 
 Route::middleware(['auth', 'role:Coordinator'])->prefix('coordinator')->name('coordinator.')->group(function () {
