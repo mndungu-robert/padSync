@@ -53,6 +53,9 @@ Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('ma
 //inventory routes
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
+//distribution routes
+    Route::get('/distributions', [App\Http\Controllers\DistributionController::class, 'index'])->name('distributions.index');
+    Route::post('/distributions', [App\Http\Controllers\DistributionController::class, 'store'])->name('distributions.store');
 });
 
 Route::middleware(['auth', 'role:Coordinator'])->prefix('coordinator')->name('coordinator.')->group(function () {
