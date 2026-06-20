@@ -7,6 +7,7 @@ use App\Http\Controllers\DonorController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicDonationController;
+use App\Http\Controllers\SchoolController;
 use Illuminate\Support\Facades\Route;
 
 // 1. Open Public Routes
@@ -42,9 +43,7 @@ Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('ma
         return view('manager.dashboard');
     })->name('dashboard');
 
-    Route::get('/schools', function () {
-        return view('manager.schools.index');
-    })->name('schools.index');
+    Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
 
     Route::get('/coordinators', function () {
         return view('manager.coordinators.index');

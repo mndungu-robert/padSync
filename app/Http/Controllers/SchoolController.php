@@ -13,7 +13,12 @@ class SchoolController extends Controller
      */
     public function index()
     {
-        //
+        // Fetch schools along with a count of their linked coordinators
+        $schools = School::withCount('coordinators')
+            ->orderBy('school_name', 'asc')
+            ->get();
+
+        return view('manager.schools.index', compact('schools'));
     }
 
     /**
@@ -29,7 +34,20 @@ class SchoolController extends Controller
      */
     public function store(StoreSchoolRequest $request)
     {
-        //
+        $request->validate([
+            'school_name'     => 'required|string|max:255|unique:schools,school_name',
+            'school_location' => 'required|string|max:255',
+            'enrollment'      => 'required|integer|min:0',
+        ]);
+
+        School::create([
+            'school_name'     => $request->school_name,
+            'school_location' => $request->school_location,
+            'enrollment'      => $request->enrollment,
+        ]);
+
+        return redirect()->route('manager.schools.index')
+            ->with('success', 'Physical school site successfully registered in PadSync.');
     }
 
     /**
