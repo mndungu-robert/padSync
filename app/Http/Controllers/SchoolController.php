@@ -18,7 +18,10 @@ class SchoolController extends Controller
             ->orderBy('school_name', 'asc')
             ->get();
 
-        return view('manager.schools.index', compact('schools'));
+        return view('manager.schools.index', [
+            'schools' => $schools,
+            'active' => 'schools',
+        ]);
     }
 
     /**

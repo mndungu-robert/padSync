@@ -42,7 +42,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
             // PROGRAM MANAGER ROUTES
 Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('manager.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('manager.dashboard');
+        return view('manager.dashboard', ['active' => 'dashboard']);
     })->name('dashboard');
 //school routes
     Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');

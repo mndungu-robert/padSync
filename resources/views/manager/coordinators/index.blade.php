@@ -1,4 +1,4 @@
-@extends('layouts.manager', ['active' => 'coordinators'])
+@extends('layouts.manager')
 
 @section('title', 'Coordinator Requests - PadSync')
 @section('page_title', 'Coordinator Requests')

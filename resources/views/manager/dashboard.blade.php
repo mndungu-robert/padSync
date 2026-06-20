@@ -1,4 +1,4 @@
-@extends('layouts.manager', ['active' => 'dashboard'])
+@extends('layouts.manager')
 
 @section('title', 'Program Manager Dashboard - PadSync')
 @section('page_title', 'Program Manager Dashboard')

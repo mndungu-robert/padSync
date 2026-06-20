@@ -39,7 +39,11 @@ class InventoryController extends Controller
                      ->orderBy('donations.created_at', 'desc')
                      ->get();
 
-        return view('manager.inventory.index', compact('metrics', 'donations'));
+        return view('manager.inventory.index', [
+            'metrics' => $metrics,
+            'donations' => $donations,
+            'active' => 'inventory',
+        ]);
     }
 
     /**

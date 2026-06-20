@@ -1,4 +1,4 @@
-@extends('layouts.manager', ['active' => 'schools'])
+@extends('layouts.manager')
 
 @section('title', 'Schools Directory - PadSync')
 @section('page_title', 'Schools Directory')

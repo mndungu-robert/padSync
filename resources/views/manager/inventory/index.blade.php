@@ -1,4 +1,4 @@
-@extends('layouts.manager', ['active' => 'inventory'])
+@extends('layouts.manager')
 
 @section('title', 'Inventory Overview - PadSync')
 @section('page_title', 'Inventory Overview')
