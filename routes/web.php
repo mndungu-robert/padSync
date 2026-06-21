@@ -30,7 +30,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 // 3. Isolated Private Role Routing Guard Enclaves
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
     Route::patch('/users/{user}/coordinator-status', [AdminUserController::class, 'updateCoordinatorStatus'])->name('users.coordinator-status');
     Route::post('/users/program-managers', [AdminUserController::class, 'storeProgramManager'])->name('users.program-managers.store');
@@ -41,9 +41,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
 
             // PROGRAM MANAGER ROUTES
 Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('manager.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('manager.dashboard', ['active' => 'dashboard']);
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\ManagerDashboardController::class, 'index'])->name('dashboard');
 //school routes
     Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
     Route::post('/schools', [SchoolController::class, 'store'])->name('schools.store');
@@ -59,9 +57,7 @@ Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('ma
 });
 
 Route::middleware(['auth', 'role:Coordinator'])->prefix('coordinator')->name('coordinator.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('coordinator.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\CoordinatorDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/enrollments', function () {
         return view('coordinator.enrollments.index');
