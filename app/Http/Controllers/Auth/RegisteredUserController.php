@@ -45,14 +45,15 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'username' => $request->username,
             'password' => Hash::make($request->password),
-            'role' => 'Coordinator', // Role is forced strictly on the backend system side
+            'role' => 'Coordinator', 
             'status' => 'Pending',
+            'school_id' => $request->school_id, // FIX 1: Linked the school explicitly
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        // FIX 2: REMOVED Auth::login($user) to prevent unauthorized access.
+        // Instead, redirect to login with a flashing custom status warning message.
+        return redirect()->route('login')->with('status', 'Account submitted! Please wait for a Program Manager to approve your access.');
     }
 }

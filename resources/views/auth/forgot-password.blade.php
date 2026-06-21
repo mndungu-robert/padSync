@@ -6,6 +6,13 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
+    @if (session('dev_reset_link'))
+        <div class="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+            <div class="font-semibold">Local development reset link:</div>
+            <a href="{{ session('dev_reset_link') }}" class="underline break-all">{{ session('dev_reset_link') }}</a>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('password.email') }}">
         @csrf
 

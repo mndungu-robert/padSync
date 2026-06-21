@@ -11,6 +11,7 @@
 
     <x-danger-button
         x-data=""
+        class="bg-rose-600 hover:bg-rose-500 active:bg-rose-700 focus:ring-rose-500"
         x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
     >{{ __('Delete Account') }}</x-danger-button>
 
@@ -34,7 +35,7 @@
                     id="password"
                     name="password"
                     type="password"
-                    class="mt-1 block w-3/4"
+                    class="mt-1 block w-3/4 focus:border-indigo-600 focus:ring-indigo-600"
                     placeholder="{{ __('Password') }}"
                 />
 
@@ -42,11 +43,11 @@
             </div>
 
             <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
+                <x-secondary-button class="focus:ring-indigo-600" x-on:click="$dispatch('close')">
                     {{ __('Cancel') }}
                 </x-secondary-button>
 
-                <x-danger-button class="ms-3">
+                <x-danger-button class="ms-3 bg-rose-600 hover:bg-rose-500 active:bg-rose-700 focus:ring-rose-500">
                     {{ __('Delete Account') }}
                 </x-danger-button>
             </div>

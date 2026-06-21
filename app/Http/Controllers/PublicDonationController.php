@@ -2,40 +2,92 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Donation;
+use App\Models\Donor;
+use App\Models\School;
+use App\Models\ShortfallReport;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class PublicDonationController extends Controller
 {
+    public function create()
+    {
+        return view('donations.create', [
+            'stats' => $this->publicImpactStats(),
+        ]);
+    }
+
+    public function learnMore()
+    {
+        return view('public.learn-more', [
+            'stats' => $this->publicImpactStats(),
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
+            'name' => ['required', 'string'],
             'email' => ['required', 'email'],
+            'phone' => ['nullable', 'string'],
             'quantity_pledged' => ['required', 'integer', 'min:1'],
         ]);
 
-        // Find or create a shell user record for this donor email
-        $donor = User::firstOrCreate(
+        $donorType = $this->inferDonorType($request->name);
+        $organizationName = $donorType === 'Organization' ? $request->name : null;
+
+        // 1. Create or find donor
+        $donor = Donor::firstOrCreate(
             ['email' => $request->email],
             [
-                'name' => 'Anonymous Donor',
-                'username' => explode('@', $request->email)[0] . rand(10,99),
-                'password' => bcrypt(Str::random(16)),
-                'role' => 'Donor',
-                'status' => 'Approved'
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'donor_type' => $donorType,
+                'organization_name' => $organizationName,
             ]
         );
 
-        // Store the donation pledge mapping
+        // 2. Create donation record
         Donation::create([
             'donor_id' => $donor->id,
             'pad_count' => $request->quantity_pledged,
-            'pledge_status' => 'Pledged',
             'pledge_date' => now(),
         ]);
 
-        return back()->with('success', 'Thank you! Your donation pledge has been recorded.');
+        $donor->update([
+            'pad_count' => Donation::query()->where('donor_id', '=', $donor->id)->sum('pad_count'),
+        ]);
+
+        return redirect()->back()->with('success', 'Your donation has been recorded. Thank you for your support.');
+    }
+
+    private function publicImpactStats(): array
+    {
+        return [
+            'schools_supported' => School::query()->count(),
+            'girls_enrolled' => (int) School::query()->sum('enrollment'),
+            'pads_still_needed' => (int) ShortfallReport::query()
+                ->whereIn('status', ['Submitted', 'Dispatched'])
+                ->sum('shortfall'),
+        ];
+    }
+
+    private function inferDonorType(string $name): string
+    {
+        $normalizedName = strtolower(trim($name));
+
+        $organizationKeywords = [
+            'ltd', 'limited', 'llc', 'inc', 'company', 'co.', 'foundation',
+            'ngo', 'church', 'school', 'university', 'college', 'association',
+            'group', 'trust', 'ministry', 'agency', 'bank', 'hospital',
+        ];
+
+        foreach ($organizationKeywords as $keyword) {
+            if (str_contains($normalizedName, $keyword)) {
+                return 'Organization';
+            }
+        }
+
+        return 'Individual';
     }
 }

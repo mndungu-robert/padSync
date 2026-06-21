@@ -56,3 +56,36 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Database Backup Workflow
+
+This project includes a one-command backup flow that writes timestamped SQL dumps.
+
+Run an immediate backup:
+
+```bash
+php artisan db:backup
+```
+
+Keep a custom number of recent backups:
+
+```bash
+php artisan db:backup --keep=30
+```
+
+Backups are saved to:
+
+```text
+storage/app/backups/database
+```
+
+Daily automation is enabled via Laravel scheduler:
+
+- Command: `db:backup --keep=14`
+- Time: `01:30` server time
+
+To enable scheduled execution on Linux, add this cron entry:
+
+```cron
+* * * * * cd /var/www/html/pad-sync && php artisan schedule:run >> /dev/null 2>&1
+```
