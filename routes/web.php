@@ -6,6 +6,7 @@ use App\Http\Controllers\DonationController;
 use App\Http\Controllers\DonorController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ManagerCoordinatorController;
+use App\Http\Controllers\ManagerDonationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicDonationController;
 use App\Http\Controllers\SchoolController;
@@ -40,6 +41,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
 });
 
             // PROGRAM MANAGER ROUTES
+//dashboard
 Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('manager.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\ManagerDashboardController::class, 'index'])->name('dashboard');
 //school routes
@@ -54,6 +56,9 @@ Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('ma
 //distribution routes
     Route::get('/distributions', [App\Http\Controllers\DistributionController::class, 'index'])->name('distributions.index');
     Route::post('/distributions', [App\Http\Controllers\DistributionController::class, 'store'])->name('distributions.store');
+//donation routes
+    Route::get('/donations', [ManagerDonationController::class, 'index'])->name('donations.index');
+
 });
 
 Route::middleware(['auth', 'role:Coordinator'])->prefix('coordinator')->name('coordinator.')->group(function () {
