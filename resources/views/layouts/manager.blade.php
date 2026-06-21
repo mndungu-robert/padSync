@@ -7,13 +7,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Program Manager Workspace - PadSync')</title>
+    <title>@yield('title', 'Program Manager Workspace - ' . config('app.name'))</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased h-full flex flex-col bg-gray-100 text-gray-800">
     <header class="bg-[#0F766E] text-white px-6 py-4 flex justify-between items-center shadow-sm">
         <div class="flex items-center space-x-2">
-            <span class="text-xl font-bold tracking-tight">PadSync</span>
+            <span class="text-xl font-bold tracking-tight">{{ config('app.name') }}</span>
             <span class="bg-teal-900 text-teal-200 text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-md uppercase border border-teal-800">Program Manager</span>
         </div>
         <div class="flex items-center space-x-2 text-sm font-medium text-teal-100">

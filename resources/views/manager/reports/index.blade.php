@@ -1,6 +1,6 @@
 @extends('layouts.manager')
 
-@section('title', 'Reports Central - PadSync')
+@section('title', 'Reports Central - ' . config('app.name'))
 @section('page_title', 'Reports Central Hub')
 @section('page_subtitle', 'Generate, filter, and export system-wide logistical datasets for audits and donor reporting.')
 

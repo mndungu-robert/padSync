@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name') }}</title>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -24,7 +24,7 @@
 
             <!-- Sticky, centered page footer -->
             <footer class="text-[11px] text-gray-400 text-center font-medium tracking-wide mt-8">
-                PadSync · Macheo Programme · ICS3 Group E · Strathmore University 2026
+                {{ config('app.name') }} · Macheo Programme · ICS3 Group E · Strathmore University 2026
             </footer>
         </div>
     </body>

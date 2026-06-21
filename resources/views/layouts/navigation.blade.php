@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2">
-                        <span class="text-xl font-extrabold tracking-tight text-indigo-700">PadSync</span>
+                        <span class="text-xl font-extrabold tracking-tight text-indigo-700">{{ config('app.name') }}</span>
                     </a>
                 </div>
 

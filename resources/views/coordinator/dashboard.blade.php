@@ -1,6 +1,6 @@
 @extends('layouts.coordinator', ['active' => 'dashboard'])
 
-@section('title', 'Coordinator Dashboard - PadSync')
+@section('title', 'Coordinator Dashboard - ' . config('app.name'))
 @section('page_title', 'Coordinator Dashboard')
 @section('page_subtitle', 'Daily field operations and reporting overview.')
 

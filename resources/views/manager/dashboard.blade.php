@@ -1,6 +1,6 @@
 @extends('layouts.manager')
 
-@section('title', 'Program Manager Dashboard - PadSync')
+@section('title', 'Program Manager Dashboard - ' . config('app.name'))
 @section('page_title', 'Program Manager Dashboard')
 @section('page_subtitle', 'High-level operational visibility for schools, coordinators, and inventory.')
 

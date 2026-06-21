@@ -4,7 +4,7 @@
         <div class="w-full sm:max-w-md mt-6 px-10 py-10 bg-white shadow-md overflow-hidden sm:rounded-lg border border-gray-100 text-center">
             
             <!-- Branding Headers -->
-            <h1 class="text-3xl font-extrabold text-[#1E3A8A] tracking-tight mb-1">PadSync</h1>
+            <h1 class="text-3xl font-extrabold text-[#1E3A8A] tracking-tight mb-1">{{ config('app.name') }}</h1>
             <p class="text-sm font-medium text-gray-400 mb-6">Coordinator Registration Portal</p>
 
             <form method="POST" action="{{ route('register') }}" class="text-left">
@@ -78,7 +78,7 @@
         </div>
 
         <footer class="mt-8 text-xs text-gray-400 text-center font-medium tracking-wide">
-            PadSync · Macheo Programme · ICS3 Group E · Strathmore University 2026
+            {{ config('app.name') }} · Macheo Programme · ICS3 Group E · Strathmore University 2026
         </footer>
     </div>
 </x-guest-layout>

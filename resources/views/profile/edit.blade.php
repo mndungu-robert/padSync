@@ -10,7 +10,7 @@
                 </p>
             </div>
             <span class="hidden sm:inline-flex px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-indigo-200 bg-indigo-50 text-indigo-700">
-                {{ __('PadSync Portal') }}
+                {{ config('app.name') }} {{ __('Portal') }}
             </span>
         </div>
     </x-slot>

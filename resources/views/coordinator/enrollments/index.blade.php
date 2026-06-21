@@ -1,6 +1,6 @@
 @extends('layouts.coordinator', ['active' => 'enrollments'])
 
-@section('title', 'Enrollment Logs - PadSync')
+@section('title', 'Enrollment Logs - ' . config('app.name'))
 @section('page_title', 'Enrollment Logs')
 @section('page_subtitle', 'Submit and review school enrollment updates.')
 

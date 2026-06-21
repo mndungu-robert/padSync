@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'PadSync')</title>
+    <title>@yield('title', config('app.name'))</title>
 
     <style>
         * {
@@ -167,7 +167,7 @@ input, select, textarea {
 <body>
 
 <nav>
-    <div style="color:white; font-weight:bold;">PadSync</div>
+    <div style="color:white; font-weight:bold;">{{ config('app.name') }}</div>
 
     <div class="nav-links">
         <a href="/">Home</a>

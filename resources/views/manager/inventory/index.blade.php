@@ -1,6 +1,6 @@
 @extends('layouts.manager')
 
-@section('title', 'Inventory Overview - PadSync')
+@section('title', 'Inventory Overview - ' . config('app.name'))
 @section('page_title', 'Inventory Overview')
 @section('page_subtitle', 'Monitor stock levels, donation activity, and warehouse health.')
 

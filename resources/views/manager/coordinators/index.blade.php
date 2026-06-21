@@ -1,6 +1,6 @@
 @extends('layouts.manager')
 
-@section('title', 'Coordinator Requests - PadSync')
+@section('title', 'Coordinator Requests - ' . config('app.name'))
 @section('page_title', 'Coordinator Requests')
 @section('page_subtitle', 'Approve, reject, and manage school coordinator assignments.')
 

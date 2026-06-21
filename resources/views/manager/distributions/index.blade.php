@@ -1,6 +1,6 @@
 @extends('layouts.manager')
 
-@section('title', 'Allocation Engine - PadSync')
+@section('title', 'Allocation Engine - ' . config('app.name'))
 @section('page_title', 'Live Allocation & Dispatches')
 @section('page_subtitle', 'Review dynamic monthly school shortfalls and authorize sanitary towel dispatches.')
 

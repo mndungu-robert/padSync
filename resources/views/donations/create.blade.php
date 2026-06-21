@@ -16,7 +16,7 @@
     </h2>
 
     <p style="max-width: 600px; margin: 0 auto 25px; font-size: 14px; opacity: 0.9;">
-        The PadSync Programme distributes sanitary pads to sponsored schools. Your pledge closes the gap.
+        The {{ config('app.name') }} Programme distributes sanitary pads to sponsored schools. Your pledge closes the gap.
     </p>
 
     <!-- STATS -->

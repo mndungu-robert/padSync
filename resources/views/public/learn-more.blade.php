@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Learn More - PadSync')
+@section('title', 'Learn More - ' . config('app.name'))
 
 @section('content')
 @php
@@ -8,9 +8,9 @@
 @endphp
 
 <div style="background: linear-gradient(135deg, #eef2ff, #e0e7ff); border:1px solid #c7d2fe; border-radius:12px; padding:24px; margin-bottom:20px;">
-    <h2 style="margin:0; font-size:28px; color:#312e81;">About PadSync</h2>
+    <h2 style="margin:0; font-size:28px; color:#312e81;">About {{ config('app.name') }}</h2>
     <p style="margin-top:10px; color:#4338ca; max-width:760px;">
-        PadSync helps schools, coordinators, and program managers track sanitary pad needs and distribution in one transparent workflow.
+        {{ config('app.name') }} helps schools, coordinators, and program managers track sanitary pad needs and distribution in one transparent workflow.
         The goal is simple: reduce absenteeism by ensuring girls have reliable monthly access.
     </p>
 </div>

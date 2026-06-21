@@ -1,6 +1,6 @@
 @extends('layouts.coordinator', ['active' => 'distributions'])
 
-@section('title', 'Distributions - PadSync')
+@section('title', 'Distributions - ' . config('app.name'))
 @section('page_title', 'Distributions')
 @section('page_subtitle', 'Confirm receipt of pads dispatched to your school.')
 

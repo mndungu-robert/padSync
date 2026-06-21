@@ -1,6 +1,6 @@
 @extends('layouts.admin', ['active' => 'dashboard'])
 
-@section('title', 'Admin Dashboard - PadSync')
+@section('title', 'Admin Dashboard - ' . config('app.name'))
 
 @section('content')
     @if (session('success'))

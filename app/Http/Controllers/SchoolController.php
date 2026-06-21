@@ -50,7 +50,7 @@ class SchoolController extends Controller
         ]);
 
         return redirect()->route('manager.schools.index')
-            ->with('success', 'Physical school site successfully registered in PadSync.');
+            ->with('success', 'Physical school site successfully registered in ' . config('app.name') . '.');
     }
 
     /**

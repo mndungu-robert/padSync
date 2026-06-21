@@ -1,6 +1,6 @@
 @extends('layouts.coordinator', ['active' => 'shortfalls'])
 
-@section('title', 'Shortfall Reports - PadSync')
+@section('title', 'Shortfall Reports - ' . config('app.name'))
 @section('page_title', 'Shortfall Reports')
 @section('page_subtitle', 'Track gaps and request replenishment by school and cycle.')
 

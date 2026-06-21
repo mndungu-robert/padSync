@@ -1,6 +1,6 @@
 @extends('layouts.manager')
 
-@section('title', 'Donation Pledges Registry - PadSync')
+@section('title', 'Donation Pledges Registry - ' . config('app.name'))
 @section('page_title', 'Donation Pledges Registry')
 @section('page_subtitle', 'Monitor external pad pledges submitted via the public portal site.')
 

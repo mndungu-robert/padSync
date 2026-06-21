@@ -1,6 +1,6 @@
 @extends('layouts.manager')
 
-@section('title', 'Schools Directory - PadSync')
+@section('title', 'Schools Directory - ' . config('app.name'))
 @section('page_title', 'Schools Directory')
 @section('page_subtitle', 'Track onboarded schools and their operational status.')
 

@@ -2,7 +2,7 @@
     <div class="w-full sm:max-w-md px-8 py-10 bg-white shadow-md rounded-xl border border-gray-100 text-center mx-auto my-auto">
         
         <!-- Branding Headers -->
-        <h1 class="text-3xl font-extrabold text-[#1E3A8A] tracking-tight mb-1">PadSync</h1>
+        <h1 class="text-3xl font-extrabold text-[#1E3A8A] tracking-tight mb-1">{{ config('app.name') }}</h1>
         <p class="text-xs font-semibold text-gray-400 mb-8">Macheo Programme · Strathmore University</p>
 
         <!-- Status Alerts -->
