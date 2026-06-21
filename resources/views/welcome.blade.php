@@ -95,7 +95,7 @@
 
         </a>
 
-        <a href="#"
+        <a href="{{ route('learn.more') }}"
            class="border-2 border-indigo-600 text-indigo-600 px-8 py-4 rounded-lg font-bold hover:bg-indigo-600 hover:text-white transition">
 
             Learn More

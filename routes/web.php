@@ -20,6 +20,8 @@ Route::get('/', function () {
 // Donation form page
 Route::get('/donate', [PublicDonationController::class, 'create'])
     ->name('donate.form');
+Route::get('/learn-more', [PublicDonationController::class, 'learnMore'])
+    ->name('learn.more');
 // Submit donation
 Route::post('/donate', [PublicDonationController::class, 'store'])
     ->name('donate.store');

@@ -4,6 +4,10 @@
 
 @section('content')
 
+@php
+    $impact = $stats ?? ['schools_supported' => 0, 'girls_enrolled' => 0, 'pads_still_needed' => 0];
+@endphp
+
 <!-- HERO STATS SECTION -->
 <div style="text-align:center; padding: 30px 10px; background: linear-gradient(135deg, #4f46e5, #6d28d9); color:white; border-radius:12px;">
 
@@ -19,17 +23,17 @@
     <div style="display:flex; justify-content:center; gap:40px; flex-wrap:wrap; margin-top:20px;">
 
         <div>
-            <h3 style="font-size:36px; font-weight:bold;">8</h3>
+            <h3 style="font-size:36px; font-weight:bold;">{{ number_format($impact['schools_supported']) }}</h3>
             <p style="font-size:13px; opacity:0.9;">Schools Supported</p>
         </div>
 
         <div>
-            <h3 style="font-size:36px; font-weight:bold;">1,024</h3>
+            <h3 style="font-size:36px; font-weight:bold;">{{ number_format($impact['girls_enrolled']) }}</h3>
             <p style="font-size:13px; opacity:0.9;">Girls Enrolled</p>
         </div>
 
         <div>
-            <h3 style="font-size:36px; font-weight:bold; color:#f472b6;">342</h3>
+            <h3 style="font-size:36px; font-weight:bold; color:#f472b6;">{{ number_format($impact['pads_still_needed']) }}</h3>
             <p style="font-size:13px; opacity:0.9;">Pads Still Needed</p>
         </div>
 
@@ -69,19 +73,6 @@
     <p>
         <label>Email</label><br>
         <input type="email" name="email" required>
-    </p>
-
-    <p>
-        <label>Donor Type</label><br>
-        <select name="donor_type">
-            <option value="Individual">Individual</option>
-            <option value="Organization">Organization</option>
-        </select>
-    </p>
-
-    <p>
-        <label>Organization Name</label><br>
-        <input type="text" name="organization_name">
     </p>
 
     <p>
