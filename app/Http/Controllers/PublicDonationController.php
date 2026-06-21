@@ -4,13 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Donation;
 use App\Models\Donor;
+use App\Models\School;
+use App\Models\ShortfallReport;
 use Illuminate\Http\Request;
 
 class PublicDonationController extends Controller
 {
     public function create()
     {
-        return view('donations.create');
+        return view('donations.create', [
+            'stats' => $this->publicImpactStats(),
+        ]);
+    }
+
+    public function learnMore()
+    {
+        return view('public.learn-more', [
+            'stats' => $this->publicImpactStats(),
+        ]);
     }
 
     public function store(Request $request)
@@ -19,13 +30,11 @@ class PublicDonationController extends Controller
             'name' => ['required', 'string'],
             'email' => ['required', 'email'],
             'phone' => ['nullable', 'string'],
-            'donor_type' => ['required', 'in:Individual,Organization'],
-            'organization_name' => ['nullable', 'string'],
             'quantity_pledged' => ['required', 'integer', 'min:1'],
         ]);
-        $organizationName = $request->donor_type === 'Organization'
-          ? $request->organization_name
-          : null;
+
+        $donorType = $this->inferDonorType($request->name);
+        $organizationName = $donorType === 'Organization' ? $request->name : null;
 
         // 1. Create or find donor
         $donor = Donor::firstOrCreate(
@@ -33,7 +42,7 @@ class PublicDonationController extends Controller
             [
                 'name' => $request->name,
                 'phone' => $request->phone,
-                'donor_type' => $request->donor_type,
+                'donor_type' => $donorType,
                 'organization_name' => $organizationName,
             ]
         );
@@ -50,5 +59,35 @@ class PublicDonationController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Your donation has been recorded. Thank you for your support.');
+    }
+
+    private function publicImpactStats(): array
+    {
+        return [
+            'schools_supported' => School::query()->count(),
+            'girls_enrolled' => (int) School::query()->sum('enrollment'),
+            'pads_still_needed' => (int) ShortfallReport::query()
+                ->whereIn('status', ['Submitted', 'Dispatched'])
+                ->sum('shortfall'),
+        ];
+    }
+
+    private function inferDonorType(string $name): string
+    {
+        $normalizedName = strtolower(trim($name));
+
+        $organizationKeywords = [
+            'ltd', 'limited', 'llc', 'inc', 'company', 'co.', 'foundation',
+            'ngo', 'church', 'school', 'university', 'college', 'association',
+            'group', 'trust', 'ministry', 'agency', 'bank', 'hospital',
+        ];
+
+        foreach ($organizationKeywords as $keyword) {
+            if (str_contains($normalizedName, $keyword)) {
+                return 'Organization';
+            }
+        }
+
+        return 'Individual';
     }
 }

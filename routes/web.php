@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\CoordinatorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\DonorController;
@@ -20,6 +21,8 @@ Route::get('/', function () {
 // Donation form page
 Route::get('/donate', [PublicDonationController::class, 'create'])
     ->name('donate.form');
+Route::get('/learn-more', [PublicDonationController::class, 'learnMore'])
+    ->name('learn.more');
 // Submit donation
 Route::post('/donate', [PublicDonationController::class, 'store'])
     ->name('donate.store');
@@ -64,15 +67,16 @@ Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('ma
 });
 
 Route::middleware(['auth', 'role:Coordinator'])->prefix('coordinator')->name('coordinator.')->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\CoordinatorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [CoordinatorController::class, 'dashboard'])->name('dashboard');
 
-    Route::get('/enrollments', function () {
-        return view('coordinator.enrollments.index');
-    })->name('enrollments.index');
+    Route::get('/enrollments', [CoordinatorController::class, 'enrollmentsIndex'])->name('enrollments.index');
+    Route::post('/enrollments', [CoordinatorController::class, 'storeEnrollment'])->name('enrollments.store');
 
-    Route::get('/shortfalls', function () {
-        return view('coordinator.shortfalls.index');
-    })->name('shortfalls.index');
+    Route::get('/shortfalls', [CoordinatorController::class, 'shortfallsIndex'])->name('shortfalls.index');
+    Route::post('/shortfalls', [CoordinatorController::class, 'storeShortfall'])->name('shortfalls.store');
+
+    Route::get('/distributions', [CoordinatorController::class, 'distributionsIndex'])->name('distributions.index');
+    Route::post('/distributions/{distribution}/confirm', [CoordinatorController::class, 'confirmDistribution'])->name('distributions.confirm');
 });
 
 Route::middleware('auth')->group(function () {
