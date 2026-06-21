@@ -40,7 +40,7 @@ class DashboardController extends Controller
 
         // 3. Coordinator routing safety
         if ($user->role === 'Coordinator') {
-            return view('coordinator.dashboard');
+            return redirect()->route('coordinator.dashboard');
         }
 
         abort(403, 'Invalid system role detected.');

@@ -14,6 +14,7 @@ class ShortfallReport extends Model
         'report_date',
         'required_pads',
         'available_pads',
+        'government_pads_received',
         'shortfall',
         'status',
     ];

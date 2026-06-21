@@ -11,12 +11,12 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased h-full flex flex-col bg-gray-100 text-gray-800">
-    <header class="bg-[#7C2D12] text-white px-6 py-4 flex justify-between items-center shadow-sm">
+    <header class="bg-indigo-700 text-white px-6 py-4 flex justify-between items-center shadow-sm">
         <div class="flex items-center space-x-2">
             <span class="text-xl font-bold tracking-tight">PadSync</span>
-            <span class="bg-orange-900 text-orange-200 text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-md uppercase border border-orange-800">Coordinator</span>
+            <span class="bg-indigo-900 text-indigo-200 text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-md uppercase border border-indigo-800">Coordinator</span>
         </div>
-        <div class="flex items-center space-x-2 text-sm font-medium text-orange-100">
+        <div class="flex items-center space-x-2 text-sm font-medium text-indigo-100">
             <span>{{ auth()->user()->name }}</span>
             <span>|</span>
             <a href="{{ route('profile.edit') }}" class="hover:text-white transition font-semibold">Profile</a>
