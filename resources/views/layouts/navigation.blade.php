@@ -7,9 +7,6 @@
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2">
                         <span class="text-xl font-extrabold tracking-tight text-indigo-700">PadSync</span>
-                        <span class="hidden md:inline-flex text-[10px] uppercase tracking-wider font-bold text-indigo-500 border border-indigo-200 bg-indigo-50 px-2 py-0.5 rounded">
-                            Web Portal
-                        </span>
                     </a>
                 </div>
 
