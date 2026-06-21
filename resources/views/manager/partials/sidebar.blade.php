@@ -27,4 +27,8 @@
         class="flex items-center px-4 py-3 rounded-lg {{ $active === 'donations' ? 'bg-[#0F766E] font-bold text-white' : 'hover:bg-slate-200 text-gray-700 font-medium' }} text-sm transition">
         <span>Donations</span>
     </a>
+    <a href="{{ route('manager.reports.index') }}"
+        class="flex items-center px-4 py-3 rounded-lg {{ $active === 'reports' ? 'bg-[#0F766E] font-bold text-white' : 'hover:bg-slate-200 text-gray-700 font-medium' }} text-sm transition">
+        <span>Reports</span>
+    </a>
 </aside>
