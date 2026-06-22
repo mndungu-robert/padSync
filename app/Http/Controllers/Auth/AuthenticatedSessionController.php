@@ -44,7 +44,7 @@ class AuthenticatedSessionController extends Controller
                 : 'Your account registration has been rejected.';
 
             throw ValidationException::withMessages([
-                'email' => [$message],
+                'login' => [$message],
             ]);
         }
 

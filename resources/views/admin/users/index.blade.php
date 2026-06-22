@@ -1,6 +1,6 @@
 @extends('layouts.admin', ['active' => 'users'])
 
-@section('title', 'Manage Users - ' . config('app.name'))
+@section('title', 'Manage Managers - ' . config('app.name'))
 
 @section('content')
     @if (session('success'))
@@ -26,13 +26,13 @@
     @endif
 
     <div>
-        <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Manage Users</h2>
-        <p class="text-xs font-medium text-gray-400 mt-0.5">View all users, approve coordinators, and add managers.</p>
+        <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Manage Managers</h2>
+        <p class="text-xs font-medium text-gray-400 mt-0.5">Approve coordinators and create manager accounts.</p>
     </div>
 
     <div class="flex justify-end">
         <button type="button" id="open-add-user-modal" class="rounded-md bg-[#1E3A8A] px-4 py-2 text-sm font-semibold text-white hover:bg-[#173071] transition">
-            Add Users
+            Add Manager
         </button>
     </div>
 
@@ -71,15 +71,25 @@
                             <td class="px-6 py-4 text-xs text-gray-500">{{ $systemUser->school?->school_name ?? 'N/A' }}</td>
                             <td class="px-6 py-4">
                                 @if ($systemUser->role === 'Coordinator')
-                                    <form method="POST" action="{{ route('admin.users.coordinator-status', $systemUser) }}" class="flex items-center gap-2">
-                                        @csrf
-                                        @method('PATCH')
-                                        <select name="status" class="text-xs border-gray-300 rounded-md px-2 py-1">
-                                            <option value="Approved" @selected($systemUser->status === 'Approved')>Approve</option>
-                                            <option value="Rejected" @selected($systemUser->status === 'Rejected')>Reject</option>
-                                        </select>
-                                        <button type="submit" class="text-xs font-semibold text-blue-600 hover:text-blue-800">Save</button>
-                                    </form>
+                                    <div class="flex items-center gap-2">
+                                        <form method="POST" action="{{ route('admin.users.coordinator-status', $systemUser) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="Approved">
+                                            <button type="submit" class="bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold px-3 py-1.5 rounded transition shadow-sm">
+                                                Approve
+                                            </button>
+                                        </form>
+
+                                        <form method="POST" action="{{ route('admin.users.coordinator-status', $systemUser) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="Rejected">
+                                            <button type="submit" class="bg-white hover:bg-rose-50 border border-gray-200 text-rose-600 text-xs font-bold px-3 py-1.5 rounded transition">
+                                                Reject
+                                            </button>
+                                        </form>
+                                    </div>
                                 @else
                                     <span class="text-gray-300 font-medium">-</span>
                                 @endif

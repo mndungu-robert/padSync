@@ -7,7 +7,7 @@
         <span>Dashboard</span>
     </a>
     <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 rounded-lg {{ $active === 'users' ? 'bg-[#1E3A8A] font-bold text-white' : 'hover:bg-slate-200 text-gray-700 font-medium' }} text-sm transition">
-        <span>Manage Users</span>
+        <span>Manage Managers</span>
     </a>
     <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-slate-200 text-gray-700 font-medium text-sm transition">
         <span>Audit Logs</span>

@@ -18,11 +18,16 @@ class CheckRole
 
         $user = Auth::user();
 
-        // 2. Block pending school coordinators immediately before accessing system views
-        if ($user->role === 'Coordinator' && $user->status === 'Pending') {
+        // 2. Block non-approved coordinators immediately before accessing system views
+        if ($user->role === 'Coordinator' && in_array($user->status, ['Pending', 'Rejected'], true)) {
             Auth::logout();
+
+            $message = $user->status === 'Pending'
+                ? 'Your coordinator account registration is pending approval from a Program Manager.'
+                : 'Your coordinator account registration has been rejected. Please contact a Program Manager for assistance.';
+
             return redirect()->route('login')->withErrors([
-                'email' => 'Your coordinator account registration is pending approval from a Program Manager.'
+                'login' => $message,
             ]);
         }
 
