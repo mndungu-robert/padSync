@@ -39,6 +39,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('/users/{user}/coordinator-status', [AdminUserController::class, 'updateCoordinatorStatus'])->name('users.coordinator-status');
     Route::post('/users/program-managers', [AdminUserController::class, 'storeProgramManager'])->name('users.program-managers.store');
 
+    Route::get('/logs', [App\Http\Controllers\AdminUserController::class, 'indexLogs'])->name('logs');
     // Route::resource('donors', DonorController::class);
     // Route::resource('donations', DonationController::class);
 });

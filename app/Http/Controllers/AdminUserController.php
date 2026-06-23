@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class AdminUserController extends Controller
@@ -56,5 +57,21 @@ class AdminUserController extends Controller
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'Program Manager account created successfully.');
+    }
+
+    /**
+     * Display the paginated system audit trails logs.
+     */
+    public function indexLogs()
+    {
+        // Pull logs, joining user information if necessary, or extracting raw traces
+        $logs = DB::table('audit_logs')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15); // Paginated to keep loading fast
+
+        return view('admin.logs.index', [
+            'logs'   => $logs,
+            'active' => 'logs' // Highlights the audit logs tab in the sidebar
+        ]);
     }
 }
