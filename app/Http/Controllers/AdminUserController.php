@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 use Illuminate\Validation\Rule;
 
 class AdminUserController extends Controller
@@ -57,6 +59,22 @@ class AdminUserController extends Controller
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'Program Manager account created successfully.');
+    }
+
+    public function destroy(User $user)
+    {
+        if (Auth::id() === $user->id) {
+            return redirect()->route('admin.users.index')->with('error', 'You cannot delete your own account.');
+        }
+
+        try {
+            $name = $user->name;
+            User::query()->whereKey($user->id)->delete();
+
+            return redirect()->route('admin.users.index')->with('success', "User account for {$name} deleted successfully.");
+        } catch (QueryException $exception) {
+            return redirect()->route('admin.users.index')->with('error', 'This user cannot be deleted because related records exist in the system.');
+        }
     }
 
     /**

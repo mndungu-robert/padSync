@@ -89,9 +89,29 @@
                                                 Reject
                                             </button>
                                         </form>
+
+                                        @if (auth()->id() !== $systemUser->id)
+                                            <form method="POST" action="{{ route('admin.users.destroy', $systemUser) }}" onsubmit="return confirm('Delete this user account? This action cannot be undone.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="bg-white hover:bg-red-50 border border-red-200 text-red-700 text-xs font-bold px-3 py-1.5 rounded transition">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 @else
-                                    <span class="text-gray-300 font-medium">-</span>
+                                    @if (auth()->id() !== $systemUser->id)
+                                        <form method="POST" action="{{ route('admin.users.destroy', $systemUser) }}" onsubmit="return confirm('Delete this user account? This action cannot be undone.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="bg-white hover:bg-red-50 border border-red-200 text-red-700 text-xs font-bold px-3 py-1.5 rounded transition">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-gray-300 font-medium">Current Account</span>
+                                    @endif
                                 @endif
                             </td>
                         </tr>
