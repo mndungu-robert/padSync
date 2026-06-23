@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Donation;
 use App\Models\Donor;
+use App\Models\Enrollment;
 use App\Models\School;
 use App\Models\ShortfallReport;
 use Illuminate\Http\Request;
@@ -65,7 +66,7 @@ class PublicDonationController extends Controller
     {
         return [
             'schools_supported' => School::query()->count(),
-            'girls_enrolled' => (int) School::query()->sum('enrollment'),
+            'girls_enrolled' => (int) Enrollment::query()->sum('girl_count'),
             'pads_still_needed' => (int) ShortfallReport::query()
                 ->whereIn('status', ['Submitted', 'Dispatched'])
                 ->sum('shortfall'),

@@ -50,7 +50,7 @@
                         <!-- Fulfillment State Badge -->
                         <td class="px-6 py-4 text-right">
                             <span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border
-                                {{ $pledge->pledge_status === 'Fulfilled' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-blue-50 text-blue-700 border-blue-200' }}">
+                                {{ $pledge->pledge_status === 'Fully Received' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-blue-50 text-blue-700 border-blue-200' }}">
                                 {{ $pledge->pledge_status }}
                             </span>
                         </td>

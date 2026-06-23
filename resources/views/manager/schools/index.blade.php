@@ -7,6 +7,7 @@
 @section('content')
     @php
         $schoolList = collect($schools ?? []);
+        $currentMonthName = $currentMonth ?? now()->format('F');
     @endphp
 
     @if(session('success'))
@@ -56,7 +57,8 @@
                         <th class="px-6 py-3">ID</th>
                         <th class="px-6 py-3">School Name</th>
                         <th class="px-6 py-3">Location</th>
-                        <th class="px-6 py-3">Baseline Girls</th>
+                        <th class="px-6 py-3">{{ $currentMonthName }} Girls (Read)</th>
+                        <th class="px-6 py-3">Previous / Latest Transaction</th>
                         <th class="px-6 py-3">Assigned Coordinators</th>
                     </tr>
                 </thead>
@@ -66,7 +68,10 @@
                         <td class="px-6 py-4 text-xs font-mono text-gray-400">#{{ $school->school_id }}</td>
                         <td class="px-6 py-4 font-bold text-gray-800">{{ $school->school_name }}</td>
                         <td class="px-6 py-4 font-medium">{{ $school->school_location }}</td>
-                        <td class="px-6 py-4 font-semibold text-slate-700">{{ number_format($school->enrollment) }}</td>
+                        <td class="px-6 py-4 font-semibold text-slate-700">{{ number_format((int) $school->enrollment) }}</td>
+                        <td class="px-6 py-4 text-gray-600">
+                            {{ number_format((int) ($school->latest_enrollment ?? 0)) }}
+                        </td>
                         <td class="px-6 py-4">
                             <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-slate-100 text-slate-600 border border-slate-200">
                                 {{ $school->coordinators_count }} Linked
@@ -75,7 +80,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-8 text-center text-gray-400 font-medium">No school sites have been registered in the system directory yet.</td>
+                        <td colspan="6" class="px-6 py-8 text-center text-gray-400 font-medium">No school sites have been registered in the system directory yet.</td>
                     </tr>
                     @endforelse
                 </tbody>

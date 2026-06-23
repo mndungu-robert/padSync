@@ -5,8 +5,12 @@
 @section('page_subtitle', 'Submit and review school enrollment updates.')
 
 @section('content')
+    @php
+        $currentMonth = now()->format('F');
+    @endphp
+
     <div class="bg-indigo-50 text-indigo-800 p-3 rounded-lg text-xs font-semibold border border-indigo-200">
-        Notice: Only one enrollment entry is allowed per month for the same academic year.
+        Notice: Enrollment starts from this month. Backdated month selection is not allowed, and only one entry is allowed per month for the same academic year.
     </div>
 
     @if(session('success'))
@@ -47,10 +51,7 @@
                     <label class="block text-xs font-bold text-gray-600 mb-1">Month <span class="text-rose-500">*</span></label>
                     <select name="month" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                        <option value="">Select month</option>
-                        @foreach(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] as $month)
-                            <option value="{{ $month }}" @selected(old('month') === $month)>{{ $month }}</option>
-                        @endforeach
+                        <option value="{{ $currentMonth }}" selected>{{ $currentMonth }}</option>
                     </select>
                 </div>
                 <div>

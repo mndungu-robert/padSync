@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSchoolRequest;
 use App\Http\Requests\UpdateSchoolRequest;
+use App\Models\Enrollment;
 use App\Models\School;
+use Illuminate\Support\Carbon;
 
 class SchoolController extends Controller
 {
@@ -13,13 +15,44 @@ class SchoolController extends Controller
      */
     public function index()
     {
-        // Fetch schools along with a count of their linked coordinators
-        $schools = School::withCount('coordinators')
+        $currentMonth = Carbon::now()->format('F');
+
+        $latestEnrollmentSubquery = Enrollment::query()
+            ->select('school_id', 'girl_count')
+            ->whereIn('enrollment_id', function ($query) {
+                $query->selectRaw('MAX(enrollment_id)')
+                    ->from('enrollments')
+                    ->groupBy('school_id');
+            });
+
+        $currentMonthEnrollmentSubquery = Enrollment::query()
+            ->select('school_id', 'girl_count')
+            ->where('month', $currentMonth)
+            ->whereIn('enrollment_id', function ($query) use ($currentMonth) {
+                $query->selectRaw('MAX(enrollment_id)')
+                    ->from('enrollments')
+                    ->where('month', $currentMonth)
+                    ->groupBy('school_id');
+            });
+
+        // Fetch schools with coordinator counts and latest submitted enrollment per school.
+        $schools = School::query()
+            ->leftJoinSub($latestEnrollmentSubquery, 'latest_enrollments', function ($join) {
+                $join->on('latest_enrollments.school_id', '=', 'schools.school_id');
+            })
+            ->leftJoinSub($currentMonthEnrollmentSubquery, 'current_month_enrollments', function ($join) {
+                $join->on('current_month_enrollments.school_id', '=', 'schools.school_id');
+            })
+            ->select('schools.*')
+            ->selectRaw('COALESCE(current_month_enrollments.girl_count, 0) as enrollment')
+            ->selectRaw('COALESCE(latest_enrollments.girl_count, schools.enrollment) as latest_enrollment')
+            ->withCount('coordinators')
             ->orderBy('school_name', 'asc')
             ->get();
 
         return view('manager.schools.index', [
             'schools' => $schools,
+            'currentMonth' => $currentMonth,
             'active' => 'schools',
         ]);
     }

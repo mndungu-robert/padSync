@@ -80,7 +80,7 @@ class InventoryController extends Controller
             Donation::create([
                 'donor_id' => $donor->id,
                 'pad_count' => $request->quantity_pads,
-                'pledge_status' => 'Fulfilled',
+                'pledge_status' => 'Fully Received',
                 'pledge_date' => $request->date_received,
                 'fulfillment_date' => $request->date_received,
             ]);

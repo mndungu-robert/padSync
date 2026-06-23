@@ -8,6 +8,7 @@ use App\Models\ReceiptConfirmation;
 use App\Models\School;
 use App\Models\ShortfallReport;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -94,15 +95,14 @@ class CoordinatorController extends Controller
                 ->with('error', 'Your account is not linked to a school yet. Contact a Program Manager.');
         }
 
+        $currentMonth = Carbon::now()->format('F');
+
         $validated = request()->validate([
             'academic_year' => ['required', 'string', 'max:10'],
             'month' => [
                 'required',
                 'string',
-                Rule::in([
-                    'January', 'February', 'March', 'April', 'May', 'June',
-                    'July', 'August', 'September', 'October', 'November', 'December',
-                ]),
+                Rule::in([$currentMonth]),
             ],
             'girl_count' => ['required', 'integer', 'min:0'],
             'government_pads_received' => ['required', 'integer', 'min:0'],
@@ -126,12 +126,17 @@ class CoordinatorController extends Controller
                 ->with('error', 'Monthly enrollment already submitted for this academic year. Only one entry per month is allowed.');
         }
 
-        Enrollment::query()->create([
+        $enrollment = Enrollment::query()->create([
             'school_id' => $school->school_id,
             'academic_year' => $validated['academic_year'],
             'month' => $validated['month'],
             'girl_count' => $validated['girl_count'],
             'government_pads_received' => $validated['government_pads_received'],
+        ]);
+
+        // Keep school-level enrollment in sync for manager screens using schools.enrollment.
+        $school->update([
+            'enrollment' => (int) $enrollment->girl_count,
         ]);
 
         return redirect()->route('coordinator.enrollments.index')
