@@ -30,11 +30,14 @@ class PublicDonationController extends Controller
             'name' => ['required', 'string'],
             'email' => ['required', 'email'],
             'phone' => ['nullable', 'string'],
+            'donor_type' => ['required', 'in:Individual,Organization'],
             'quantity_pledged' => ['required', 'integer', 'min:1'],
         ]);
 
-        $donorType = $this->inferDonorType($request->name);
-        $organizationName = $donorType === 'Organization' ? $request->name : null;
+        $donorType = (string) $request->input('donor_type');
+        $organizationName = $donorType === 'Organization'
+            ? (string) $request->input('name')
+            : null;
 
         // 1. Create or find donor
         $donor = Donor::firstOrCreate(
@@ -46,6 +49,12 @@ class PublicDonationController extends Controller
                 'organization_name' => $organizationName,
             ]
         );
+
+        $donor->update([
+            'name' => $request->name,
+            'donor_type' => $donorType,
+            'organization_name' => $organizationName,
+        ]);
 
         // 2. Create donation record
         Donation::create([
@@ -74,22 +83,4 @@ class PublicDonationController extends Controller
         ];
     }
 
-    private function inferDonorType(string $name): string
-    {
-        $normalizedName = strtolower(trim($name));
-
-        $organizationKeywords = [
-            'ltd', 'limited', 'llc', 'inc', 'company', 'co.', 'foundation',
-            'ngo', 'church', 'school', 'university', 'college', 'association',
-            'group', 'trust', 'ministry', 'agency', 'bank', 'hospital',
-        ];
-
-        foreach ($organizationKeywords as $keyword) {
-            if (str_contains($normalizedName, $keyword)) {
-                return 'Organization';
-            }
-        }
-
-        return 'Individual';
-    }
 }

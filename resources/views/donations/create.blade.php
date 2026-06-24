@@ -73,11 +73,20 @@
     <p>
         <label>Name</label><br>
         <input type="text" name="name" required>
+        <small style="color:#6b7280; display:block; margin-top:4px;">If donor type is Organization, enter the organization name here.</small>
     </p>
 
     <p>
         <label>Email</label><br>
         <input type="email" name="email" required>
+    </p>
+
+    <p>
+        <label>Donor Type</label><br>
+        <select name="donor_type" required>
+            <option value="Individual" {{ old('donor_type') === 'Individual' ? 'selected' : '' }}>Individual</option>
+            <option value="Organization" {{ old('donor_type') === 'Organization' ? 'selected' : '' }}>Organization</option>
+        </select>
     </p>
 
     <p>
