@@ -40,12 +40,20 @@
     <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm space-y-4 mt-6">
         <h3 class="font-bold text-sm text-gray-800 tracking-tight">Log New Donation Batch</h3>
 
-        <form method="POST" action="{{ route('manager.inventory.store') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <form method="POST" action="{{ route('manager.inventory.store') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             @csrf
             <div>
                 <label class="block text-xs font-bold text-gray-600 mb-1">Donor Name / Organization <span class="text-rose-500">*</span></label>
                 <input type="text" name="donor_name" required placeholder="e.g. Safaricom Foundation"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-teal-600 focus:border-teal-600 placeholder-gray-300">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-600 mb-1">Donor Type <span class="text-rose-500">*</span></label>
+                <select name="donor_type" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-teal-600 focus:border-teal-600 text-gray-700 bg-white">
+                    <option value="Individual">Individual</option>
+                    <option value="Organization">Organization</option>
+                </select>
             </div>
             <div>
                 <label class="block text-xs font-bold text-gray-600 mb-1">Quantity (pads) <span class="text-rose-500">*</span></label>
@@ -82,6 +90,9 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-gray-600">
                     @forelse($inventoryDonations as $donation)
+                    @php
+                        $fulfillmentState = $donation->fulfillment_state ?? ($donation->fulfillment_date ? 'Fully Received' : 'Pledged');
+                    @endphp
                     <tr class="hover:bg-gray-50/50 transition">
                         <td class="px-6 py-4 text-xs font-medium text-gray-400">
                             {{ \Carbon\Carbon::parse($donation->pledge_date)->format('M d, Y') }}
@@ -94,7 +105,7 @@
                         </td>
                         <td class="px-6 py-4">
                             <span class="px-2 py-0.5 rounded text-[10px] font-extrabold tracking-wide uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                {{ $donation->pledge_status }}
+                                {{ $fulfillmentState }}
                             </span>
                         </td>
                     </tr>

@@ -33,9 +33,10 @@ class InventoryController extends Controller
         $donations = Donation::select(
                         'donations.*', 
                         'donors.name as donor_name',
-                        'donors.organization_name'
+                   'donors.organization_name'
                      )
                      ->join('donors', 'donations.donor_id', '=', 'donors.id')
+                ->selectRaw("CASE WHEN donations.fulfillment_date IS NULL THEN 'Pledged' ELSE 'Fully Received' END as fulfillment_state")
                      ->orderBy('donations.created_at', 'desc')
                      ->get();
 
@@ -61,26 +62,38 @@ class InventoryController extends Controller
     {
          $request->validate([
             'donor_name'     => 'required|string|max:255',
+            'donor_type'     => 'required|in:Individual,Organization',
             'quantity_pads'  => 'required|integer|min:1',
             'date_received'  => 'required|date',
         ]);
 
         DB::transaction(function () use ($request) {
-            // 1. Find or create an individual donor entry to keep records clean
+            $donorType = $request->string('donor_type')->toString();
+            $organizationName = $donorType === 'Organization' ? $request->donor_name : null;
+
+            // 1. Find or create a donor entry with explicit type classification
             $donor = Donor::firstOrCreate(
                 ['name' => $request->donor_name],
                 [
                     'email' => strtolower(str_replace(' ', '', $request->donor_name)) . '@example.com',
-                    'donor_type' => 'Individual',
+                    'donor_type' => $donorType,
+                    'organization_name' => $organizationName,
                     'pad_count' => 0
                 ]
             );
+
+            // Keep legacy records aligned when managers explicitly classify donor type.
+            if ($donor->donor_type !== $donorType || $donor->organization_name !== $organizationName) {
+                $donor->update([
+                    'donor_type' => $donorType,
+                    'organization_name' => $organizationName,
+                ]);
+            }
 
             // 2. Log the raw donation record entry linked back to the donor
             Donation::create([
                 'donor_id' => $donor->id,
                 'pad_count' => $request->quantity_pads,
-                'pledge_status' => 'Fully Received',
                 'pledge_date' => $request->date_received,
                 'fulfillment_date' => $request->date_received,
             ]);

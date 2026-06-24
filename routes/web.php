@@ -63,6 +63,7 @@ Route::middleware(['auth', 'role:Program Manager'])->prefix('manager')->name('ma
     Route::post('/distributions', [App\Http\Controllers\DistributionController::class, 'store'])->name('distributions.store');
 //donation routes
     Route::get('/donations', [ManagerDonationController::class, 'index'])->name('donations.index');
+    Route::patch('/donations/{donation}/receive', [ManagerDonationController::class, 'markReceived'])->name('donations.receive');
 // reports routes
     Route::get('/reports', [App\Http\Controllers\ManagerReportController::class, 'index'])->name('reports.index');
     Route::post('/reports/export', [App\Http\Controllers\ManagerReportController::class, 'export'])->name('reports.export');
