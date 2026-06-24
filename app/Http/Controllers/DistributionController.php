@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class DistributionController extends Controller
 {
+    private const DISPATCH_BUFFER_PADS = 20;
+
     /**
      * Display a listing of the resource.
      */
@@ -25,6 +27,12 @@ class DistributionController extends Controller
         // 2. Fetch central available warehouse stock pool balance
         $warehouse = Inventory::query()->first() ?? new Inventory(['quantity_available' => 0]);
         $availableStock = $warehouse->quantity_available;
+
+        $pendingReports = $pendingReports->map(function (ShortfallReport $report) {
+            $report->dispatch_quantity = (int) $report->shortfall + self::DISPATCH_BUFFER_PADS;
+
+            return $report;
+        });
 
         // 3. Fetch recent dispatch history log records
         $dispatches = Distribution::with('school')
@@ -59,25 +67,26 @@ class DistributionController extends Controller
 
         $report = ShortfallReport::findOrFail($request->report_id);
         $warehouse = Inventory::query()->firstOrCreate([], ['quantity_available' => 0, 'allocated_stock' => 0]);
+        $dispatchQuantity = (int) $report->shortfall + self::DISPATCH_BUFFER_PADS;
 
         // 1. Verify warehouse availability limits before allowing a dispatch action
-        if ($warehouse->quantity_available < $report->shortfall) {
+        if ($warehouse->quantity_available < $dispatchQuantity) {
             return redirect()->route('manager.distributions.index')
-                ->withErrors(['stock_error' => "Insufficient central warehouse stock. Required: {$report->shortfall} pads, Available: {$warehouse->quantity_available} pads."]);
+                ->withErrors(['stock_error' => "Insufficient central warehouse stock. Required: {$dispatchQuantity} pads (shortfall + 20 buffer), Available: {$warehouse->quantity_available} pads."]);
         }
 
-        DB::transaction(function () use ($report, $warehouse) {
+        DB::transaction(function () use ($report, $warehouse, $dispatchQuantity) {
             // 2. Create the distribution record trace entry log
             Distribution::create([
                 'school_id'            => $report->school_id,
-                'quantity_distributed' => $report->shortfall,
+                'quantity_distributed' => $dispatchQuantity,
                 'distribution_date'    => now()->format('Y-m-d'),
                 'status'               => 'Dispatched',
             ]);
 
             // 3. Subtract from available warehouse stock balance, add to allocated buffer pool
-            $warehouse->quantity_available -= $report->shortfall;
-            $warehouse->allocated_stock += $report->shortfall;
+            $warehouse->quantity_available -= $dispatchQuantity;
+            $warehouse->allocated_stock += $dispatchQuantity;
             $warehouse->save();
 
             // 4. Update the coordinator's shortfall ticket report status block
@@ -85,7 +94,7 @@ class DistributionController extends Controller
         });
 
         return redirect()->route('manager.distributions.index')
-            ->with('success', "Sanitary towels successfully dispatched to target school site.");
+            ->with('success', "Sanitary towels successfully dispatched to target school site with a +20 buffer.");
     }
 
     /**

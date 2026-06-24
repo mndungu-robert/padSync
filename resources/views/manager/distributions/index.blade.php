@@ -42,6 +42,7 @@
                         <th class="px-6 py-3.5">Required Pads</th>
                         <th class="px-6 py-3.5">Available On-Site</th>
                         <th class="px-6 py-3.5">Calculated Shortfall Gap</th>
+                        <th class="px-6 py-3.5">Planned Dispatch (+20)</th>
                         <th class="px-6 py-3.5 text-center">Action Link</th>
                     </tr>
                 </thead>
@@ -57,14 +58,17 @@
                         <td class="px-6 py-4 font-bold text-rose-600">
                             {{ number_format($report->shortfall) }} pads
                         </td>
+                        <td class="px-6 py-4 font-bold text-teal-700">
+                            {{ number_format($report->dispatch_quantity) }} pads
+                        </td>
                         <td class="px-6 py-4 text-center">
                             <form method="POST" action="{{ route('manager.distributions.store') }}">
                                 @csrf
                                 <input type="hidden" name="report_id" value="{{ $report->report_id }}">
                                 <button type="submit" 
                                     class="text-white text-xs font-bold px-4 py-2 rounded-md transition shadow-sm
-                                    {{ $availableStock >= $report->shortfall ? 'bg-teal-700 hover:bg-teal-800' : 'bg-gray-300 cursor-not-allowed' }}"
-                                    {{ $availableStock >= $report->shortfall ? '' : 'disabled' }}>
+                                    {{ $availableStock >= $report->dispatch_quantity ? 'bg-teal-700 hover:bg-teal-800' : 'bg-gray-300 cursor-not-allowed' }}"
+                                    {{ $availableStock >= $report->dispatch_quantity ? '' : 'disabled' }}>
                                     Authorize Dispatch
                                 </button>
                             </form>
@@ -72,7 +76,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-10 text-center text-gray-400 font-medium">All school shortfall tickets are clear. No pending allocation items.</td>
+                        <td colspan="6" class="px-6 py-10 text-center text-gray-400 font-medium">All school shortfall tickets are clear. No pending allocation items.</td>
                     </tr>
                     @endforelse
                 </tbody>
