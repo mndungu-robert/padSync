@@ -8,6 +8,7 @@ use App\Models\ReceiptConfirmation;
 use App\Models\School;
 use App\Models\ShortfallReport;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +20,7 @@ class CoordinatorController extends Controller
     public function dashboard(): View
     {
         $schoolId = Auth::user()?->school_id;
-        $school = $schoolId ? School::find($schoolId) : null;
+        $school = $schoolId ? School::query()->whereKey($schoolId)->first() : null;
 
         if (! $school) {
             return view('coordinator.dashboard', [
@@ -68,7 +69,7 @@ class CoordinatorController extends Controller
     public function enrollmentsIndex(): View
     {
         $schoolId = Auth::user()?->school_id;
-        $school = $schoolId ? School::find($schoolId) : null;
+        $school = $schoolId ? School::query()->whereKey($schoolId)->first() : null;
 
         $enrollments = collect();
         if ($school) {
@@ -88,7 +89,7 @@ class CoordinatorController extends Controller
     public function storeEnrollment(): RedirectResponse
     {
         $schoolId = Auth::user()?->school_id;
-        $school = $schoolId ? School::find($schoolId) : null;
+        $school = $schoolId ? School::query()->whereKey($schoolId)->first() : null;
 
         if (! $school) {
             return redirect()->route('coordinator.enrollments.index')
@@ -143,22 +144,44 @@ class CoordinatorController extends Controller
             ->with('success', 'Enrollment log submitted successfully.');
     }
 
-    public function shortfallsIndex(): View
+    public function shortfallsIndex(Request $request): View
     {
         $schoolId = Auth::user()?->school_id;
-        $school = $schoolId ? School::find($schoolId) : null;
+        $school = $schoolId ? School::query()->whereKey($schoolId)->first() : null;
 
         $reports = collect();
+        $prefillEnrollment = null;
         if ($school) {
             $reports = ShortfallReport::query()
                 ->where('school_id', $school->school_id)
                 ->orderBy('report_date', 'desc')
                 ->get();
+
+            $latestEnrollment = Enrollment::query()
+                ->where('school_id', $school->school_id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            $prefillEnrollment = $latestEnrollment;
+
+            $enrollmentId = $request->integer('enrollment_id');
+            if ($enrollmentId > 0) {
+                $selectedEnrollment = Enrollment::query()
+                    ->where('school_id', $school->school_id)
+                    ->where('enrollment_id', $enrollmentId)
+                    ->first();
+
+                if ($selectedEnrollment) {
+                    $prefillEnrollment = $selectedEnrollment;
+                }
+            }
         }
 
         return view('coordinator.shortfalls.index', [
             'school' => $school,
             'reports' => $reports,
+            'prefillEnrollment' => $prefillEnrollment,
+            'prefillReportDate' => $request->query('report_date', now()->toDateString()),
             'active' => 'shortfalls',
         ]);
     }
@@ -166,7 +189,7 @@ class CoordinatorController extends Controller
     public function storeShortfall(): RedirectResponse
     {
         $schoolId = Auth::user()?->school_id;
-        $school = $schoolId ? School::find($schoolId) : null;
+        $school = $schoolId ? School::query()->whereKey($schoolId)->first() : null;
 
         if (! $school) {
             return redirect()->route('coordinator.shortfalls.index')
@@ -175,23 +198,78 @@ class CoordinatorController extends Controller
 
         $validated = request()->validate([
             'report_date' => ['required', 'date'],
-            'required_pads' => ['required', 'integer', 'min:0'],
+            'enrollment_id' => ['nullable', 'integer'],
+            'required_pads' => ['nullable', 'integer', 'min:0'],
             'available_pads' => ['required', 'integer', 'min:0'],
-            'government_pads_received' => ['required', 'integer', 'min:0'],
-            'status' => ['required', 'in:Draft,Submitted,Dispatched,Received'],
+            'government_pads_received' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        $totalAvailablePads = (int) $validated['available_pads'] + (int) $validated['government_pads_received'];
-        $shortfall = max(0, (int) $validated['required_pads'] - $totalAvailablePads);
+        $reportMonth = Carbon::parse($validated['report_date'])->format('F');
+
+        $sourceEnrollment = null;
+
+        if (! empty($validated['enrollment_id'])) {
+            $sourceEnrollment = Enrollment::query()
+                ->where('school_id', $school->school_id)
+                ->where('enrollment_id', (int) $validated['enrollment_id'])
+                ->first();
+
+            if (! $sourceEnrollment) {
+                return redirect()->route('coordinator.shortfalls.index')
+                    ->withInput()
+                    ->with('error', 'Selected enrollment record was not found for your school.');
+            }
+        }
+
+        if (! $sourceEnrollment) {
+            $matchingEnrollment = Enrollment::query()
+                ->where('school_id', $school->school_id)
+                ->where('month', $reportMonth)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            $latestEnrollment = Enrollment::query()
+                ->where('school_id', $school->school_id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            $sourceEnrollment = $matchingEnrollment ?? $latestEnrollment;
+        }
+
+        if (! $sourceEnrollment) {
+            return redirect()->route('coordinator.shortfalls.index')
+                ->withInput()
+                ->with('error', 'Submit an enrollment record first so shortfall can auto-load required and government values.');
+        }
+
+        $requiredPads = $validated['required_pads'] ?? (int) $sourceEnrollment->girl_count;
+        $governmentPadsReceived = $validated['government_pads_received'] ?? (int) $sourceEnrollment->government_pads_received;
+
+        $existingReport = ShortfallReport::query()
+            ->where('school_id', $school->school_id)
+            ->whereBetween('report_date', [
+                Carbon::parse($validated['report_date'])->startOfMonth()->toDateString(),
+                Carbon::parse($validated['report_date'])->endOfMonth()->toDateString(),
+            ])
+            ->exists();
+
+        if ($existingReport) {
+            return redirect()->route('coordinator.shortfalls.index')
+                ->withInput()
+                ->with('error', 'Shortfall report already exists for this month. Only one shortfall entry is allowed per month.');
+        }
+
+        $totalAvailablePads = (int) $validated['available_pads'] + (int) $governmentPadsReceived;
+        $shortfall = max(0, (int) $requiredPads - $totalAvailablePads);
 
         ShortfallReport::query()->create([
             'school_id' => $school->school_id,
             'report_date' => $validated['report_date'],
-            'required_pads' => $validated['required_pads'],
+            'required_pads' => $requiredPads,
             'available_pads' => $validated['available_pads'],
-            'government_pads_received' => $validated['government_pads_received'],
+            'government_pads_received' => $governmentPadsReceived,
             'shortfall' => $shortfall,
-            'status' => $validated['status'],
+            'status' => 'Submitted',
         ]);
 
         return redirect()->route('coordinator.shortfalls.index')
@@ -201,7 +279,7 @@ class CoordinatorController extends Controller
     public function distributionsIndex(): View
     {
         $schoolId = Auth::user()?->school_id;
-        $school = $schoolId ? School::find($schoolId) : null;
+        $school = $schoolId ? School::query()->whereKey($schoolId)->first() : null;
 
         $pendingDispatches = collect();
         $receivedDispatches = collect();
@@ -209,7 +287,7 @@ class CoordinatorController extends Controller
         if ($school) {
             $pendingDispatches = Distribution::query()
                 ->where('school_id', $school->school_id)
-                ->where('status', 'Dispatched')
+                ->whereIn('status', ['Pending', 'Dispatched'])
                 ->orderBy('distribution_date', 'desc')
                 ->get();
 
@@ -247,9 +325,9 @@ class CoordinatorController extends Controller
                 ->with('error', 'This dispatch has already been confirmed as received.');
         }
 
-        if ($distribution->status !== 'Dispatched') {
+        if (! in_array($distribution->status, ['Pending', 'Dispatched'], true)) {
             return redirect()->route('coordinator.distributions.index')
-                ->with('error', 'Only dispatched records can be confirmed.');
+            ->with('error', 'Only pending or dispatched records can be confirmed.');
         }
 
         DB::transaction(function () use ($distribution) {
@@ -263,6 +341,21 @@ class CoordinatorController extends Controller
             );
 
             $distribution->update(['status' => 'Received']);
+
+            $distributionMonth = Carbon::parse($distribution->distribution_date);
+            $linkedShortfall = ShortfallReport::query()
+                ->where('school_id', $distribution->school_id)
+                ->where('status', 'Dispatched')
+                ->whereBetween('report_date', [
+                    $distributionMonth->copy()->startOfMonth()->toDateString(),
+                    $distributionMonth->copy()->endOfMonth()->toDateString(),
+                ])
+                ->orderByDesc('report_date')
+                ->first();
+
+            if ($linkedShortfall) {
+                $linkedShortfall->update(['status' => 'Received']);
+            }
         });
 
         return redirect()->route('coordinator.distributions.index')

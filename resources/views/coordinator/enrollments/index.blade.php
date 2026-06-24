@@ -40,6 +40,15 @@
         @if($school)
             <p class="text-xs text-gray-500 mt-1">School: <span class="font-semibold text-gray-700">{{ $school->school_name }}</span></p>
 
+            @if($enrollments->isNotEmpty())
+                <div class="mt-3">
+                    <a href="{{ route('coordinator.shortfalls.index', ['enrollment_id' => $enrollments->first()->enrollment_id, 'report_date' => now()->toDateString()]) }}"
+                        class="inline-flex items-center bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-md transition shadow-sm">
+                        Create Shortfall From Latest Enrollment
+                    </a>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('coordinator.enrollments.store') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 items-end">
                 @csrf
                 <div>
@@ -88,6 +97,7 @@
                         <th class="px-6 py-3">Girls Count</th>
                         <th class="px-6 py-3">Govt Pads Received</th>
                         <th class="px-6 py-3">Submitted</th>
+                        <th class="px-6 py-3 text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-gray-600">
@@ -98,10 +108,16 @@
                             <td class="px-6 py-4 font-semibold">{{ number_format($enrollment->girl_count) }}</td>
                             <td class="px-6 py-4 font-semibold">{{ number_format($enrollment->government_pads_received ?? 0) }}</td>
                             <td class="px-6 py-4 text-xs text-gray-500">{{ $enrollment->created_at?->format('d M Y, H:i') }}</td>
+                            <td class="px-6 py-4 text-center">
+                                <a href="{{ route('coordinator.shortfalls.index', ['enrollment_id' => $enrollment->enrollment_id, 'report_date' => now()->toDateString()]) }}"
+                                   class="inline-flex items-center bg-indigo-700 hover:bg-indigo-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-md transition shadow-sm">
+                                    Use for Shortfall
+                                </a>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-gray-400 font-medium">No enrollment records submitted yet.</td>
+                            <td colspan="6" class="px-6 py-8 text-center text-gray-400 font-medium">No enrollment records submitted yet.</td>
                         </tr>
                     @endforelse
                 </tbody>

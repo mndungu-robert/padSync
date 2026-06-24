@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateDistributionRequest;
 use App\Models\Distribution;
 use App\Models\Inventory;
 use App\Models\ShortfallReport;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DistributionController extends Controller
@@ -68,6 +69,25 @@ class DistributionController extends Controller
         $report = ShortfallReport::findOrFail($request->report_id);
         $warehouse = Inventory::query()->firstOrCreate([], ['quantity_available' => 0, 'allocated_stock' => 0]);
         $dispatchQuantity = (int) $report->shortfall + self::DISPATCH_BUFFER_PADS;
+
+        if ($report->status !== 'Submitted') {
+            return redirect()->route('manager.distributions.index')
+                ->withErrors(['stock_error' => 'This shortfall report is not open for dispatch. It may already be dispatched or closed.']);
+        }
+
+        $reportMonth = Carbon::parse($report->report_date);
+        $monthStart = $reportMonth->copy()->startOfMonth()->toDateString();
+        $monthEnd = $reportMonth->copy()->endOfMonth()->toDateString();
+
+        $existingMonthlyDispatch = Distribution::query()
+            ->where('school_id', $report->school_id)
+            ->whereBetween('distribution_date', [$monthStart, $monthEnd])
+            ->first();
+
+        if ($existingMonthlyDispatch) {
+            return redirect()->route('manager.distributions.index')
+                ->withErrors(['stock_error' => 'Only one distribution per school per month is allowed. This school already has a dispatch recorded for that month.']);
+        }
 
         // 1. Verify warehouse availability limits before allowing a dispatch action
         if ($warehouse->quantity_available < $dispatchQuantity) {

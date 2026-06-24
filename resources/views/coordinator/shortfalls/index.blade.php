@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="bg-indigo-50 text-indigo-800 p-3 rounded-lg text-xs font-semibold border border-indigo-200">
-        Notice: Shortfall is calculated as Required Pads minus (Available Pads + Govt Pads Received).
+        Notice: Shortfall is calculated as Required Pads minus (Available Pads + Govt Pads Received). Required and Govt values are auto-loaded from your latest enrollment.
     </div>
 
     @if(session('success'))
@@ -37,17 +37,25 @@
         @if($school)
             <p class="text-xs text-gray-500 mt-1">School: <span class="font-semibold text-gray-700">{{ $school->school_name }}</span></p>
 
+            @if($prefillEnrollment)
+                <div class="mt-3 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-md px-3 py-2">
+                    Enrollment baseline loaded: Month {{ $prefillEnrollment->month }}, Required Pads {{ number_format($prefillEnrollment->girl_count) }}, Govt Pads Received {{ number_format($prefillEnrollment->government_pads_received ?? 0) }}.
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('coordinator.shortfalls.store') }}" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mt-4 items-end">
                 @csrf
+                <input type="hidden" name="enrollment_id" value="{{ old('enrollment_id', $prefillEnrollment?->enrollment_id) }}">
                 <div>
                     <label class="block text-xs font-bold text-gray-600 mb-1">Report Date <span class="text-rose-500">*</span></label>
-                    <input type="date" name="report_date" value="{{ old('report_date', now()->toDateString()) }}" required
+                    <input type="date" name="report_date" value="{{ old('report_date', $prefillReportDate ?? now()->toDateString()) }}" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">Required Pads <span class="text-rose-500">*</span></label>
-                    <input type="number" name="required_pads" value="{{ old('required_pads') }}" min="0" required placeholder="e.g. 1200"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-300">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Required Pads (Auto from Enrollment)</label>
+                    <input type="number" value="{{ old('required_pads', $prefillEnrollment?->girl_count) }}" min="0" readonly
+                        class="w-full px-3 py-2 border border-gray-200 bg-gray-50 rounded-md text-sm text-gray-600">
+                    <input type="hidden" name="required_pads" value="{{ old('required_pads', $prefillEnrollment?->girl_count) }}">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-600 mb-1">Available Pads <span class="text-rose-500">*</span></label>
@@ -55,17 +63,10 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-300">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">Govt Pads Received <span class="text-rose-500">*</span></label>
-                    <input type="number" name="government_pads_received" value="{{ old('government_pads_received') }}" min="0" required placeholder="e.g. 250"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-300">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">Status <span class="text-rose-500">*</span></label>
-                    <select name="status" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                        @foreach(['Draft', 'Submitted', 'Dispatched', 'Received'] as $status)
-                            <option value="{{ $status }}" @selected(old('status', 'Submitted') === $status)>{{ $status }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Govt Pads Received (Auto from Enrollment)</label>
+                    <input type="number" value="{{ old('government_pads_received', $prefillEnrollment?->government_pads_received) }}" min="0" readonly
+                        class="w-full px-3 py-2 border border-gray-200 bg-gray-50 rounded-md text-sm text-gray-600">
+                    <input type="hidden" name="government_pads_received" value="{{ old('government_pads_received', $prefillEnrollment?->government_pads_received) }}">
                 </div>
                 <div class="md:col-span-2 xl:col-span-4 pt-1">
                     <button type="submit" class="bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-bold px-4 py-2.5 rounded-md transition shadow-sm">

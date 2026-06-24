@@ -18,7 +18,7 @@
     @endif
 
     <div class="bg-indigo-50 text-indigo-800 p-3 rounded-lg text-xs font-semibold border border-indigo-200">
-        Confirm each dispatched batch once it is physically received at your school site.
+        Confirm each pending or dispatched batch once it is physically received at your school site.
     </div>
 
     <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
@@ -54,7 +54,7 @@
                             <td class="px-6 py-4 font-semibold text-gray-800">{{ \Illuminate\Support\Carbon::parse($dispatch->distribution_date)->format('d M Y') }}</td>
                             <td class="px-6 py-4 font-semibold">{{ number_format($dispatch->quantity_distributed) }} pads</td>
                             <td class="px-6 py-4">
-                                <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-blue-50 text-blue-700 border border-blue-200">
+                                <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border {{ $dispatch->status === 'Pending' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-blue-700 border-blue-200' }}">
                                     {{ $dispatch->status }}
                                 </span>
                             </td>
