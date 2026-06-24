@@ -20,7 +20,7 @@
 
     <input type="text" name="name" value="{{ old('name', $donor->name) }}"><br><br>
     <input type="email" name="email" value="{{ old('email', $donor->email) }}"><br><br>
-    <label>Pad Count</label><br>
+    <label>Packet Count</label><br>
     <input type="number" name="pad_count" min="0" value="{{ old('pad_count', $donor->pad_count) }}"><br><br>
 
     <select name="donor_type">

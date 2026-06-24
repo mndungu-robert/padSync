@@ -17,6 +17,8 @@ use Illuminate\View\View;
 
 class CoordinatorController extends Controller
 {
+    private const PACKETS_PER_GIRL_PER_MONTH = 2;
+
     public function dashboard(): View
     {
         $schoolId = Auth::user()?->school_id;
@@ -97,9 +99,14 @@ class CoordinatorController extends Controller
         }
 
         $currentMonth = Carbon::now()->format('F');
+        $currentAcademicYear = Carbon::now()->format('Y');
 
         $validated = request()->validate([
-            'academic_year' => ['required', 'string', 'max:10'],
+            'academic_year' => [
+                'required',
+                'string',
+                Rule::in([$currentAcademicYear]),
+            ],
             'month' => [
                 'required',
                 'string',
@@ -109,10 +116,12 @@ class CoordinatorController extends Controller
             'government_pads_received' => ['required', 'integer', 'min:0'],
         ]);
 
-        if ((int) $validated['government_pads_received'] > (int) $validated['girl_count']) {
+        $maxGovernmentPackets = (int) $validated['girl_count'] * self::PACKETS_PER_GIRL_PER_MONTH;
+
+        if ((int) $validated['government_pads_received'] > $maxGovernmentPackets) {
             return redirect()->route('coordinator.enrollments.index')
                 ->withInput()
-                ->with('error', 'Government pads received cannot exceed total girls enrolled for the same month.');
+            ->with('error', 'Government packets received cannot exceed the monthly requirement of 2 packets per girl.');
         }
 
         $alreadySubmitted = Enrollment::query()
@@ -239,10 +248,10 @@ class CoordinatorController extends Controller
         if (! $sourceEnrollment) {
             return redirect()->route('coordinator.shortfalls.index')
                 ->withInput()
-                ->with('error', 'Submit an enrollment record first so shortfall can auto-load required and government values.');
+                ->with('error', 'Submit an enrollment record first so shortfall can auto-load required and government packet values.');
         }
 
-        $requiredPads = $validated['required_pads'] ?? (int) $sourceEnrollment->girl_count;
+        $requiredPads = $validated['required_pads'] ?? ((int) $sourceEnrollment->girl_count * self::PACKETS_PER_GIRL_PER_MONTH);
         $governmentPadsReceived = $validated['government_pads_received'] ?? (int) $sourceEnrollment->government_pads_received;
 
         $existingReport = ShortfallReport::query()

@@ -23,7 +23,7 @@
       <!-- Real-time Status Metric Aggregation Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Pads in Stock</div>
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Packets in Stock</div>
             <div class="text-3xl font-bold text-slate-800 mt-2">{{ number_format($inventoryMetrics['total_stock']) }}</div>
         </div>
         <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
@@ -56,8 +56,8 @@
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-bold text-gray-600 mb-1">Quantity (pads) <span class="text-rose-500">*</span></label>
-                <input type="number" name="quantity_pads" min="1" required placeholder="e.g. 500"
+                <label class="block text-xs font-bold text-gray-600 mb-1">Quantity (packets) <span class="text-rose-500">*</span></label>
+                <input type="number" name="quantity_packets" min="1" required placeholder="e.g. 500"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-teal-600 focus:border-teal-600 placeholder-gray-300">
             </div>
             <div>

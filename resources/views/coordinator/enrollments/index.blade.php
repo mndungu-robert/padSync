@@ -7,10 +7,11 @@
 @section('content')
     @php
         $currentMonth = now()->format('F');
+        $currentAcademicYear = now()->format('Y');
     @endphp
 
     <div class="bg-indigo-50 text-indigo-800 p-3 rounded-lg text-xs font-semibold border border-indigo-200">
-        Notice: Enrollment starts from this month. Backdated month selection is not allowed, and only one entry is allowed per month for the same academic year.
+        Notice: Enrollment starts from this month. Month and academic year are pre-set for the current cycle, and only one entry is allowed per month for the same academic year. Government support is tracked in packets.
     </div>
 
     @if(session('success'))
@@ -53,8 +54,10 @@
                 @csrf
                 <div>
                     <label class="block text-xs font-bold text-gray-600 mb-1">Academic Year <span class="text-rose-500">*</span></label>
-                    <input type="text" name="academic_year" value="{{ old('academic_year') }}" required placeholder="e.g. 2026/2027"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-300">
+                    <select name="academic_year" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                        <option value="{{ $currentAcademicYear }}" selected>{{ $currentAcademicYear }}</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-600 mb-1">Month <span class="text-rose-500">*</span></label>
@@ -69,7 +72,7 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-300">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">Govt Pads Received <span class="text-rose-500">*</span></label>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Govt Packets Received <span class="text-rose-500">*</span></label>
                     <input type="number" name="government_pads_received" value="{{ old('government_pads_received') }}" min="0" required placeholder="e.g. 260"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-300">
                 </div>
@@ -95,7 +98,7 @@
                         <th class="px-6 py-3">Academic Year</th>
                         <th class="px-6 py-3">Month / Cycle</th>
                         <th class="px-6 py-3">Girls Count</th>
-                        <th class="px-6 py-3">Govt Pads Received</th>
+                        <th class="px-6 py-3">Govt Packets Received</th>
                         <th class="px-6 py-3">Submitted</th>
                         <th class="px-6 py-3 text-center">Action</th>
                     </tr>

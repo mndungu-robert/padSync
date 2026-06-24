@@ -5,7 +5,7 @@
 @section('content')
 
 @php
-    $impact = $stats ?? ['schools_supported' => 0, 'girls_enrolled' => 0, 'pads_still_needed' => 0];
+    $impact = $stats ?? ['schools_supported' => 0, 'girls_enrolled' => 0, 'packets_still_needed' => 0, 'pads_still_needed' => 0];
 @endphp
 
 <!-- HERO STATS SECTION -->
@@ -16,7 +16,7 @@
     </h2>
 
     <p style="max-width: 600px; margin: 0 auto 25px; font-size: 14px; opacity: 0.9;">
-        The {{ config('app.name') }} Programme distributes sanitary pads to sponsored schools. Your pledge closes the gap.
+        The {{ config('app.name') }} Programme distributes sanitary towel packets to sponsored schools. Your pledge closes the gap.
     </p>
 
     <!-- STATS -->
@@ -33,8 +33,8 @@
         </div>
 
         <div>
-            <h3 style="font-size:36px; font-weight:bold; color:#f472b6;">{{ number_format($impact['pads_still_needed']) }}</h3>
-            <p style="font-size:13px; opacity:0.9;">Pads Still Needed</p>
+            <h3 style="font-size:36px; font-weight:bold; color:#f472b6;">{{ number_format($impact['packets_still_needed'] ?? $impact['pads_still_needed']) }}</h3>
+            <p style="font-size:13px; opacity:0.9;">Packets Still Needed</p>
         </div>
 
     </div>
@@ -76,7 +76,7 @@
     </p>
 
     <p>
-        <label>Pads Pledged</label><br>
+        <label>Packets Pledged</label><br>
         <input type="number" name="quantity_pledged" min="1" required>
     </p>
 

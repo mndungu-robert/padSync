@@ -2,7 +2,7 @@
 
 @section('title', 'Distributions - ' . config('app.name'))
 @section('page_title', 'Distributions')
-@section('page_subtitle', 'Confirm receipt of pads dispatched to your school.')
+@section('page_subtitle', 'Confirm receipt of packets dispatched to your school.')
 
 @section('content')
     @if(session('success'))
@@ -52,7 +52,7 @@
                     @forelse($pendingDispatches as $dispatch)
                         <tr class="hover:bg-gray-50/50 transition">
                             <td class="px-6 py-4 font-semibold text-gray-800">{{ \Illuminate\Support\Carbon::parse($dispatch->distribution_date)->format('d M Y') }}</td>
-                            <td class="px-6 py-4 font-semibold">{{ number_format($dispatch->quantity_distributed) }} pads</td>
+                            <td class="px-6 py-4 font-semibold">{{ number_format($dispatch->quantity_distributed) }} packets</td>
                             <td class="px-6 py-4">
                                 <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border {{ $dispatch->status === 'Pending' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-blue-50 text-blue-700 border-blue-200' }}">
                                     {{ $dispatch->status }}
@@ -95,7 +95,7 @@
                     @forelse($receivedDispatches as $dispatch)
                         <tr class="hover:bg-gray-50/50 transition">
                             <td class="px-6 py-4 font-semibold text-gray-800">{{ \Illuminate\Support\Carbon::parse($dispatch->distribution_date)->format('d M Y') }}</td>
-                            <td class="px-6 py-4 font-semibold">{{ number_format($dispatch->receiptConfirmation?->received_quantity ?? $dispatch->quantity_distributed) }} pads</td>
+                            <td class="px-6 py-4 font-semibold">{{ number_format($dispatch->receiptConfirmation?->received_quantity ?? $dispatch->quantity_distributed) }} packets</td>
                             <td class="px-6 py-4 text-xs text-gray-500">{{ optional($dispatch->receiptConfirmation?->confirmation_date)->format('d M Y, H:i') ?? 'N/A' }}</td>
                             <td class="px-6 py-4">
                                 <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-200">

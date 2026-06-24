@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name') }} - Sanitary Pad Distribution System</title>
+    <title>{{ config('app.name') }} - Sanitary Packet Distribution System</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans">
@@ -27,7 +27,7 @@
     <!-- Main Content Summary Banner -->
     <header class="text-center py-16 bg-indigo-50 px-4">
         <h2 class="text-4xl font-extrabold text-indigo-900">Keeping Girls in School, One Pack at a Time</h2>
-        <p class="mt-4 text-lg text-indigo-700 max-w-2xl mx-auto">{{ config('app.name') }} automates sanitary pad distribution tracking across participating schools.</p>
+        <p class="mt-4 text-lg text-indigo-700 max-w-2xl mx-auto">{{ config('app.name') }} automates sanitary towel packet distribution tracking across participating schools.</p>
 
     
     {{-- <!-- Statistics -->
@@ -76,7 +76,7 @@
 
             <p class="mt-2 text-indigo-600">
 
-                Pads Still Needed
+                Packets Still Needed
 
             </p>
 

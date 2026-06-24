@@ -63,7 +63,7 @@ class InventoryController extends Controller
          $request->validate([
             'donor_name'     => 'required|string|max:255',
             'donor_type'     => 'required|in:Individual,Organization',
-            'quantity_pads'  => 'required|integer|min:1',
+                'quantity_packets'  => 'required|integer|min:1',
             'date_received'  => 'required|date',
         ]);
 
@@ -93,7 +93,7 @@ class InventoryController extends Controller
             // 2. Log the raw donation record entry linked back to the donor
             Donation::create([
                 'donor_id' => $donor->id,
-                'pad_count' => $request->quantity_pads,
+                'pad_count' => $request->quantity_packets,
                 'pledge_date' => $request->date_received,
                 'fulfillment_date' => $request->date_received,
             ]);
@@ -105,8 +105,8 @@ class InventoryController extends Controller
                 'reorder_level' => 100
             ]);
             
-            $inventory->increment('quantity_available', $request->quantity_pads);
-            $donor->increment('pad_count', $request->quantity_pads);
+            $inventory->increment('quantity_available', $request->quantity_packets);
+            $donor->increment('pad_count', $request->quantity_packets);
         });
 
         return redirect()->route('manager.inventory.index')

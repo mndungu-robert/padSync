@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class DistributionController extends Controller
 {
-    private const DISPATCH_BUFFER_PADS = 20;
+    private const DISPATCH_BUFFER_PACKETS = 20;
 
     /**
      * Display a listing of the resource.
@@ -30,7 +30,7 @@ class DistributionController extends Controller
         $availableStock = $warehouse->quantity_available;
 
         $pendingReports = $pendingReports->map(function (ShortfallReport $report) {
-            $report->dispatch_quantity = (int) $report->shortfall + self::DISPATCH_BUFFER_PADS;
+            $report->dispatch_quantity = (int) $report->shortfall + self::DISPATCH_BUFFER_PACKETS;
 
             return $report;
         });
@@ -68,7 +68,7 @@ class DistributionController extends Controller
 
         $report = ShortfallReport::findOrFail($request->report_id);
         $warehouse = Inventory::query()->firstOrCreate([], ['quantity_available' => 0, 'allocated_stock' => 0]);
-        $dispatchQuantity = (int) $report->shortfall + self::DISPATCH_BUFFER_PADS;
+        $dispatchQuantity = (int) $report->shortfall + self::DISPATCH_BUFFER_PACKETS;
 
         if ($report->status !== 'Submitted') {
             return redirect()->route('manager.distributions.index')
@@ -92,7 +92,7 @@ class DistributionController extends Controller
         // 1. Verify warehouse availability limits before allowing a dispatch action
         if ($warehouse->quantity_available < $dispatchQuantity) {
             return redirect()->route('manager.distributions.index')
-                ->withErrors(['stock_error' => "Insufficient central warehouse stock. Required: {$dispatchQuantity} pads (shortfall + 20 buffer), Available: {$warehouse->quantity_available} pads."]);
+                ->withErrors(['stock_error' => "Insufficient central warehouse stock. Required: {$dispatchQuantity} packets (shortfall + 20 buffer), Available: {$warehouse->quantity_available} packets."]);
         }
 
         DB::transaction(function () use ($report, $warehouse, $dispatchQuantity) {
@@ -114,7 +114,7 @@ class DistributionController extends Controller
         });
 
         return redirect()->route('manager.distributions.index')
-            ->with('success', "Sanitary towels successfully dispatched to target school site with a +20 buffer.");
+            ->with('success', "Sanitary towel packets successfully dispatched to target school site with a +20 buffer.");
     }
 
     /**

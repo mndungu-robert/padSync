@@ -18,7 +18,7 @@
     <tr style="background:#34495e;color:white;">
         <th>Name</th>
         <th>Email</th>
-        <th>Pad Count</th>
+        <th>Packet Count</th>
         <th>Type</th>
         <th>Organization</th>
         <th>Actions</th>

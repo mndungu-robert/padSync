@@ -5,7 +5,7 @@
             <span class="text-base">⚠️</span>
             <div>
                 <span class="font-bold uppercase tracking-wider block text-[10px] text-amber-700">Central Stock Reorder Warning Level Active</span>
-                Central storage stock balance ({{ number_format($metrics['available_stock']) }} pads) has dropped below your configured safety threshold of {{ number_format($metrics['reorder_threshold']) }} units. Update intake ledgers.
+                Central storage stock balance ({{ number_format($metrics['available_stock']) }} packets) has dropped below your configured safety threshold of {{ number_format($metrics['reorder_threshold']) }} units. Update intake ledgers.
             </div>
         </div>
     @endif
@@ -18,7 +18,7 @@
             <div class="text-3xl font-black mt-2 {{ $metrics['available_stock'] <= $metrics['reorder_threshold'] ? 'text-amber-600' : 'text-slate-800' }}">
                 {{ number_format($metrics['available_stock']) }}
             </div>
-            <div class="text-[10px] text-gray-400 font-medium mt-1">pads unallocated</div>
+            <div class="text-[10px] text-gray-400 font-medium mt-1">packets unallocated</div>
         </div>
 
         <!-- Metric 2 -->
@@ -63,7 +63,7 @@
                     <thead>
                         <tr class="bg-gray-50 text-gray-400 text-[11px] font-bold uppercase tracking-wider border-b border-gray-100">
                             <th class="px-6 py-3">School Name Site</th>
-                            <th class="px-6 py-3 text-center">Required Pads</th>
+                            <th class="px-6 py-3 text-center">Required Packets</th>
                             <th class="px-6 py-3 text-right">Shortfall Delta</th>
                         </tr>
                     </thead>
@@ -76,7 +76,7 @@
                             </td>
                             <td class="px-6 py-4 text-center font-semibold">{{ number_format($need->required_pads) }}</td>
                             <td class="px-6 py-4 text-right font-black text-rose-600">
-                                {{ number_format($need->shortfall) }} pads
+                                {{ number_format($need->shortfall) }} packets
                             </td>
                         </tr>
                         @empty

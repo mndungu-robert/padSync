@@ -2,7 +2,7 @@
 
 @section('title', 'Allocation Engine - ' . config('app.name'))
 @section('page_title', 'Live Allocation & Dispatches')
-@section('page_subtitle', 'Review dynamic monthly school shortfalls and authorize sanitary towel dispatches.')
+@section('page_subtitle', 'Review dynamic monthly school shortfalls and authorize sanitary towel packet dispatches.')
 
 @section('content')
     <!-- Operational Alerts -->
@@ -22,7 +22,7 @@
     <div class="bg-white border border-gray-200 p-5 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
             <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">Central Warehouse Pool Balance</div>
-            <div class="text-2xl font-black text-slate-800 mt-1">{{ number_format($availableStock) }} <span class="text-sm text-gray-400 font-medium">pads currently available</span></div>
+            <div class="text-2xl font-black text-slate-800 mt-1">{{ number_format($availableStock) }} <span class="text-sm text-gray-400 font-medium">packets currently available</span></div>
         </div>
         <span class="inline-flex px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border {{ $availableStock > 500 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-600 border-amber-200' }}">
             {{ $availableStock > 500 ? 'Stock Levels Secure' : 'Low Stock Warning' }}
@@ -39,8 +39,8 @@
                 <thead>
                     <tr class="bg-gray-50 text-gray-400 text-[11px] font-bold uppercase tracking-wider border-b border-gray-100">
                         <th class="px-6 py-3.5">School Name</th>
-                        <th class="px-6 py-3.5">Required Pads</th>
-                        <th class="px-6 py-3.5">Available On-Site</th>
+                        <th class="px-6 py-3.5">Required Packets</th>
+                        <th class="px-6 py-3.5">Available On-Site Packets</th>
                         <th class="px-6 py-3.5">Calculated Shortfall Gap</th>
                         <th class="px-6 py-3.5">Planned Dispatch (+20)</th>
                         <th class="px-6 py-3.5 text-center">Action Link</th>
@@ -56,10 +56,10 @@
                         <td class="px-6 py-4 font-semibold">{{ number_format($report->required_pads) }}</td>
                         <td class="px-6 py-4 font-medium text-gray-400">{{ number_format($report->available_pads) }}</td>
                         <td class="px-6 py-4 font-bold text-rose-600">
-                            {{ number_format($report->shortfall) }} pads
+                            {{ number_format($report->shortfall) }} packets
                         </td>
                         <td class="px-6 py-4 font-bold text-teal-700">
-                            {{ number_format($report->dispatch_quantity) }} pads
+                            {{ number_format($report->dispatch_quantity) }} packets
                         </td>
                         <td class="px-6 py-4 text-center">
                             <form method="POST" action="{{ route('manager.distributions.store') }}">
@@ -109,7 +109,7 @@
                             {{ $dispatch->school->school_name }}
                         </td>
                         <td class="px-6 py-4 font-semibold text-teal-600">
-                            {{ number_format($dispatch->quantity_distributed) }} pads
+                            {{ number_format($dispatch->quantity_distributed) }} packets
                         </td>
                         <td class="px-6 py-4">
                             <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border

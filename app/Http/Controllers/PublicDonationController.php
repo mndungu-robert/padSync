@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Donation;
 use App\Models\Donor;
 use App\Models\Enrollment;
-use App\Models\School;
-use App\Models\ShortfallReport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PublicDonationController extends Controller
 {
@@ -64,12 +63,15 @@ class PublicDonationController extends Controller
 
     private function publicImpactStats(): array
     {
+        $packetsStillNeeded = (int) DB::table('shortfall_reports')
+            ->whereIn('status', ['Submitted', 'Dispatched'])
+            ->sum('shortfall');
+
         return [
-            'schools_supported' => School::query()->count(),
+            'schools_supported' => (int) DB::table('schools')->count('school_id'),
             'girls_enrolled' => (int) Enrollment::query()->sum('girl_count'),
-            'pads_still_needed' => (int) ShortfallReport::query()
-                ->whereIn('status', ['Submitted', 'Dispatched'])
-                ->sum('shortfall'),
+            'packets_still_needed' => $packetsStillNeeded,
+            'pads_still_needed' => $packetsStillNeeded,
         ];
     }
 

@@ -17,7 +17,7 @@
 <table width="100%" border="1" cellpadding="10" style="background:white;">
     <tr style="background:#34495e;color:white;">
         <th>Donor</th>
-        <th>Pads</th>
+        <th>Packets</th>
         <th>Pledge Date</th>
         <th>Actions</th>
     </tr>

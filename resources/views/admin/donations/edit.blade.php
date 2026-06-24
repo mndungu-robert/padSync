@@ -25,7 +25,7 @@
         @endforeach
     </select><br><br>
 
-    <label>Pad Count</label><br>
+    <label>Packet Count</label><br>
     <input type="number" name="pad_count" min="1" value="{{ old('pad_count', $donation->pad_count) }}" required><br><br>
 
     <label>Pledge Date</label><br>
