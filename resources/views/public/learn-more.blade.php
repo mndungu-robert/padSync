@@ -4,7 +4,12 @@
 
 @section('content')
 @php
-    $impact = $stats ?? ['schools_supported' => 0, 'girls_enrolled' => 0, 'packets_still_needed' => 0, 'pads_still_needed' => 0];
+    $impact = $stats ?? [
+        'schools_supported' => 0,
+        'girls_enrolled' => 0,
+        'packets_needed_monthly' => 0,
+        'pads_needed_monthly' => 0,
+    ];
 @endphp
 
 <div style="background: linear-gradient(135deg, #eef2ff, #e0e7ff); border:1px solid #c7d2fe; border-radius:12px; padding:24px; margin-bottom:20px;">
@@ -21,12 +26,12 @@
         <div style="font-size:30px; color:#1f2937; font-weight:800; margin-top:4px;">{{ number_format($impact['schools_supported']) }}</div>
     </div>
     <div style="background:white; border:1px solid #e5e7eb; border-radius:10px; padding:16px;">
-        <div style="font-size:12px; color:#6b7280; text-transform:uppercase; font-weight:700;">Girls Enrolled</div>
+        <div style="font-size:12px; color:#6b7280; text-transform:uppercase; font-weight:700;">Girls Supported</div>
         <div style="font-size:30px; color:#1f2937; font-weight:800; margin-top:4px;">{{ number_format($impact['girls_enrolled']) }}</div>
     </div>
     <div style="background:white; border:1px solid #e5e7eb; border-radius:10px; padding:16px;">
-        <div style="font-size:12px; color:#6b7280; text-transform:uppercase; font-weight:700;">Packets Still Needed</div>
-        <div style="font-size:30px; color:#be185d; font-weight:800; margin-top:4px;">{{ number_format($impact['packets_still_needed'] ?? $impact['pads_still_needed']) }}</div>
+        <div style="font-size:12px; color:#6b7280; text-transform:uppercase; font-weight:700;">Packets Needed Monthly</div>
+        <div style="font-size:30px; color:#be185d; font-weight:800; margin-top:4px;">{{ number_format($impact['packets_needed_monthly'] ?? $impact['pads_needed_monthly']) }}</div>
     </div>
 </div>
 

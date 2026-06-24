@@ -63,15 +63,14 @@ class PublicDonationController extends Controller
 
     private function publicImpactStats(): array
     {
-        $packetsStillNeeded = (int) DB::table('shortfall_reports')
-            ->whereIn('status', ['Submitted', 'Dispatched'])
-            ->sum('shortfall');
+        $girlsEnrolled = (int) Enrollment::query()->sum('girl_count');
+        $packetsNeededMonthly = $girlsEnrolled * 2;
 
         return [
             'schools_supported' => (int) DB::table('schools')->count('school_id'),
-            'girls_enrolled' => (int) Enrollment::query()->sum('girl_count'),
-            'packets_still_needed' => $packetsStillNeeded,
-            'pads_still_needed' => $packetsStillNeeded,
+            'girls_enrolled' => $girlsEnrolled,
+            'packets_needed_monthly' => $packetsNeededMonthly,
+            'pads_needed_monthly' => $packetsNeededMonthly,
         ];
     }
 

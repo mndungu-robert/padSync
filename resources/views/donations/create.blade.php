@@ -5,7 +5,12 @@
 @section('content')
 
 @php
-    $impact = $stats ?? ['schools_supported' => 0, 'girls_enrolled' => 0, 'packets_still_needed' => 0, 'pads_still_needed' => 0];
+    $impact = $stats ?? [
+        'schools_supported' => 0,
+        'girls_enrolled' => 0,
+        'packets_needed_monthly' => 0,
+        'pads_needed_monthly' => 0,
+    ];
 @endphp
 
 <!-- HERO STATS SECTION -->
@@ -29,12 +34,12 @@
 
         <div>
             <h3 style="font-size:36px; font-weight:bold;">{{ number_format($impact['girls_enrolled']) }}</h3>
-            <p style="font-size:13px; opacity:0.9;">Girls Enrolled</p>
+            <p style="font-size:13px; opacity:0.9;">Girls Supported</p>
         </div>
 
         <div>
-            <h3 style="font-size:36px; font-weight:bold; color:#f472b6;">{{ number_format($impact['packets_still_needed'] ?? $impact['pads_still_needed']) }}</h3>
-            <p style="font-size:13px; opacity:0.9;">Packets Still Needed</p>
+            <h3 style="font-size:36px; font-weight:bold; color:#f472b6;">{{ number_format($impact['packets_needed_monthly'] ?? $impact['pads_needed_monthly']) }}</h3>
+            <p style="font-size:13px; opacity:0.9;">Packets Needed Monthly</p>
         </div>
 
     </div>
