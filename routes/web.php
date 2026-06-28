@@ -14,9 +14,7 @@ use App\Http\Controllers\SchoolController;
 use Illuminate\Support\Facades\Route;
 
 // 1. Open Public Routes
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PublicDonationController::class, 'home']);
 
 // Donation form page
 Route::get('/donate', [PublicDonationController::class, 'create'])

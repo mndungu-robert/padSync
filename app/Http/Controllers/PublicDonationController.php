@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\DB;
 
 class PublicDonationController extends Controller
 {
+    public function home()
+    {
+        return view('welcome', [
+            'stats' => $this->publicImpactStats(),
+        ]);
+    }
+
     public function create()
     {
         return view('donations.create', [
