@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Donation;
 use App\Models\Donor;
 use App\Models\Enrollment;
+use App\Models\VolunteerInterest;
 use App\Services\DarajaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,20 +41,38 @@ class PublicDonationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'contribution_type' => ['required', 'in:Donate Pads,Donate Money,Volunteer'],
             'name' => ['required', 'string'],
             'email' => ['required', 'email'],
-            'phone' => ['required', 'string'],
-            'donor_type' => ['required', 'in:Individual,Organization'],
-            'quantity_pledged' => ['required', 'integer', 'min:1'],
-            'amount_kes' => ['required', 'numeric', 'min:1'],
+            'phone' => ['nullable', 'string'],
+            'donor_type' => ['nullable', 'in:Individual,Organization'],
+            'quantity_pledged' => ['nullable', 'integer', 'min:1'],
+            'amount_kes' => ['nullable', 'numeric', 'min:1'],
+            'volunteer_notes' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        $normalizedPhone = $this->normalizeKenyanPhone((string) $request->input('phone'));
-        if ($normalizedPhone === null) {
-            return back()->withErrors([
-                'phone' => 'Enter a valid Kenyan phone number (for example 07XXXXXXXX or 2547XXXXXXXX).',
-            ])->withInput();
+        $contributionType = (string) $request->input('contribution_type');
+
+        if ($contributionType === 'Volunteer') {
+            return $this->storeVolunteerInterest($request);
         }
+
+        $request->validate([
+            'donor_type' => ['required', 'in:Individual,Organization'],
+        ]);
+
+        if ($contributionType === 'Donate Pads') {
+            return $this->storePadsPledge($request);
+        }
+
+        return $this->storeMoneyDonation($request);
+    }
+
+    private function storePadsPledge(Request $request)
+    {
+        $request->validate([
+            'quantity_pledged' => ['required', 'integer', 'min:1'],
+        ]);
 
         $donorType = (string) $request->input('donor_type');
         $organizationName = $donorType === 'Organization'
@@ -76,11 +95,66 @@ class PublicDonationController extends Controller
             'organization_name' => $organizationName,
         ]);
 
-        // 2. Create donation record in pending payment state
-        $donation = Donation::create([
+        Donation::create([
             'donor_id' => $donor->id,
             'pad_count' => $request->quantity_pledged,
             'pledge_date' => now(),
+            'contribution_type' => 'Donate Pads',
+            'amount_kes' => 0,
+            'payment_method' => 'In-Kind',
+            'payment_status' => 'Not Required',
+            'notes' => 'Public in-kind pads pledge.',
+        ]);
+
+        $donor->update([
+            'pad_count' => Donation::query()
+                ->where('donor_id', '=', $donor->id)
+                ->where('contribution_type', 'Donate Pads')
+                ->sum('pad_count'),
+        ]);
+
+        return redirect()->back()->with('success', 'Pads pledge recorded successfully. Thank you for supporting the program.');
+    }
+
+    private function storeMoneyDonation(Request $request)
+    {
+        $request->validate([
+            'phone' => ['required', 'string'],
+            'amount_kes' => ['required', 'numeric', 'min:1'],
+        ]);
+
+        $normalizedPhone = $this->normalizeKenyanPhone((string) $request->input('phone'));
+        if ($normalizedPhone === null) {
+            return back()->withErrors([
+                'phone' => 'Enter a valid Kenyan phone number (for example 07XXXXXXXX or 2547XXXXXXXX).',
+            ])->withInput();
+        }
+
+        $donorType = (string) $request->input('donor_type');
+        $organizationName = $donorType === 'Organization'
+            ? (string) $request->input('name')
+            : null;
+
+        $donor = Donor::firstOrCreate(
+            ['email' => $request->email],
+            [
+                'name' => $request->name,
+                'donor_type' => $donorType,
+                'organization_name' => $organizationName,
+            ]
+        );
+
+        $donor->update([
+            'name' => $request->name,
+            'donor_type' => $donorType,
+            'organization_name' => $organizationName,
+        ]);
+
+        $donation = Donation::create([
+            'donor_id' => $donor->id,
+            'pad_count' => 0,
+            'pledge_date' => now(),
+            'contribution_type' => 'Donate Money',
             'amount_kes' => (float) $request->input('amount_kes'),
             'payment_method' => 'M-Pesa',
             'payment_status' => 'Pending',
@@ -118,6 +192,22 @@ class PublicDonationController extends Controller
                 'phone' => 'Could not start M-Pesa payment. Confirm Daraja credentials and callback URL, then try again.',
             ])->withInput();
         }
+    }
+
+    private function storeVolunteerInterest(Request $request)
+    {
+        $request->validate([
+            'phone' => ['required', 'string'],
+        ]);
+
+        VolunteerInterest::create([
+            'name' => (string) $request->input('name'),
+            'email' => (string) $request->input('email'),
+            'phone' => (string) $request->input('phone'),
+            'notes' => (string) ($request->input('volunteer_notes') ?? ''),
+        ]);
+
+        return redirect()->back()->with('success', 'Volunteer interest received. Our team will contact you shortly.');
     }
 
     private function normalizeKenyanPhone(string $input): ?string

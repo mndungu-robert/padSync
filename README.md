@@ -92,7 +92,11 @@ To enable scheduled execution on Linux, add this cron entry:
 
 ## M-Pesa Daraja Integration (STK Push)
 
-This project now supports M-Pesa STK Push for public donations.
+This project now supports a hybrid public contribution flow:
+
+- Donate Pads: records an in-kind pledge (existing logistics workflow)
+- Donate Money: triggers M-Pesa STK Push
+- Volunteer: captures volunteer interest contacts
 
 ### 1. Configure Environment
 

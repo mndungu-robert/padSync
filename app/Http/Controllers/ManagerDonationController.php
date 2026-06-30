@@ -46,7 +46,12 @@ class ManagerDonationController extends Controller
                 ->with('success', 'This donation was already marked as received.');
         }
 
-        if (($donation->payment_status ?? 'Completed') !== 'Completed') {
+        if (($donation->contribution_type ?? 'Donate Pads') !== 'Donate Pads') {
+            return redirect()->route('manager.donations.index')
+                ->withErrors(['received_date' => 'Only pad pledges can be moved into inventory.']);
+        }
+
+        if (!in_array(($donation->payment_status ?? 'Completed'), ['Completed', 'Not Required'], true)) {
             return redirect()->route('manager.donations.index')
                 ->withErrors(['received_date' => 'Only paid donations can be marked as received in inventory.']);
         }

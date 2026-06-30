@@ -16,6 +16,7 @@
                     <tr class="bg-gray-50 text-gray-400 text-[11px] font-bold uppercase tracking-wider border-b border-gray-100">
                         <th class="px-6 py-3.5">Donor Profile Details</th>
                         <th class="px-6 py-3.5">Classification Type</th>
+                        <th class="px-6 py-3.5">Contribution Type</th>
                         <th class="px-6 py-3.5 text-center">Packs Pledged</th>
                         <th class="px-6 py-3.5 text-center">Payment</th>
                         <th class="px-6 py-3.5">Pledge Logging Date</th>
@@ -40,6 +41,10 @@
                             <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/60">
                                 {{ $pledge->donor_type }}
                             </span>
+                        </td>
+
+                        <td class="px-6 py-4 text-xs font-semibold text-slate-700">
+                            {{ $pledge->contribution_type ?? 'Donate Pads' }}
                         </td>
                         
                         <!-- Quantity Metrics -->
@@ -71,7 +76,7 @@
                         </td>
 
                         <td class="px-6 py-4 text-right">
-                            @if($fulfillmentState === 'Pledged' && (($pledge->payment_status ?? 'Completed') === 'Completed'))
+                            @if(($pledge->contribution_type ?? 'Donate Pads') === 'Donate Pads' && $fulfillmentState === 'Pledged' && (($pledge->payment_status ?? 'Completed') === 'Completed' || ($pledge->payment_status ?? '') === 'Not Required'))
                                 <form method="POST" action="{{ route('manager.donations.receive', $pledge) }}" class="inline">
                                     @csrf
                                     @method('PATCH')
@@ -79,6 +84,8 @@
                                         Mark Received
                                     </button>
                                 </form>
+                            @elseif(($pledge->contribution_type ?? 'Donate Pads') !== 'Donate Pads')
+                                <span class="text-[11px] text-gray-500 font-semibold">No Inventory Action</span>
                             @elseif($fulfillmentState === 'Pledged')
                                 <span class="text-[11px] text-amber-600 font-semibold">Awaiting Payment</span>
                             @else
@@ -88,7 +95,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-10 text-center text-gray-400 font-medium">No donation pledges have been logged from the public portal page yet.</td>
+                        <td colspan="8" class="px-6 py-10 text-center text-gray-400 font-medium">No donation pledges have been logged from the public portal page yet.</td>
                     </tr>
                     @endforelse
                 </tbody>

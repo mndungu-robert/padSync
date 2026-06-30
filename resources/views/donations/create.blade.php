@@ -22,6 +22,62 @@
     .public-serif {
         font-family: 'Fraunces', serif;
     }
+
+    .help-tabs {
+        margin: 16px 0 14px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        padding: 6px;
+        border: 1px solid #c7d2fe;
+        border-radius: 12px;
+        background: #eef2ff;
+    }
+
+    .help-tab {
+        border: 0;
+        border-radius: 9px;
+        padding: 11px 10px;
+        font-weight: 800;
+        font-size: 13px;
+        color: #4338ca;
+        background: transparent;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+    .help-tab.is-active {
+        background: #312e81;
+        color: #ffffff;
+        box-shadow: 0 6px 14px rgba(49, 46, 129, .28);
+    }
+
+    .help-panel {
+        margin-top: 12px;
+        border: 1px solid #e0e7ff;
+        border-radius: 12px;
+        background: #f8faff;
+        padding: 14px 14px 4px;
+    }
+
+    .help-panel-title {
+        margin: 0 0 4px;
+        font-size: 14px;
+        font-weight: 800;
+        color: #312e81;
+    }
+
+    .help-panel-copy {
+        margin: 0 0 10px;
+        font-size: 12px;
+        color: #4f46e5;
+    }
+
+    @media (max-width: 700px) {
+        .help-tabs {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
 <div class="public-page" style="margin: -4px;">
@@ -47,8 +103,8 @@
     </div>
 
     <div style="margin-top:16px; border:1px solid #e0e7ff; background:#ffffff; border-radius:16px; padding:18px; box-shadow:0 8px 16px rgba(15,23,42,.04);">
-        <h3 class="public-serif" style="margin:0; font-size:28px; color:#312e81;">Make a Donation</h3>
-        <p style="margin:8px 0 0; color:#4338ca; font-size:13px;">Choose donor type and pledge packet quantity for this cycle.</p>
+        <h3 class="public-serif" style="margin:0; font-size:28px; color:#312e81;">How Would You Like To Help?</h3>
+        <p style="margin:8px 0 0; color:#4338ca; font-size:13px;">Choose your support path below. You can donate pads, donate money, or volunteer.</p>
 
         @if(session('success'))
             <div class="alert" style="margin-top:14px;">
@@ -69,10 +125,21 @@
         <form method="POST" action="{{ route('donate.store') }}" style="margin-top:14px;">
             @csrf
 
+            @php
+                $selectedContribution = old('contribution_type', 'Donate Pads');
+            @endphp
+
+            <input type="hidden" name="contribution_type" id="contribution-type" value="{{ $selectedContribution }}">
+
+            <div class="help-tabs" role="tablist" aria-label="Contribution types">
+                <button type="button" class="help-tab" data-contribution="Donate Pads" role="tab">Donate Pads</button>
+                <button type="button" class="help-tab" data-contribution="Donate Money" role="tab">Donate Money</button>
+                <button type="button" class="help-tab" data-contribution="Volunteer" role="tab">Volunteer</button>
+            </div>
+
             <p>
                 <label style="font-weight:700; color:#3730a3;">Name</label><br>
                 <input type="text" name="name" value="{{ old('name') }}" required>
-                <small style="color:#6b7280; display:block; margin-top:4px;">If donor type is Organization, enter the organization name here.</small>
             </p>
 
             <p>
@@ -80,37 +147,125 @@
                 <input type="email" name="email" value="{{ old('email') }}" required>
             </p>
 
-            <p>
+            <p id="phone-field">
                 <label style="font-weight:700; color:#3730a3;">M-Pesa Phone</label><br>
-                <input type="text" name="phone" value="{{ old('phone') }}" placeholder="07XXXXXXXX or 2547XXXXXXXX" required>
-                <small style="color:#6b7280; display:block; margin-top:4px;">This number receives the STK push prompt.</small>
+                <input type="text" name="phone" value="{{ old('phone') }}" placeholder="07XXXXXXXX or 2547XXXXXXXX">
+                <small style="color:#6b7280; display:block; margin-top:4px;">Used for M-Pesa prompt and volunteer follow-up calls.</small>
             </p>
 
-            <p>
+            <p id="donor-type-field">
                 <label style="font-weight:700; color:#3730a3;">Donor Type</label><br>
-                <select name="donor_type" required>
+                <select name="donor_type">
                     <option value="Individual" {{ old('donor_type') === 'Individual' ? 'selected' : '' }}>Individual</option>
                     <option value="Organization" {{ old('donor_type') === 'Organization' ? 'selected' : '' }}>Organization</option>
                 </select>
+                <small style="color:#6b7280; display:block; margin-top:4px;">If Organization, enter the organization name in the Name field.</small>
             </p>
 
-            <p>
-                <label style="font-weight:700; color:#3730a3;">Packets Pledged</label><br>
-                <input type="number" name="quantity_pledged" value="{{ old('quantity_pledged') }}" min="1" required>
-            </p>
+            <div class="help-panel" id="pads-panel" role="tabpanel">
+                <h4 class="help-panel-title">In-Kind Pads Pledge</h4>
+                <p class="help-panel-copy">Pledge packets you can deliver physically to support the current cycle.</p>
+                <p id="pads-field">
+                    <label style="font-weight:700; color:#3730a3;">Packets Pledged</label><br>
+                    <input type="number" name="quantity_pledged" value="{{ old('quantity_pledged') }}" min="1">
+                </p>
+            </div>
 
-            <p>
-                <label style="font-weight:700; color:#3730a3;">Amount (KES)</label><br>
-                <input type="number" name="amount_kes" value="{{ old('amount_kes') }}" min="1" step="1" required>
-            </p>
+            <div class="help-panel" id="money-panel" role="tabpanel">
+                <h4 class="help-panel-title">M-Pesa Money Donation</h4>
+                <p class="help-panel-copy">Enter amount and phone number to receive an STK prompt instantly.</p>
+                <p id="money-field">
+                    <label style="font-weight:700; color:#3730a3;">Amount (KES)</label><br>
+                    <input type="number" name="amount_kes" value="{{ old('amount_kes') }}" min="1" step="1">
+                </p>
+            </div>
 
-            <button class="btn" type="submit" style="font-weight:800;">Pay With M-Pesa</button>
+            <div class="help-panel" id="volunteer-panel" role="tabpanel">
+                <h4 class="help-panel-title">Volunteer Signup</h4>
+                <p class="help-panel-copy">Tell us how and when you can support activities on the ground.</p>
+                <p id="volunteer-notes-field">
+                    <label style="font-weight:700; color:#3730a3;">Volunteer Notes (Optional)</label><br>
+                    <textarea name="volunteer_notes" rows="3" placeholder="Tell us your location, availability, or skills...">{{ old('volunteer_notes') }}</textarea>
+                </p>
+            </div>
 
-            <p style="margin-top:10px; font-size:13px; color:#6b7280;">
-                Submit to receive an M-Pesa STK prompt on your phone and complete the donation securely.
-            </p>
+            <button class="btn" type="submit" style="font-weight:800;" id="submit-label">Submit</button>
+
+            <p style="margin-top:10px; font-size:13px; color:#6b7280;" id="helper-text"></p>
         </form>
     </div>
 </div>
+
+<script>
+    (function () {
+        const tabs = document.querySelectorAll('.help-tab');
+        const contributionType = document.getElementById('contribution-type');
+        const padsPanel = document.getElementById('pads-panel');
+        const moneyPanel = document.getElementById('money-panel');
+        const volunteerPanel = document.getElementById('volunteer-panel');
+        const padsField = document.getElementById('pads-field');
+        const moneyField = document.getElementById('money-field');
+        const donorTypeField = document.getElementById('donor-type-field');
+        const phoneField = document.getElementById('phone-field');
+        const volunteerNotesField = document.getElementById('volunteer-notes-field');
+        const submitLabel = document.getElementById('submit-label');
+        const helperText = document.getElementById('helper-text');
+
+        function selectedValue() {
+            return contributionType.value || 'Donate Pads';
+        }
+
+        function setActiveTab(value) {
+            tabs.forEach(function (tab) {
+                tab.classList.toggle('is-active', tab.dataset.contribution === value);
+                tab.setAttribute('aria-selected', tab.dataset.contribution === value ? 'true' : 'false');
+            });
+        }
+
+        function toggleFields() {
+            const value = selectedValue();
+
+            const isPads = value === 'Donate Pads';
+            const isMoney = value === 'Donate Money';
+            const isVolunteer = value === 'Volunteer';
+
+            setActiveTab(value);
+
+            padsField.style.display = isPads ? 'block' : 'none';
+            moneyField.style.display = isMoney ? 'block' : 'none';
+            donorTypeField.style.display = (isPads || isMoney) ? 'block' : 'none';
+            phoneField.style.display = (isMoney || isVolunteer) ? 'block' : 'none';
+            volunteerNotesField.style.display = isVolunteer ? 'block' : 'none';
+
+            padsPanel.style.display = isPads ? 'block' : 'none';
+            moneyPanel.style.display = isMoney ? 'block' : 'none';
+            volunteerPanel.style.display = isVolunteer ? 'block' : 'none';
+
+            if (isPads) {
+                submitLabel.textContent = 'Submit Pads Pledge';
+                helperText.textContent = 'Your in-kind pads pledge is recorded and your team can coordinate delivery.';
+            }
+
+            if (isMoney) {
+                submitLabel.textContent = 'Pay With M-Pesa';
+                helperText.textContent = 'Submit to receive an M-Pesa STK prompt on your phone and complete payment.';
+            }
+
+            if (isVolunteer) {
+                submitLabel.textContent = 'Submit Volunteer Interest';
+                helperText.textContent = 'Share your contact details and we will reach out with volunteer opportunities.';
+            }
+        }
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                contributionType.value = tab.dataset.contribution;
+                toggleFields();
+            });
+        });
+
+        toggleFields();
+    })();
+</script>
 
 @endsection
