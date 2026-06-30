@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Donation;
 use App\Models\Donor;
 use App\Models\Enrollment;
-use App\Models\VolunteerInterest;
 use App\Services\DarajaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,21 +40,16 @@ class PublicDonationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'contribution_type' => ['required', 'in:Donate Pads,Donate Money,Volunteer'],
+            'contribution_type' => ['required', 'in:Donate Pads,Donate Money'],
             'name' => ['required', 'string'],
             'email' => ['required', 'email'],
             'phone' => ['nullable', 'string'],
             'donor_type' => ['nullable', 'in:Individual,Organization'],
             'quantity_pledged' => ['nullable', 'integer', 'min:1'],
             'amount_kes' => ['nullable', 'numeric', 'min:1'],
-            'volunteer_notes' => ['nullable', 'string', 'max:2000'],
         ]);
 
         $contributionType = (string) $request->input('contribution_type');
-
-        if ($contributionType === 'Volunteer') {
-            return $this->storeVolunteerInterest($request);
-        }
 
         $request->validate([
             'donor_type' => ['required', 'in:Individual,Organization'],
@@ -192,22 +186,6 @@ class PublicDonationController extends Controller
                 'phone' => 'Could not start M-Pesa payment. Confirm Daraja credentials and callback URL, then try again.',
             ])->withInput();
         }
-    }
-
-    private function storeVolunteerInterest(Request $request)
-    {
-        $request->validate([
-            'phone' => ['required', 'string'],
-        ]);
-
-        VolunteerInterest::create([
-            'name' => (string) $request->input('name'),
-            'email' => (string) $request->input('email'),
-            'phone' => (string) $request->input('phone'),
-            'notes' => (string) ($request->input('volunteer_notes') ?? ''),
-        ]);
-
-        return redirect()->back()->with('success', 'Volunteer interest received. Our team will contact you shortly.');
     }
 
     private function normalizeKenyanPhone(string $input): ?string

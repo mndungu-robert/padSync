@@ -26,7 +26,7 @@
     .help-tabs {
         margin: 16px 0 14px;
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
         padding: 6px;
         border: 1px solid #c7d2fe;
@@ -103,8 +103,8 @@
     </div>
 
     <div style="margin-top:16px; border:1px solid #e0e7ff; background:#ffffff; border-radius:16px; padding:18px; box-shadow:0 8px 16px rgba(15,23,42,.04);">
-        <h3 class="public-serif" style="margin:0; font-size:28px; color:#312e81;">How Would You Like To Help?</h3>
-        <p style="margin:8px 0 0; color:#4338ca; font-size:13px;">Choose your support path below. You can donate pads, donate money, or volunteer.</p>
+        <h3 class="public-serif" style="margin:0; font-size:28px; color:#312e81;">Choose Donation Type</h3>
+        <p style="margin:8px 0 0; color:#4338ca; font-size:13px;">Select whether you want to donate pads or donate money via M-Pesa.</p>
 
         @if(session('success'))
             <div class="alert" style="margin-top:14px;">
@@ -134,7 +134,6 @@
             <div class="help-tabs" role="tablist" aria-label="Contribution types">
                 <button type="button" class="help-tab" data-contribution="Donate Pads" role="tab">Donate Pads</button>
                 <button type="button" class="help-tab" data-contribution="Donate Money" role="tab">Donate Money</button>
-                <button type="button" class="help-tab" data-contribution="Volunteer" role="tab">Volunteer</button>
             </div>
 
             <p>
@@ -150,7 +149,7 @@
             <p id="phone-field">
                 <label style="font-weight:700; color:#3730a3;">M-Pesa Phone</label><br>
                 <input type="text" name="phone" value="{{ old('phone') }}" placeholder="07XXXXXXXX or 2547XXXXXXXX">
-                <small style="color:#6b7280; display:block; margin-top:4px;">Used for M-Pesa prompt and volunteer follow-up calls.</small>
+                <small style="color:#6b7280; display:block; margin-top:4px;">Used to receive the M-Pesa STK prompt.</small>
             </p>
 
             <p id="donor-type-field">
@@ -180,15 +179,6 @@
                 </p>
             </div>
 
-            <div class="help-panel" id="volunteer-panel" role="tabpanel">
-                <h4 class="help-panel-title">Volunteer Signup</h4>
-                <p class="help-panel-copy">Tell us how and when you can support activities on the ground.</p>
-                <p id="volunteer-notes-field">
-                    <label style="font-weight:700; color:#3730a3;">Volunteer Notes (Optional)</label><br>
-                    <textarea name="volunteer_notes" rows="3" placeholder="Tell us your location, availability, or skills...">{{ old('volunteer_notes') }}</textarea>
-                </p>
-            </div>
-
             <button class="btn" type="submit" style="font-weight:800;" id="submit-label">Submit</button>
 
             <p style="margin-top:10px; font-size:13px; color:#6b7280;" id="helper-text"></p>
@@ -202,12 +192,10 @@
         const contributionType = document.getElementById('contribution-type');
         const padsPanel = document.getElementById('pads-panel');
         const moneyPanel = document.getElementById('money-panel');
-        const volunteerPanel = document.getElementById('volunteer-panel');
         const padsField = document.getElementById('pads-field');
         const moneyField = document.getElementById('money-field');
         const donorTypeField = document.getElementById('donor-type-field');
         const phoneField = document.getElementById('phone-field');
-        const volunteerNotesField = document.getElementById('volunteer-notes-field');
         const submitLabel = document.getElementById('submit-label');
         const helperText = document.getElementById('helper-text');
 
@@ -227,19 +215,16 @@
 
             const isPads = value === 'Donate Pads';
             const isMoney = value === 'Donate Money';
-            const isVolunteer = value === 'Volunteer';
 
             setActiveTab(value);
 
             padsField.style.display = isPads ? 'block' : 'none';
             moneyField.style.display = isMoney ? 'block' : 'none';
             donorTypeField.style.display = (isPads || isMoney) ? 'block' : 'none';
-            phoneField.style.display = (isMoney || isVolunteer) ? 'block' : 'none';
-            volunteerNotesField.style.display = isVolunteer ? 'block' : 'none';
+            phoneField.style.display = isMoney ? 'block' : 'none';
 
             padsPanel.style.display = isPads ? 'block' : 'none';
             moneyPanel.style.display = isMoney ? 'block' : 'none';
-            volunteerPanel.style.display = isVolunteer ? 'block' : 'none';
 
             if (isPads) {
                 submitLabel.textContent = 'Submit Pads Pledge';
@@ -249,11 +234,6 @@
             if (isMoney) {
                 submitLabel.textContent = 'Pay With M-Pesa';
                 helperText.textContent = 'Submit to receive an M-Pesa STK prompt on your phone and complete payment.';
-            }
-
-            if (isVolunteer) {
-                submitLabel.textContent = 'Submit Volunteer Interest';
-                helperText.textContent = 'Share your contact details and we will reach out with volunteer opportunities.';
             }
         }
 
