@@ -11,6 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->validateCsrfTokens(except: [
+            'daraja/callback',
+            'mpesa/callback',
+        ]);
+
         // Register your clean role check alias here
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,

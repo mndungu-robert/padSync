@@ -27,8 +27,12 @@ Route::post('/donate', [PublicDonationController::class, 'store'])
     ->name('donate.store');
 
 Route::post('/daraja/callback', [MpesaCallbackController::class, 'handle'])
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
     ->name('daraja.callback');
+
+Route::post('/mpesa/callback', [MpesaCallbackController::class, 'handle'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+    ->name('mpesa.callback');
 
 // 2. Base Centralized Shared Dashboard Access Route
 Route::get('/dashboard', [DashboardController::class, 'index'])
