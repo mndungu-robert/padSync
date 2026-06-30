@@ -16,9 +16,23 @@ class Donation extends Model
         'donor_id',
         'pad_count',
         'pledge_date',
+        'amount_kes',
+        'payment_method',
+        'payment_status',
+        'payment_reference',
+        'merchant_request_id',
+        'checkout_request_id',
+        'payer_phone',
+        'paid_at',
+        'callback_payload',
         'expected_delivery_date',
         'fulfillment_date',
         'notes',
+    ];
+
+    protected $casts = [
+        'paid_at' => 'datetime',
+        'callback_payload' => 'array',
     ];
 
     public function donor()

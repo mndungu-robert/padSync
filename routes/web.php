@@ -8,6 +8,7 @@ use App\Http\Controllers\DonorController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ManagerCoordinatorController;
 use App\Http\Controllers\ManagerDonationController;
+use App\Http\Controllers\MpesaCallbackController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicDonationController;
 use App\Http\Controllers\SchoolController;
@@ -24,6 +25,10 @@ Route::get('/learn-more', [PublicDonationController::class, 'learnMore'])
 // Submit donation
 Route::post('/donate', [PublicDonationController::class, 'store'])
     ->name('donate.store');
+
+Route::post('/daraja/callback', [MpesaCallbackController::class, 'handle'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->name('daraja.callback');
 
 // 2. Base Centralized Shared Dashboard Access Route
 Route::get('/dashboard', [DashboardController::class, 'index'])

@@ -89,3 +89,67 @@ To enable scheduled execution on Linux, add this cron entry:
 ```cron
 * * * * * cd /var/www/html/pad-sync && php artisan schedule:run >> /dev/null 2>&1
 ```
+
+## M-Pesa Daraja Integration (STK Push)
+
+This project now supports M-Pesa STK Push for public donations.
+
+### 1. Configure Environment
+
+Set these values in `.env`:
+
+```dotenv
+MPESA_BASE_URL=https://sandbox.safaricom.co.ke
+MPESA_CONSUMER_KEY=your_consumer_key
+MPESA_CONSUMER_SECRET=your_consumer_secret
+MPESA_SHORTCODE=174379
+MPESA_PASSKEY=your_lipa_na_mpesa_passkey
+MPESA_TRANSACTION_TYPE=CustomerPayBillOnline
+MPESA_CALLBACK_URL=https://your-public-domain-or-ngrok/daraja/callback
+```
+
+Use production values only when going live:
+
+- Base URL: `https://api.safaricom.co.ke`
+- Production shortcode and passkey from Safaricom portal
+
+### 2. Apply Migration
+
+```bash
+php artisan migrate
+```
+
+### 3. Verify Routes
+
+```bash
+php artisan route:list --path=daraja
+php artisan route:list --path=donate
+```
+
+### 4. Run Local Testing
+
+- Open `/donate`
+- Submit donor details, valid Kenyan phone number, and amount
+- Confirm STK prompt on phone
+
+Callback endpoint:
+
+- `POST /daraja/callback`
+
+### 5. If Testing Locally, Expose Callback URL
+
+Daraja must reach your callback over public HTTPS. During sandbox testing, use a tunnel:
+
+```bash
+ngrok http 8000
+```
+
+Set `MPESA_CALLBACK_URL` to:
+
+- `https://<ngrok-id>.ngrok-free.app/daraja/callback`
+
+### 6. Troubleshooting
+
+- If STK push fails immediately, check `MPESA_CONSUMER_KEY` and `MPESA_CONSUMER_SECRET`
+- If STK push sends but never updates, check `MPESA_CALLBACK_URL` reachability
+- Inspect logs in `storage/logs/laravel.log` for `Daraja` messages

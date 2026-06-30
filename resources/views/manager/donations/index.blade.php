@@ -17,6 +17,7 @@
                         <th class="px-6 py-3.5">Donor Profile Details</th>
                         <th class="px-6 py-3.5">Classification Type</th>
                         <th class="px-6 py-3.5 text-center">Packs Pledged</th>
+                        <th class="px-6 py-3.5 text-center">Payment</th>
                         <th class="px-6 py-3.5">Pledge Logging Date</th>
                         <th class="px-6 py-3.5 text-right">Fulfillment State</th>
                         <th class="px-6 py-3.5 text-right">Action</th>
@@ -45,6 +46,16 @@
                         <td class="px-6 py-4 text-center font-bold text-slate-800">
                             {{ number_format($pledge->pad_count) }}
                         </td>
+
+                        <td class="px-6 py-4 text-center">
+                            @php
+                                $paymentState = $pledge->payment_status ?? 'Completed';
+                            @endphp
+                            <span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border
+                                {{ $paymentState === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($paymentState === 'Pending' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200') }}">
+                                {{ $paymentState }}
+                            </span>
+                        </td>
                         
                         <!-- Logging Date -->
                         <td class="px-6 py-4 text-xs font-medium text-gray-400">
@@ -60,7 +71,7 @@
                         </td>
 
                         <td class="px-6 py-4 text-right">
-                            @if($fulfillmentState === 'Pledged')
+                            @if($fulfillmentState === 'Pledged' && (($pledge->payment_status ?? 'Completed') === 'Completed'))
                                 <form method="POST" action="{{ route('manager.donations.receive', $pledge) }}" class="inline">
                                     @csrf
                                     @method('PATCH')
@@ -68,6 +79,8 @@
                                         Mark Received
                                     </button>
                                 </form>
+                            @elseif($fulfillmentState === 'Pledged')
+                                <span class="text-[11px] text-amber-600 font-semibold">Awaiting Payment</span>
                             @else
                                 <span class="text-[11px] text-gray-400 font-semibold">Received</span>
                             @endif
@@ -75,7 +88,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-10 text-center text-gray-400 font-medium">No donation pledges have been logged from the public portal page yet.</td>
+                        <td colspan="7" class="px-6 py-10 text-center text-gray-400 font-medium">No donation pledges have been logged from the public portal page yet.</td>
                     </tr>
                     @endforelse
                 </tbody>

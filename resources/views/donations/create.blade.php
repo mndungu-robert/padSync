@@ -81,6 +81,12 @@
             </p>
 
             <p>
+                <label style="font-weight:700; color:#3730a3;">M-Pesa Phone</label><br>
+                <input type="text" name="phone" value="{{ old('phone') }}" placeholder="07XXXXXXXX or 2547XXXXXXXX" required>
+                <small style="color:#6b7280; display:block; margin-top:4px;">This number receives the STK push prompt.</small>
+            </p>
+
+            <p>
                 <label style="font-weight:700; color:#3730a3;">Donor Type</label><br>
                 <select name="donor_type" required>
                     <option value="Individual" {{ old('donor_type') === 'Individual' ? 'selected' : '' }}>Individual</option>
@@ -93,10 +99,15 @@
                 <input type="number" name="quantity_pledged" value="{{ old('quantity_pledged') }}" min="1" required>
             </p>
 
-            <button class="btn" type="submit" style="font-weight:800;">Submit Donation</button>
+            <p>
+                <label style="font-weight:700; color:#3730a3;">Amount (KES)</label><br>
+                <input type="number" name="amount_kes" value="{{ old('amount_kes') }}" min="1" step="1" required>
+            </p>
+
+            <button class="btn" type="submit" style="font-weight:800;">Pay With M-Pesa</button>
 
             <p style="margin-top:10px; font-size:13px; color:#6b7280;">
-                Any donation is appreciated, and we will follow up with you to coordinate delivery. Thank you for your support!
+                Submit to receive an M-Pesa STK prompt on your phone and complete the donation securely.
             </p>
         </form>
     </div>

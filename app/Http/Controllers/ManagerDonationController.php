@@ -46,6 +46,11 @@ class ManagerDonationController extends Controller
                 ->with('success', 'This donation was already marked as received.');
         }
 
+        if (($donation->payment_status ?? 'Completed') !== 'Completed') {
+            return redirect()->route('manager.donations.index')
+                ->withErrors(['received_date' => 'Only paid donations can be marked as received in inventory.']);
+        }
+
         DB::transaction(function () use ($donation, $validated) {
             $donation->update([
                 'fulfillment_date' => $validated['received_date'] ?? now()->toDateString(),
