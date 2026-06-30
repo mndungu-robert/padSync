@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donation;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class MpesaCallbackController extends Controller
 {
@@ -52,6 +54,17 @@ class MpesaCallbackController extends Controller
                 'notes' => 'Payment completed via M-Pesa.',
             ]);
 
+            $this->recordPaymentAudit(
+                action: 'M-Pesa payment completed',
+                details: sprintf(
+                    'Donation #%d completed. Amount %.2f KES. Receipt %s.',
+                    $donation->donation_id,
+                    (float) ($donation->amount_kes ?? 0),
+                    (string) ($donation->payment_reference ?? 'N/A')
+                ),
+                ipAddress: $request->ip()
+            );
+
             if (!$wasCompleted && $donation->donor) {
                 $donation->donor->update([
                     'pad_count' => Donation::query()
@@ -66,6 +79,16 @@ class MpesaCallbackController extends Controller
                 'callback_payload' => $payload,
                 'notes' => 'Payment failed: '.$resultDesc,
             ]);
+
+            $this->recordPaymentAudit(
+                action: 'M-Pesa payment failed',
+                details: sprintf(
+                    'Donation #%d failed. Reason: %s',
+                    $donation->donation_id,
+                    $resultDesc
+                ),
+                ipAddress: $request->ip()
+            );
         }
 
         return response()->json(['ResultCode' => 0, 'ResultDesc' => 'Accepted']);
@@ -103,5 +126,23 @@ class MpesaCallbackController extends Controller
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    private function recordPaymentAudit(string $action, string $details, ?string $ipAddress): void
+    {
+        $systemUser = User::query()->where('role', '=', 'Admin')->orderBy('id', 'asc')->first()
+            ?? User::query()->orderBy('id', 'asc')->first();
+
+        if (!$systemUser) {
+            return;
+        }
+
+        DB::table('audit_logs')->insert([
+            'user_id' => $systemUser->id,
+            'user_role' => 'System',
+            'action_performed' => $action.' - '.$details,
+            'ip_address' => $ipAddress,
+            'created_at' => now(),
+        ]);
     }
 }

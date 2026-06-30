@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Inventory;
 use App\Models\ShortfallReport;
 use App\Models\User;
+use App\Models\Donation;
 use Illuminate\Support\Facades\DB;
 
 class ManagerDashboardController extends Controller
@@ -19,6 +20,10 @@ class ManagerDashboardController extends Controller
         $managerMetrics = [
             'available_stock' => $warehouse->quantity_available,
             'reorder_threshold' => $warehouse->reorder_level,
+            'money_received' => (float) Donation::query()
+                ->where('contribution_type', 'Donate Money')
+                ->where('payment_status', 'Completed')
+                ->sum('amount_kes'),
             'schools_count' => DB::table('schools')->count('school_id'),
             'active_shortfalls' => ShortfallReport::query()->where('status', 'Submitted')->count(),
             'pending_profiles' => User::query()->where('role', 'Coordinator')->where('status', 'Pending')->count(),

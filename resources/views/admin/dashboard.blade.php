@@ -20,7 +20,7 @@
         <p class="text-xs font-medium text-gray-400 mt-0.5">System overview - all roles and activity</p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5">
         <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
             <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Program Managers</div>
             <div class="text-3xl font-bold text-gray-800 mt-2">{{ $metrics['program_managers'] }}</div>
@@ -40,6 +40,16 @@
             <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pending Approvals</div>
             <div class="text-3xl font-bold text-rose-600 mt-2">{{ $metrics['pending_approvals'] }}</div>
             <div class="text-[10px] text-gray-400 font-medium mt-1">awaiting review</div>
+        </div>
+
+        <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Money Received (KES)</div>
+            <div class="text-3xl font-bold text-emerald-700 mt-2">{{ number_format((float) $metrics['money_received'], 2) }}</div>
+        </div>
+
+        <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Money Pending (KES)</div>
+            <div class="text-3xl font-bold text-amber-700 mt-2">{{ number_format((float) $metrics['money_pending'], 2) }}</div>
         </div>
     </div>
 

@@ -9,6 +9,7 @@
         $dashboardMetrics = array_merge([
             'available_stock' => 0,
             'reorder_threshold' => 100,
+            'money_received' => 0,
             'schools_count' => 0,
             'active_shortfalls' => 0,
             'pending_profiles' => 0,
@@ -16,7 +17,7 @@
         $criticalNeedRows = collect($criticalNeeds ?? []);
     @endphp
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-5">
         <div class="bg-white border border-gray-200 p-5 rounded-xl shadow-sm">
             <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Available Stock</div>
             <div class="text-2xl font-bold text-slate-800 mt-2">{{ number_format($dashboardMetrics['available_stock']) }}</div>
@@ -24,6 +25,10 @@
         <div class="bg-white border border-gray-200 p-5 rounded-xl shadow-sm">
             <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Reorder Threshold</div>
             <div class="text-2xl font-bold text-amber-700 mt-2">{{ number_format($dashboardMetrics['reorder_threshold']) }}</div>
+        </div>
+        <div class="bg-white border border-gray-200 p-5 rounded-xl shadow-sm">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Money Received (KES)</div>
+            <div class="text-2xl font-bold text-emerald-700 mt-2">{{ number_format((float) $dashboardMetrics['money_received'], 2) }}</div>
         </div>
         <div class="bg-white border border-gray-200 p-5 rounded-xl shadow-sm">
             <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Registered Schools</div>

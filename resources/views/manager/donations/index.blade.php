@@ -18,6 +18,7 @@
                         <th class="px-6 py-3.5">Classification Type</th>
                         <th class="px-6 py-3.5">Contribution Type</th>
                         <th class="px-6 py-3.5 text-center">Packs Pledged</th>
+                        <th class="px-6 py-3.5 text-center">Amount (KES)</th>
                         <th class="px-6 py-3.5 text-center">Payment</th>
                         <th class="px-6 py-3.5">Pledge Logging Date</th>
                         <th class="px-6 py-3.5 text-right">Fulfillment State</th>
@@ -50,6 +51,14 @@
                         <!-- Quantity Metrics -->
                         <td class="px-6 py-4 text-center font-bold text-slate-800">
                             {{ number_format($pledge->pad_count) }}
+                        </td>
+
+                        <td class="px-6 py-4 text-center font-semibold text-slate-700">
+                            @if(($pledge->contribution_type ?? 'Donate Pads') === 'Donate Money')
+                                {{ number_format((float) ($pledge->amount_kes ?? 0), 2) }}
+                            @else
+                                -
+                            @endif
                         </td>
 
                         <td class="px-6 py-4 text-center">
@@ -95,7 +104,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="px-6 py-10 text-center text-gray-400 font-medium">No donation pledges have been logged from the public portal page yet.</td>
+                        <td colspan="9" class="px-6 py-10 text-center text-gray-400 font-medium">No donation pledges have been logged from the public portal page yet.</td>
                     </tr>
                     @endforelse
                 </tbody>

@@ -13,7 +13,7 @@
     @endif
 
     <!-- Data Scope Quick Counters Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-7 gap-4">
         <div class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm text-center">
             <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Track Sites</div>
             <div class="text-xl font-bold text-slate-800 mt-1">{{ $summary['total_schools'] }}</div>
@@ -25,6 +25,14 @@
         <div class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm text-center">
             <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Pledges</div>
             <div class="text-xl font-bold text-slate-800 mt-1">{{ number_format($summary['cumulative_pledges']) }}</div>
+        </div>
+        <div class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm text-center">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Money Received (KES)</div>
+            <div class="text-xl font-bold text-emerald-700 mt-1">{{ number_format((float) $summary['money_received'], 2) }}</div>
+        </div>
+        <div class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm text-center">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Money Pending (KES)</div>
+            <div class="text-xl font-bold text-amber-700 mt-1">{{ number_format((float) $summary['money_pending'], 2) }}</div>
         </div>
         <div class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm text-center">
             <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">In Transit</div>
@@ -52,6 +60,7 @@
                         <option value="inventory">Warehouse Inventory Balance Sheets</option>
                         <option value="shortfalls">School Shortfall Deficit Tickets</option>
                         <option value="donations">Cumulative Public Pledges Ledger</option>
+                        <option value="money">Money Donation Payment Ledger</option>
                         <option value="distributions">Dispatches and Delivery Tracking Logs</option>
                     </select>
                 </div>

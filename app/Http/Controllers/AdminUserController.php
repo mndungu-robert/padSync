@@ -87,8 +87,27 @@ class AdminUserController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15); // Paginated to keep loading fast
 
+        $paymentActivity = DB::table('donations')
+            ->join('donors', 'donations.donor_id', '=', 'donors.id')
+            ->select([
+                'donations.donation_id',
+                'donations.amount_kes',
+                'donations.payment_status',
+                'donations.payment_reference',
+                'donations.paid_at',
+                'donations.payer_phone',
+                'donations.updated_at',
+                'donors.name as donor_name',
+                'donors.email as donor_email',
+            ])
+            ->where('donations.contribution_type', 'Donate Money')
+            ->orderByDesc('donations.updated_at')
+            ->limit(20)
+            ->get();
+
         return view('admin.logs.index', [
             'logs'   => $logs,
+            'paymentActivity' => $paymentActivity,
             'active' => 'logs' // Highlights the audit logs tab in the sidebar
         ]);
     }

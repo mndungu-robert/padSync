@@ -61,4 +61,55 @@
             </div>
         @endif
     </div>
+
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mt-6">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+            <h3 class="font-bold text-sm text-gray-800">Recent Money Donation Payment Activity</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="bg-gray-50 text-gray-400 text-[11px] font-bold uppercase tracking-wider border-b border-gray-100">
+                        <th class="px-6 py-3.5">Donation</th>
+                        <th class="px-6 py-3.5">Donor</th>
+                        <th class="px-6 py-3.5 text-right">Amount (KES)</th>
+                        <th class="px-6 py-3.5">Status</th>
+                        <th class="px-6 py-3.5">Receipt Ref</th>
+                        <th class="px-6 py-3.5">Paid At</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-gray-600 font-medium">
+                    @forelse(($paymentActivity ?? collect()) as $payment)
+                    <tr class="hover:bg-gray-50/40 transition">
+                        <td class="px-6 py-4 text-xs font-mono text-gray-500">#{{ $payment->donation_id }}</td>
+
+                        <td class="px-6 py-4">
+                            <div class="font-semibold text-gray-800">{{ $payment->donor_name }}</div>
+                            <div class="text-xs text-gray-400 font-mono">{{ $payment->donor_email }}</div>
+                        </td>
+
+                        <td class="px-6 py-4 text-right font-bold text-slate-800">{{ number_format((float) $payment->amount_kes, 2) }}</td>
+
+                        <td class="px-6 py-4">
+                            <span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border
+                                {{ $payment->payment_status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($payment->payment_status === 'Pending' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200') }}">
+                                {{ $payment->payment_status }}
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4 text-xs font-mono text-gray-500">{{ $payment->payment_reference ?? 'N/A' }}</td>
+
+                        <td class="px-6 py-4 text-xs text-gray-500">
+                            {{ $payment->paid_at ? \Carbon\Carbon::parse($payment->paid_at)->format('d M Y, H:i:s') : 'N/A' }}
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-10 text-center text-gray-400 font-medium">No money donation payment activity found.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 @endsection
