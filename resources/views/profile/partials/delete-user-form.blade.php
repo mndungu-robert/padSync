@@ -1,10 +1,10 @@
 <section class="space-y-6">
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
+        <h2 class="text-lg font-semibold text-slate-900">
             {{ __('Delete Account') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
+        <p class="mt-1 text-sm text-slate-600">
             {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
         </p>
     </header>
@@ -35,7 +35,7 @@
                     id="password"
                     name="password"
                     type="password"
-                    class="mt-1 block w-3/4 focus:border-indigo-600 focus:ring-indigo-600"
+                    class="mt-1 block w-3/4 profile-input"
                     placeholder="{{ __('Password') }}"
                 />
 
@@ -43,7 +43,7 @@
             </div>
 
             <div class="mt-6 flex justify-end">
-                <x-secondary-button class="focus:ring-indigo-600" x-on:click="$dispatch('close')">
+                <x-secondary-button class="focus:ring-[var(--profile-accent)]" x-on:click="$dispatch('close')">
                     {{ __('Cancel') }}
                 </x-secondary-button>
 
