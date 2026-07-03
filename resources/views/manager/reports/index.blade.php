@@ -55,7 +55,7 @@
                         class="w-full px-3 py-2 bg-slate-50 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-teal-600 focus:border-teal-600 text-gray-700 cursor-pointer">
                         <option value="inventory">Warehouse Inventory Balance Sheets</option>
                         <option value="shortfalls">School Shortfall Deficit Tickets</option>
-                        <option value="donations">Cumulative Public Pledges Ledger</option>
+                        <option value="donations">Physical Donation Pledges Ledger</option>
                         <option value="money">Money Donation Payment Ledger</option>
                         <option value="distributions">Dispatches and Delivery Tracking Logs</option>
                     </select>

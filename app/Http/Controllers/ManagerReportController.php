@@ -166,23 +166,18 @@ class ManagerReportController extends Controller
                 ->select([
                     'donations.donation_id',
                     'donors.name as donor_name',
-                    'donations.contribution_type',
                     'donations.pad_count',
-                    'donations.amount_kes',
                     'donations.payment_status',
-                    'donations.payment_reference',
                     'donations.pledge_date',
                     'donations.fulfillment_date',
                 ])
+                ->where('donations.contribution_type', '=', 'Donate Pads')
                 ->get()
                 ->map(fn ($row) => [
                     'donation_id' => (string) ($row->donation_id ?? ''),
                     'donor_name' => (string) ($row->donor_name ?? ''),
-                    'contribution_type' => (string) ($row->contribution_type ?? ''),
                     'pad_count' => (string) ($row->pad_count ?? ''),
-                    'amount_kes' => (string) ($row->amount_kes ?? ''),
                     'payment_status' => (string) ($row->payment_status ?? ''),
-                    'payment_reference' => (string) ($row->payment_reference ?? ''),
                     'pledge_date' => (string) ($row->pledge_date ?? ''),
                     'fulfillment_date' => (string) ($row->fulfillment_date ?? ''),
                 ])
@@ -190,8 +185,8 @@ class ManagerReportController extends Controller
                 ->all();
 
             return [
-                'title' => 'Donations Report',
-                'headers' => ['donation_id', 'donor_name', 'contribution_type', 'pad_count', 'amount_kes', 'payment_status', 'payment_reference', 'pledge_date', 'fulfillment_date'],
+                'title' => 'Physical Donations Report',
+                'headers' => ['donation_id', 'donor_name', 'pad_count', 'payment_status', 'pledge_date', 'fulfillment_date'],
                 'rows' => $rows,
             ];
         }

@@ -5,10 +5,28 @@
 @section('page_subtitle', 'Monitor external packet pledges submitted via the public portal site.')
 
 @section('content')
-    <!-- Donation Pledges Registry Grid Table -->
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+    @php
+        $physicalRows = collect($physicalPledges ?? []);
+        $moneyRows = collect($moneyDonations ?? []);
+    @endphp
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <a href="#physical-donations-table" class="block bg-white border border-gray-200 p-4 rounded-xl shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-600" aria-label="Jump to physical donations table">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Physical Donation Pledges</div>
+            <div class="text-2xl font-black text-slate-800 mt-2">{{ number_format($physicalRows->count()) }}</div>
+            <div class="text-[10px] font-semibold text-gray-500 mt-1">View table →</div>
+        </a>
+        <a href="#money-donations-table" class="block bg-white border border-gray-200 p-4 rounded-xl shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-600" aria-label="Jump to money donations table">
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Money Donation Transactions</div>
+            <div class="text-2xl font-black text-slate-800 mt-2">{{ number_format($moneyRows->count()) }}</div>
+            <div class="text-[10px] font-semibold text-gray-500 mt-1">View table →</div>
+        </a>
+    </div>
+
+    <!-- Physical Donation Table -->
+    <div id="physical-donations-table" class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-            <h3 class="font-bold text-sm text-gray-800">Public Donation Pledges Log</h3>
+            <h3 class="font-bold text-sm text-gray-800">Physical Donation Pledges (Pads)</h3>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-sm">
@@ -16,17 +34,14 @@
                     <tr class="bg-gray-50 text-gray-400 text-[11px] font-bold uppercase tracking-wider border-b border-gray-100">
                         <th class="px-6 py-3.5">Donor Profile Details</th>
                         <th class="px-6 py-3.5">Classification Type</th>
-                        <th class="px-6 py-3.5">Contribution Type</th>
                         <th class="px-6 py-3.5 text-center">Packs Pledged</th>
-                        <th class="px-6 py-3.5 text-center">Amount (KES)</th>
-                        <th class="px-6 py-3.5 text-center">Payment</th>
                         <th class="px-6 py-3.5">Pledge Logging Date</th>
                         <th class="px-6 py-3.5 text-right">Fulfillment State</th>
                         <th class="px-6 py-3.5 text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-gray-600">
-                    @forelse($pledges as $pledge)
+                    @forelse($physicalRows as $pledge)
                     @php
                         $fulfillmentState = $pledge->fulfillment_state ?? ($pledge->fulfillment_date ? 'Fully Received' : 'Pledged');
                     @endphp
@@ -43,34 +58,12 @@
                                 {{ $pledge->donor_type }}
                             </span>
                         </td>
-
-                        <td class="px-6 py-4 text-xs font-semibold text-slate-700">
-                            {{ $pledge->contribution_type ?? 'Donate Pads' }}
-                        </td>
                         
                         <!-- Quantity Metrics -->
                         <td class="px-6 py-4 text-center font-bold text-slate-800">
                             {{ number_format($pledge->pad_count) }}
                         </td>
 
-                        <td class="px-6 py-4 text-center font-semibold text-slate-700">
-                            @if(($pledge->contribution_type ?? 'Donate Pads') === 'Donate Money')
-                                {{ number_format((float) ($pledge->amount_kes ?? 0), 2) }}
-                            @else
-                                -
-                            @endif
-                        </td>
-
-                        <td class="px-6 py-4 text-center">
-                            @php
-                                $paymentState = $pledge->payment_status ?? 'Completed';
-                            @endphp
-                            <span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border
-                                {{ $paymentState === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' }}">
-                                {{ $paymentState }}
-                            </span>
-                        </td>
-                        
                         <!-- Logging Date -->
                         <td class="px-6 py-4 text-xs font-medium text-gray-400">
                             {{ \Carbon\Carbon::parse($pledge->pledge_date)->format('M d, Y') }}
@@ -104,7 +97,74 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9" class="px-6 py-10 text-center text-gray-400 font-medium">No donation pledges have been logged from the public portal page yet.</td>
+                        <td colspan="6" class="px-6 py-10 text-center text-gray-400 font-medium">No physical donation pledges have been logged yet.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Money Donation Table -->
+    <div id="money-donations-table" class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mt-6">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+            <h3 class="font-bold text-sm text-gray-800">Money Donation Transactions</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="bg-gray-50 text-gray-400 text-[11px] font-bold uppercase tracking-wider border-b border-gray-100">
+                        <th class="px-6 py-3.5">Donor Profile Details</th>
+                        <th class="px-6 py-3.5">Classification Type</th>
+                        <th class="px-6 py-3.5 text-center">Amount (KES)</th>
+                        <th class="px-6 py-3.5 text-center">Payment Status</th>
+                        <th class="px-6 py-3.5 text-center">Receipt Ref</th>
+                        <th class="px-6 py-3.5">Logged Date</th>
+                        <th class="px-6 py-3.5">Paid At</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-gray-600">
+                    @forelse($moneyRows as $donation)
+                    <tr class="hover:bg-gray-50/40 transition">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-gray-900">{{ $donation->donor_name }}</div>
+                            <div class="text-xs text-gray-400 font-mono mt-0.5">{{ $donation->donor_email }}</div>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/60">
+                                {{ $donation->donor_type }}
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4 text-center font-bold text-slate-800">
+                            {{ number_format((float) ($donation->amount_kes ?? 0), 2) }}
+                        </td>
+
+                        <td class="px-6 py-4 text-center">
+                            @php
+                                $paymentState = $donation->payment_status ?? 'Failed';
+                            @endphp
+                            <span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border {{ $paymentState === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' }}">
+                                {{ $paymentState }}
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4 text-center text-xs font-mono text-gray-500">
+                            {{ $donation->payment_reference ?? 'N/A' }}
+                        </td>
+
+                        <td class="px-6 py-4 text-xs font-medium text-gray-400">
+                            {{ \Carbon\Carbon::parse($donation->pledge_date)->format('M d, Y') }}
+                        </td>
+
+                        <td class="px-6 py-4 text-xs font-medium text-gray-400">
+                            {{ $donation->paid_at ? \Carbon\Carbon::parse($donation->paid_at)->format('M d, Y H:i') : 'N/A' }}
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="px-6 py-10 text-center text-gray-400 font-medium">No money donation transactions have been logged yet.</td>
                     </tr>
                     @endforelse
                 </tbody>

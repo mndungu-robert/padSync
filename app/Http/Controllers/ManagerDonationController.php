@@ -14,20 +14,28 @@ class ManagerDonationController extends Controller
      */
     public function index()
     {
-        // Fetch public pledges joined with donor profiling details
-        $pledges = Donation::select(
-                        'donations.*', 
-                        'donors.name as donor_name',
-                        'donors.email as donor_email',
-                        'donors.donor_type'
-                     )
-                     ->join('donors', 'donations.donor_id', '=', 'donors.id')
-                ->selectRaw("CASE WHEN donations.fulfillment_date IS NULL THEN 'Pledged' ELSE 'Fully Received' END as fulfillment_state")
-                     ->orderBy('donations.created_at', 'desc')
-                     ->get();
+        $baseQuery = Donation::query()
+            ->select(
+                'donations.*',
+                'donors.name as donor_name',
+                'donors.email as donor_email',
+                'donors.donor_type'
+            )
+            ->join('donors', 'donations.donor_id', '=', 'donors.id')
+            ->orderBy('donations.created_at', 'desc');
+
+        $physicalPledges = (clone $baseQuery)
+            ->where('donations.contribution_type', 'Donate Pads')
+            ->selectRaw("CASE WHEN donations.fulfillment_date IS NULL THEN 'Pledged' ELSE 'Fully Received' END as fulfillment_state")
+            ->get();
+
+        $moneyDonations = (clone $baseQuery)
+            ->where('donations.contribution_type', 'Donate Money')
+            ->get();
 
         return view('manager.donations.index', [
-            'pledges' => $pledges,
+            'physicalPledges' => $physicalPledges,
+            'moneyDonations' => $moneyDonations,
             'active'  => 'donations' // Highlights correct navigation bar link
         ]);
     }
