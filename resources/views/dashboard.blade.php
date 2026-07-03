@@ -1,21 +1,11 @@
 <x-app-layout>
-     <!-- Safety Threshold Alert Framework Notice -->
-    @if($metrics['available_stock'] <= $metrics['reorder_threshold'])
-        <div class="bg-amber-50 text-amber-900 border border-amber-200 rounded-xl p-4 text-xs font-semibold shadow-sm mb-6 flex items-center space-x-3">
-            <span class="text-base">⚠️</span>
-            <div>
-                <span class="font-bold uppercase tracking-wider block text-[10px] text-amber-700">Central Stock Reorder Warning Level Active</span>
-                Central storage stock balance ({{ number_format($metrics['available_stock']) }} packets) has dropped below your configured safety threshold of {{ number_format($metrics['reorder_threshold']) }} units. Update intake ledgers.
-            </div>
-        </div>
-    @endif
 
     <!-- Logistical Overview Metrics Row -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Metric 1 -->
         <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
             <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Warehouse Stock Pool</div>
-            <div class="text-3xl font-black mt-2 {{ $metrics['available_stock'] <= $metrics['reorder_threshold'] ? 'text-amber-600' : 'text-slate-800' }}">
+            <div class="text-3xl font-black mt-2 text-slate-800">
                 {{ number_format($metrics['available_stock']) }}
             </div>
             <div class="text-[10px] text-gray-400 font-medium mt-1">packets unallocated</div>

@@ -178,7 +178,6 @@ class ManagerReportController extends Controller
                     'inventory_id' => (string) ($row->inventory_id ?? $row->id ?? ''),
                     'quantity_available' => (string) ($row->quantity_available ?? ''),
                     'allocated_stock' => (string) ($row->allocated_stock ?? ''),
-                    'reorder_level' => (string) ($row->reorder_level ?? ''),
                     'updated_at' => (string) ($row->updated_at ?? ''),
                 ])
                 ->values()
@@ -186,7 +185,7 @@ class ManagerReportController extends Controller
 
             return [
                 'title' => 'Inventory Report',
-                'headers' => ['inventory_id', 'quantity_available', 'allocated_stock', 'reorder_level', 'updated_at'],
+                'headers' => ['inventory_id', 'quantity_available', 'allocated_stock', 'updated_at'],
                 'rows' => $rows,
             ];
         }
