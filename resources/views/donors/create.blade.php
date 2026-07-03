@@ -13,9 +13,6 @@
     <label>Email</label><br>
     <input type="email" name="email"><br><br>
 
-    <label>Phone</label><br>
-    <input type="text" name="phone"><br><br>
-
     <label>Donor Type</label><br>
     <select name="donor_type">
         <option>Individual</option>

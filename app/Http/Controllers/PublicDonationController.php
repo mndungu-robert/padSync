@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Donation;
 use App\Models\Donor;
+use App\Support\PhonePrivacy;
 use App\Models\Enrollment;
 use App\Services\DarajaService;
 use Illuminate\Http\Request;
@@ -152,7 +153,7 @@ class PublicDonationController extends Controller
             'amount_kes' => (float) $request->input('amount_kes'),
             'payment_method' => 'M-Pesa',
             'payment_status' => 'Pending',
-            'payer_phone' => $normalizedPhone,
+            'payer_phone' => PhonePrivacy::hash($normalizedPhone),
             'notes' => 'Awaiting M-Pesa confirmation.',
         ]);
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donation;
+use App\Support\PhonePrivacy;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -15,8 +16,9 @@ class MpesaCallbackController extends Controller
     public function handle(Request $request): JsonResponse
     {
         $payload = $request->all();
+        $sanitizedPayload = $this->sanitizeCallbackPayload($payload);
 
-        Log::info('Daraja callback received', ['payload' => $payload]);
+        Log::info('Daraja callback received', ['payload' => $sanitizedPayload]);
 
         $callback = data_get($payload, 'Body.stkCallback', []);
         $checkoutRequestId = data_get($callback, 'CheckoutRequestID');
@@ -47,10 +49,12 @@ class MpesaCallbackController extends Controller
             $donation->update([
                 'payment_status' => 'Completed',
                 'payment_reference' => $meta['MpesaReceiptNumber'] ?? null,
-                'payer_phone' => isset($meta['PhoneNumber']) ? (string) $meta['PhoneNumber'] : $donation->payer_phone,
+                'payer_phone' => isset($meta['PhoneNumber'])
+                    ? PhonePrivacy::hash((string) $meta['PhoneNumber'])
+                    : $donation->payer_phone,
                 'amount_kes' => isset($meta['Amount']) ? (float) $meta['Amount'] : $donation->amount_kes,
                 'paid_at' => $this->parseTransactionDate($meta['TransactionDate'] ?? null),
-                'callback_payload' => $payload,
+                'callback_payload' => $sanitizedPayload,
                 'notes' => 'Payment completed via M-Pesa.',
             ]);
 
@@ -76,7 +80,7 @@ class MpesaCallbackController extends Controller
         } else {
             $donation->update([
                 'payment_status' => 'Failed',
-                'callback_payload' => $payload,
+                'callback_payload' => $sanitizedPayload,
                 'notes' => 'Payment failed: '.$resultDesc,
             ]);
 
@@ -108,6 +112,28 @@ class MpesaCallbackController extends Controller
         }
 
         return $result;
+    }
+
+    private function sanitizeCallbackPayload(array $payload): array
+    {
+        $items = data_get($payload, 'Body.stkCallback.CallbackMetadata.Item', []);
+
+        if (!is_array($items)) {
+            return $payload;
+        }
+
+        foreach ($items as $index => $item) {
+            $name = data_get($item, 'Name');
+            if ($name === 'PhoneNumber') {
+                data_set(
+                    $payload,
+                    'Body.stkCallback.CallbackMetadata.Item.'.$index.'.Value',
+                    PhonePrivacy::hash((string) data_get($item, 'Value'))
+                );
+            }
+        }
+
+        return $payload;
     }
 
     private function parseTransactionDate(mixed $value): ?string

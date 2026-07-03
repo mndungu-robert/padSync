@@ -70,7 +70,6 @@ class ManagerReportController extends Controller
                 'donations.amount_kes',
                 'donations.payment_status',
                 'donations.payment_reference',
-                'donations.payer_phone',
                 'donations.paid_at',
                 'donations.created_at',
             ])
@@ -98,7 +97,6 @@ class ManagerReportController extends Controller
                     'Amount KES',
                     'Payment Status',
                     'Payment Reference',
-                    'Payer Phone',
                     'Paid At',
                     'Created At',
                 ]);
@@ -111,7 +109,6 @@ class ManagerReportController extends Controller
                         number_format((float) $row->amount_kes, 2, '.', ''),
                         (string) $row->payment_status,
                         (string) ($row->payment_reference ?? ''),
-                        (string) ($row->payer_phone ?? ''),
                         (string) ($row->paid_at ?? ''),
                         (string) ($row->created_at ?? ''),
                     ]);

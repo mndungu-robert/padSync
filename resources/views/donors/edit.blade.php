@@ -10,8 +10,6 @@
 
     <input type="text" name="name" value="{{ $donor->name }}"><br><br>
     <input type="email" name="email" value="{{ $donor->email }}"><br><br>
-    {{-- <input type="text" name="phone" value="{{ $donor->phone }}"><br><br> --}}
-
     <select name="donor_type">
         <option {{ $donor->donor_type == 'Individual' ? 'selected' : '' }}>Individual</option>
         <option {{ $donor->donor_type == 'Organization' ? 'selected' : '' }}>Organization</option>

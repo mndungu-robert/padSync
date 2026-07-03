@@ -95,7 +95,6 @@ class AdminUserController extends Controller
                 'donations.payment_status',
                 'donations.payment_reference',
                 'donations.paid_at',
-                'donations.payer_phone',
                 'donations.updated_at',
                 'donors.name as donor_name',
                 'donors.email as donor_email',

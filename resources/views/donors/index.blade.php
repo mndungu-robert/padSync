@@ -18,7 +18,6 @@
     <tr style="background:#34495e;color:white;">
         <th>Name</th>
         <th>Email</th>
-        <th>Phone</th>
         <th>Type</th>
         <th>Organization</th>
         <th>Actions</th>
@@ -28,7 +27,6 @@
         <tr>
             <td>{{ $donor->name }}</td>
             <td>{{ $donor->email }}</td>
-            <td>{{ $donor->phone }}</td>
             <td>{{ $donor->donor_type }}</td>
             <td>{{ $donor->organization_name }}</td>
 

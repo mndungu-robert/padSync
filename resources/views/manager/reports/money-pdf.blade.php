@@ -106,9 +106,8 @@
                 <th style="width: 16%;">Email</th>
                 <th style="width: 10%;">Amount</th>
                 <th style="width: 10%;">Status</th>
-                <th style="width: 14%;">Receipt Ref</th>
-                <th style="width: 12%;">Payer Phone</th>
-                <th style="width: 16%;">Paid At</th>
+                <th style="width: 16%;">Receipt Ref</th>
+                <th style="width: 20%;">Paid At</th>
             </tr>
         </thead>
         <tbody>
@@ -120,12 +119,11 @@
                 <td class="right">{{ number_format((float) $row->amount_kes, 2) }}</td>
                 <td>{{ $row->payment_status }}</td>
                 <td>{{ $row->payment_reference ?? 'N/A' }}</td>
-                <td>{{ $row->payer_phone ?? 'N/A' }}</td>
                 <td>{{ $row->paid_at ? \Carbon\Carbon::parse($row->paid_at)->format('d M Y H:i') : 'N/A' }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="8" style="text-align: center; color: #6b7280;">No money donation records found.</td>
+                <td colspan="7" style="text-align: center; color: #6b7280;">No money donation records found.</td>
             </tr>
             @endforelse
         </tbody>
