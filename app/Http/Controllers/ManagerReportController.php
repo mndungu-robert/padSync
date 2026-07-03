@@ -40,26 +40,24 @@ class ManagerReportController extends Controller
     }
 
     /**
-     * Placeholder method for handling file export logic triggers (CSV/PDF)
+     * Handle report export logic. All reports are generated as PDF only.
      */
     public function export(Request $request)
     {
         $request->validate([
             'report_type' => 'required|in:inventory,shortfalls,donations,distributions,money',
-            'file_format' => 'required|in:csv,pdf',
         ]);
 
         $reportType = (string) $request->input('report_type');
-        $fileFormat = (string) $request->input('file_format');
 
         if ($reportType === 'money') {
-            return $this->exportMoneyReport($fileFormat);
+            return $this->exportMoneyReport();
         }
 
-        return $this->exportGenericReport($reportType, $fileFormat);
+        return $this->exportGenericReport($reportType);
     }
 
-    private function exportMoneyReport(string $fileFormat)
+    private function exportMoneyReport()
     {
         $moneyRows = DB::table('donations')
             ->join('donors', 'donations.donor_id', '=', 'donors.id')
@@ -84,42 +82,6 @@ class ManagerReportController extends Controller
             'total_failed' => (float) $moneyRows->where('payment_status', 'Failed')->sum('amount_kes'),
         ];
 
-        if ($fileFormat === 'csv') {
-            $filename = 'money-donation-ledger-'.now()->format('Ymd_His').'.csv';
-
-            return response()->streamDownload(function () use ($moneyRows): void {
-                $handle = fopen('php://output', 'w');
-
-                fputcsv($handle, [
-                    'Donation ID',
-                    'Donor Name',
-                    'Donor Email',
-                    'Amount KES',
-                    'Payment Status',
-                    'Payment Reference',
-                    'Paid At',
-                    'Created At',
-                ]);
-
-                foreach ($moneyRows as $row) {
-                    fputcsv($handle, [
-                        (int) $row->donation_id,
-                        (string) $row->donor_name,
-                        (string) $row->donor_email,
-                        number_format((float) $row->amount_kes, 2, '.', ''),
-                        (string) $row->payment_status,
-                        (string) ($row->payment_reference ?? ''),
-                        (string) ($row->paid_at ?? ''),
-                        (string) ($row->created_at ?? ''),
-                    ]);
-                }
-
-                fclose($handle);
-            }, $filename, [
-                'Content-Type' => 'text/csv; charset=UTF-8',
-            ]);
-        }
-
         $pdf = Pdf::loadView('manager.reports.money-pdf', [
             'rows' => $moneyRows,
             'summary' => $summary,
@@ -130,33 +92,12 @@ class ManagerReportController extends Controller
 
     }
 
-    private function exportGenericReport(string $reportType, string $fileFormat)
+    private function exportGenericReport(string $reportType)
     {
         $dataset = $this->buildGenericDataset($reportType);
         $rows = $dataset['rows'];
         $headers = $dataset['headers'];
         $title = $dataset['title'];
-
-        if ($fileFormat === 'csv') {
-            $filename = strtolower(str_replace(' ', '-', $title)).'-'.now()->format('Ymd_His').'.csv';
-
-            return response()->streamDownload(function () use ($rows, $headers): void {
-                $handle = fopen('php://output', 'w');
-                fputcsv($handle, $headers);
-
-                foreach ($rows as $row) {
-                    $line = [];
-                    foreach ($headers as $header) {
-                        $line[] = (string) ($row[$header] ?? '');
-                    }
-                    fputcsv($handle, $line);
-                }
-
-                fclose($handle);
-            }, $filename, [
-                'Content-Type' => 'text/csv; charset=UTF-8',
-            ]);
-        }
 
         $pdf = Pdf::loadView('manager.reports.generic-pdf', [
             'title' => $title,

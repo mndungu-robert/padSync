@@ -51,7 +51,7 @@
         <form method="POST" action="{{ route('manager.reports.export') }}" class="space-y-4">
             @csrf
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-4">
                 <!-- Select Scope Dataset Type Selection Dropdown -->
                 <div>
                     <label for="report_type" class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Dataset Module Scope</label>
@@ -64,16 +64,10 @@
                         <option value="distributions">Dispatches and Delivery Tracking Logs</option>
                     </select>
                 </div>
+            </div>
 
-                <!-- Select File Format Profile -->
-                <div>
-                    <label for="file_format" class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Target File Extension Format</label>
-                    <select id="file_format" name="file_format" required 
-                        class="w-full px-3 py-2 bg-slate-50 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-teal-600 focus:border-teal-600 text-gray-700 cursor-pointer">
-                        <option value="csv">CSV Spreadsheet Sheet Document (.csv)</option>
-                        <option value="pdf">Adobe Portable Document Archive File (.pdf)</option>
-                    </select>
-                </div>
+            <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">
+                Export format is locked to PDF for audit integrity and compliance.
             </div>
 
             <!-- Download Button Trigger Element Link -->
