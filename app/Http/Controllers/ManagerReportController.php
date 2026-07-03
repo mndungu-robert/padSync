@@ -25,10 +25,6 @@ class ManagerReportController extends Controller
                 ->where('contribution_type', 'Donate Money')
                 ->where('payment_status', 'Completed')
                 ->sum('amount_kes'),
-            'money_pending'       => (float) Donation::query()
-                ->where('contribution_type', 'Donate Money')
-                ->where('payment_status', 'Pending')
-                ->sum('amount_kes'),
             'total_dispatched'    => Distribution::query()->where('status', 'Dispatched')->sum('quantity_distributed'),
             'total_delivered'     => Distribution::query()->where('status', 'Received')->sum('quantity_distributed'),
         ];
@@ -78,7 +74,6 @@ class ManagerReportController extends Controller
         $summary = [
             'total_count' => $moneyRows->count(),
             'total_received' => (float) $moneyRows->where('payment_status', 'Completed')->sum('amount_kes'),
-            'total_pending' => (float) $moneyRows->where('payment_status', 'Pending')->sum('amount_kes'),
             'total_failed' => (float) $moneyRows->where('payment_status', 'Failed')->sum('amount_kes'),
         ];
 

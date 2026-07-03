@@ -66,7 +66,7 @@
                                 $paymentState = $pledge->payment_status ?? 'Completed';
                             @endphp
                             <span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border
-                                {{ $paymentState === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($paymentState === 'Pending' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200') }}">
+                                {{ $paymentState === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' }}">
                                 {{ $paymentState }}
                             </span>
                         </td>

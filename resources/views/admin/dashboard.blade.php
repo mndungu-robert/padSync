@@ -48,8 +48,8 @@
         </div>
 
         <div class="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
-            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Money Pending (KES)</div>
-            <div class="text-3xl font-bold text-amber-700 mt-2">{{ number_format((float) $metrics['money_pending'], 2) }}</div>
+            <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Money Failed (KES)</div>
+            <div class="text-3xl font-bold text-rose-700 mt-2">{{ number_format((float) $metrics['money_failed'], 2) }}</div>
         </div>
     </div>
 

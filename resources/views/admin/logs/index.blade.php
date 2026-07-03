@@ -92,7 +92,7 @@
 
                         <td class="px-6 py-4">
                             <span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border
-                                {{ $payment->payment_status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : ($payment->payment_status === 'Pending' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200') }}">
+                                {{ $payment->payment_status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' }}">
                                 {{ $payment->payment_status }}
                             </span>
                         </td>

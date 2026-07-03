@@ -19,9 +19,9 @@ class AdminDashboardController extends Controller
                 ->where('contribution_type', 'Donate Money')
                 ->where('payment_status', 'Completed')
                 ->sum('amount_kes'),
-            'money_pending' => (float) Donation::query()
+            'money_failed' => (float) Donation::query()
                 ->where('contribution_type', 'Donate Money')
-                ->where('payment_status', 'Pending')
+                ->where('payment_status', 'Failed')
                 ->sum('amount_kes'),
         ];
 

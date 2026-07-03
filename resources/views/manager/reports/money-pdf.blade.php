@@ -88,11 +88,7 @@
                 <div class="value">{{ number_format((float) $summary['total_received'], 2) }}</div>
             </td>
             <td>
-                <div class="label">Pending (KES)</div>
-                <div class="value">{{ number_format((float) $summary['total_pending'], 2) }}</div>
-            </td>
-            <td>
-                <div class="label">Failed (KES)</div>
+                <div class="label">Failed / Unresolved (KES)</div>
                 <div class="value">{{ number_format((float) $summary['total_failed'], 2) }}</div>
             </td>
         </tr>
