@@ -101,12 +101,7 @@ class AdminUserController extends Controller
      */
     public function indexLogs()
     {
-        // Pull logs, joining user information if necessary, or extracting raw traces
-        $logs = DB::table('audit_logs')
-            ->orderBy('created_at', 'desc')
-            ->paginate(15); // Paginated to keep loading fast
-
-        $paymentActivity = DB::table('donations')
+        $mpesaTransactions = DB::table('donations')
             ->join('donors', 'donations.donor_id', '=', 'donors.id')
             ->select([
                 'donations.donation_id',
@@ -123,9 +118,102 @@ class AdminUserController extends Controller
             ->limit(20)
             ->get();
 
+        $dispatches = DB::table('distributions')
+            ->join('schools', 'distributions.school_id', '=', 'schools.school_id')
+            ->select([
+                'distributions.distribution_id',
+                'distributions.quantity_distributed',
+                'distributions.distribution_date',
+                'distributions.status',
+                'distributions.updated_at',
+                'schools.school_name',
+            ])
+            ->orderByDesc('distributions.updated_at')
+            ->limit(20)
+            ->get();
+
+        $shortfallReports = DB::table('shortfall_reports')
+            ->join('schools', 'shortfall_reports.school_id', '=', 'schools.school_id')
+            ->select([
+                'shortfall_reports.report_id',
+                'shortfall_reports.report_date',
+                'shortfall_reports.required_pads',
+                'shortfall_reports.available_pads',
+                'shortfall_reports.shortfall',
+                'shortfall_reports.status',
+                'shortfall_reports.created_at',
+                'schools.school_name',
+            ])
+            ->orderByDesc('shortfall_reports.created_at')
+            ->limit(20)
+            ->get();
+
+        $receiptConfirmations = DB::table('receipt_confirmations')
+            ->join('distributions', 'receipt_confirmations.distribution_id', '=', 'distributions.distribution_id')
+            ->join('schools', 'distributions.school_id', '=', 'schools.school_id')
+            ->leftJoin('users', 'receipt_confirmations.coordinator_id', '=', 'users.id')
+            ->select([
+                'receipt_confirmations.confirmation_id',
+                'receipt_confirmations.distribution_id',
+                'receipt_confirmations.received_quantity',
+                'receipt_confirmations.confirmation_date',
+                'schools.school_name',
+                'users.name as coordinator_name',
+            ])
+            ->orderByDesc('receipt_confirmations.confirmation_date')
+            ->limit(20)
+            ->get();
+
+        $timeline = collect()
+            ->merge($mpesaTransactions->map(function ($row) {
+                return [
+                    'happened_at' => $row->paid_at ?? $row->updated_at,
+                    'category' => 'M-Pesa Transaction',
+                    'reference' => '#'.$row->donation_id,
+                    'details' => trim($row->donor_name.' paid KES '.number_format((float) $row->amount_kes, 2)),
+                    'status' => $row->payment_status,
+                ];
+            }))
+            ->merge($dispatches->map(function ($row) {
+                return [
+                    'happened_at' => $row->updated_at ?? $row->distribution_date,
+                    'category' => 'Dispatch',
+                    'reference' => '#'.$row->distribution_id,
+                    'details' => trim($row->quantity_distributed.' pads sent to '.$row->school_name),
+                    'status' => $row->status,
+                ];
+            }))
+            ->merge($shortfallReports->map(function ($row) {
+                return [
+                    'happened_at' => $row->created_at ?? $row->report_date,
+                    'category' => 'Shortfall Report',
+                    'reference' => '#'.$row->report_id,
+                    'details' => trim($row->school_name.' reported shortfall of '.number_format((int) $row->shortfall).' pads'),
+                    'status' => $row->status,
+                ];
+            }))
+            ->merge($receiptConfirmations->map(function ($row) {
+                return [
+                    'happened_at' => $row->confirmation_date,
+                    'category' => 'Receipt Confirmation',
+                    'reference' => '#'.$row->confirmation_id,
+                    'details' => trim(($row->coordinator_name ?? 'Coordinator').' confirmed '.number_format((int) $row->received_quantity).' pads at '.$row->school_name),
+                    'status' => 'Confirmed',
+                ];
+            }))
+            ->filter(function ($row) {
+                return !empty($row['happened_at']);
+            })
+            ->sortByDesc('happened_at')
+            ->values()
+            ->take(40);
+
         return view('admin.logs.index', [
-            'logs'   => $logs,
-            'paymentActivity' => $paymentActivity,
+            'timeline' => $timeline,
+            'mpesaTransactions' => $mpesaTransactions,
+            'dispatches' => $dispatches,
+            'shortfallReports' => $shortfallReports,
+            'receiptConfirmations' => $receiptConfirmations,
             'active' => 'logs' // Highlights the audit logs tab in the sidebar
         ]);
     }
