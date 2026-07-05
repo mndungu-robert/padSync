@@ -77,6 +77,25 @@ class AdminUserController extends Controller
         }
     }
 
+    public function resetPassword(Request $request, User $user)
+    {
+        if (Auth::id() === $user->id) {
+            return redirect()->route('admin.users.index')->with('error', 'Use your profile page to change your own password.');
+        }
+
+        $validated = $request->validateWithBag('resetPassword', [
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'reset_user_id' => ['nullable', 'integer'],
+        ]);
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Password reset successfully for '.$user->name.'.');
+    }
+
     /**
      * Display the paginated system audit trails logs.
      */
