@@ -11,7 +11,7 @@ class DarajaService
         $baseUrl = rtrim((string) config('services.mpesa.base_url'), '/');
         $shortcode = (string) config('services.mpesa.shortcode');
         $passkey = (string) config('services.mpesa.passkey');
-        $callbackUrl = (string) config('services.mpesa.callback_url');
+        $callbackUrl = $this->normalizeCallbackUrl((string) config('services.mpesa.callback_url'));
         $transactionType = (string) config('services.mpesa.transaction_type', 'CustomerPayBillOnline');
 
         if ($shortcode === '' || $passkey === '' || $callbackUrl === '') {
@@ -44,6 +44,21 @@ class DarajaService
         }
 
         return $response->json();
+    }
+
+    private function normalizeCallbackUrl(string $url): string
+    {
+        $normalized = trim($url);
+        if ($normalized === '') {
+            return '';
+        }
+
+        // Guard against base-domain values by forcing the callback route path.
+        if (parse_url($normalized, PHP_URL_PATH) === null || parse_url($normalized, PHP_URL_PATH) === '/') {
+            $normalized = rtrim($normalized, '/').'/mpesa/callback';
+        }
+
+        return $normalized;
     }
 
     private function accessToken(): string

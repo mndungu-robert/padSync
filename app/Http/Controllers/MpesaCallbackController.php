@@ -78,6 +78,16 @@ class MpesaCallbackController extends Controller
                 ]);
             }
         } else {
+            if ($wasCompleted) {
+                Log::warning('Ignoring failed callback for already completed donation', [
+                    'donation_id' => $donation->donation_id,
+                    'result_code' => $resultCode,
+                    'result_desc' => $resultDesc,
+                ]);
+
+                return response()->json(['ResultCode' => 0, 'ResultDesc' => 'Accepted']);
+            }
+
             $donation->update([
                 'payment_status' => 'Failed',
                 'callback_payload' => $sanitizedPayload,

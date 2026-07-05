@@ -164,7 +164,7 @@ class PublicDonationController extends Controller
             'contribution_type' => 'Donate Money',
             'amount_kes' => (float) $request->input('amount_kes'),
             'payment_method' => 'M-Pesa',
-            'payment_status' => 'Failed',
+            'payment_status' => 'Pending',
             'payer_phone' => PhonePrivacy::hash($normalizedPhone),
             'notes' => 'Awaiting M-Pesa confirmation.',
         ]);
