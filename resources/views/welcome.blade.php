@@ -135,9 +135,6 @@
                 <a href="{{ route('donate.form') }}" class="rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800">
                     Make A Donation
                 </a>
-                <a href="{{ route('learn.more') }}" class="rounded-xl border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
-                    Learn More
-                </a>
             </div>
         </div>
     </section>
