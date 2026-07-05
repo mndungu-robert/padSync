@@ -17,14 +17,6 @@ class SchoolController extends Controller
     {
         $currentMonth = Carbon::now()->format('F');
 
-        $latestEnrollmentSubquery = Enrollment::query()
-            ->select('school_id', 'girl_count')
-            ->whereIn('enrollment_id', function ($query) {
-                $query->selectRaw('MAX(enrollment_id)')
-                    ->from('enrollments')
-                    ->groupBy('school_id');
-            });
-
         $currentMonthEnrollmentSubquery = Enrollment::query()
             ->select('school_id', 'girl_count')
             ->where('month', $currentMonth)
@@ -35,17 +27,13 @@ class SchoolController extends Controller
                     ->groupBy('school_id');
             });
 
-        // Fetch schools with coordinator counts and latest submitted enrollment per school.
+        // Fetch schools with coordinator counts and current-month enrollment submitted by coordinators.
         $schools = School::query()
-            ->leftJoinSub($latestEnrollmentSubquery, 'latest_enrollments', function ($join) {
-                $join->on('latest_enrollments.school_id', '=', 'schools.school_id');
-            })
             ->leftJoinSub($currentMonthEnrollmentSubquery, 'current_month_enrollments', function ($join) {
                 $join->on('current_month_enrollments.school_id', '=', 'schools.school_id');
             })
             ->select('schools.*')
-            ->selectRaw('COALESCE(current_month_enrollments.girl_count, 0) as enrollment')
-            ->selectRaw('COALESCE(latest_enrollments.girl_count, schools.enrollment) as latest_enrollment')
+            ->selectRaw('COALESCE(current_month_enrollments.girl_count, 0) as current_month_girls')
             ->withCount('coordinators')
             ->orderBy('school_name', 'asc')
             ->get();
@@ -73,13 +61,12 @@ class SchoolController extends Controller
         $request->validate([
             'school_name'     => 'required|string|max:255|unique:schools,school_name',
             'school_location' => 'required|string|max:255',
-            'enrollment'      => 'required|integer|min:0',
         ]);
 
         School::create([
             'school_name'     => $request->school_name,
             'school_location' => $request->school_location,
-            'enrollment'      => $request->enrollment,
+            'enrollment'      => 0,
         ]);
 
         return redirect()->route('manager.schools.index')
