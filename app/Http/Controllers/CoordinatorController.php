@@ -35,6 +35,16 @@ class CoordinatorController extends Controller
                 ],
                 'recentEnrollments' => collect(),
                 'recentShortfalls' => collect(),
+                'fulfilmentPercent' => 0,
+                'fulfilmentLabel' => '0 of 0 pads covered',
+                'insights' => [
+                    'required_pads' => 0,
+                    'covered_pads' => 0,
+                    'remaining_pads' => 0,
+                    'pending_confirmations' => 0,
+                    'last_enrollment_date' => null,
+                    'last_shortfall_date' => null,
+                ],
             ]);
         }
 
@@ -50,13 +60,63 @@ class CoordinatorController extends Controller
             ->take(5)
             ->get();
 
-        $latestEnrollment = (int) optional($recentEnrollments->first())->girl_count;
+        $latestEnrollmentCount = (int) optional($recentEnrollments->first())->girl_count;
+
+        $currentMonth = Carbon::now()->format('F');
+        $currentAcademicYear = Carbon::now()->format('Y');
+
+        $currentEnrollment = Enrollment::query()
+            ->where('school_id', $school->school_id)
+            ->where('month', $currentMonth)
+            ->where('academic_year', $currentAcademicYear)
+            ->orderByDesc('created_at')
+            ->first();
+
+        $latestEnrollmentRecord = Enrollment::query()
+            ->where('school_id', $school->school_id)
+            ->orderByDesc('created_at')
+            ->first();
+
+        $fulfilmentSource = $currentEnrollment ?? $latestEnrollmentRecord;
+        $requiredPads = $fulfilmentSource ? ((int) $fulfilmentSource->girl_count * self::PACKETS_PER_GIRL_PER_MONTH) : 0;
+        $governmentCovered = $fulfilmentSource ? (int) $fulfilmentSource->government_pads_received : 0;
+
+        $monthStart = Carbon::now()->startOfMonth()->toDateString();
+        $monthEnd = Carbon::now()->endOfMonth()->toDateString();
+
+        $distributionCovered = (int) Distribution::query()
+            ->where('school_id', $school->school_id)
+            ->where('status', 'Received')
+            ->whereBetween('distribution_date', [$monthStart, $monthEnd])
+            ->sum('quantity_distributed');
+
+        $totalCovered = min($requiredPads, $governmentCovered + $distributionCovered);
+        $fulfilmentPercent = $requiredPads > 0
+            ? (int) round(($totalCovered / $requiredPads) * 100)
+            : 0;
+        $fulfilmentLabel = number_format($totalCovered).' of '.number_format($requiredPads).' pads covered';
+
+        $pendingConfirmations = Distribution::query()
+            ->where('school_id', $school->school_id)
+            ->where(function ($query) {
+                $query->where('status', 'Pending')
+                    ->orWhere('status', 'Dispatched');
+            })
+            ->count();
+
+        $lastEnrollmentDate = $recentEnrollments->isNotEmpty()
+            ? Carbon::parse($recentEnrollments->first()->created_at)->format('d M Y')
+            : null;
+
+        $lastShortfallDate = $recentShortfalls->isNotEmpty()
+            ? Carbon::parse($recentShortfalls->first()->report_date)->format('d M Y')
+            : null;
 
         return view('coordinator.dashboard', [
             'school' => $school,
             'metrics' => [
                 'enrollment_logs' => Enrollment::query()->where('school_id', $school->school_id)->count(),
-                'latest_enrollment' => $latestEnrollment,
+                'latest_enrollment' => $latestEnrollmentCount,
                 'open_shortfalls' => ShortfallReport::query()
                     ->where('school_id', $school->school_id)
                     ->whereIn('status', ['Submitted', 'Dispatched'])
@@ -65,6 +125,16 @@ class CoordinatorController extends Controller
             ],
             'recentEnrollments' => $recentEnrollments,
             'recentShortfalls' => $recentShortfalls,
+            'fulfilmentPercent' => $fulfilmentPercent,
+            'fulfilmentLabel' => $fulfilmentLabel,
+            'insights' => [
+                'required_pads' => $requiredPads,
+                'covered_pads' => $totalCovered,
+                'remaining_pads' => max(0, $requiredPads - $totalCovered),
+                'pending_confirmations' => $pendingConfirmations,
+                'last_enrollment_date' => $lastEnrollmentDate,
+                'last_shortfall_date' => $lastShortfallDate,
+            ],
         ]);
     }
 

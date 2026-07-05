@@ -13,6 +13,12 @@
             'active_shortfalls' => 0,
             'pending_profiles' => 0,
         ], $metrics ?? []);
+        $dashboardSchoolStats = collect($schoolStats ?? []);
+        $dashboardInventory = array_merge([
+            'available' => 0,
+            'allocated' => 0,
+            'dispatched' => 0,
+        ], $inventoryStats ?? []);
         $criticalNeedRows = collect($criticalNeeds ?? []);
         $hasActiveEmergency = ((int) $dashboardMetrics['active_shortfalls']) > 0;
     @endphp
@@ -58,6 +64,22 @@
         </div>
     </div>
 
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
+        <div class="xl:col-span-2 bg-white rounded-lg border border-gray-200 p-5">
+            <h3 class="text-sm font-bold text-gray-800">School Shortfall Overview</h3>
+            <div class="mt-3 h-[280px] w-full">
+                <canvas id="managerSchoolShortfallChart" aria-label="School shortfall overview chart" role="img"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 p-5">
+            <h3 class="text-sm font-bold text-gray-800">Inventory Status</h3>
+            <div class="mt-3 h-[220px] w-full">
+                <canvas id="managerInventoryStatusChart" aria-label="Inventory status chart" role="img"></canvas>
+            </div>
+        </div>
+    </div>
+
     <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mt-6">
         <div class="px-6 py-4 border-b border-gray-100">
             <h3 class="font-bold text-sm text-gray-800">Top Critical Shortfall Requests</h3>
@@ -96,3 +118,71 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        (() => {
+            if (typeof window.Chart === 'undefined') {
+                return;
+            }
+
+            const dashboardSchoolStats = @json($dashboardSchoolStats);
+            const dashboardInventory = @json($dashboardInventory);
+
+            const schoolCtx = document.getElementById('managerSchoolShortfallChart');
+            if (schoolCtx) {
+                new Chart(schoolCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: dashboardSchoolStats.map((entry) => entry.name),
+                        datasets: [
+                            {
+                                label: 'Government Received',
+                                data: dashboardSchoolStats.map((entry) => entry.received),
+                                backgroundColor: '#1a5c3a',
+                            },
+                            {
+                                label: 'Shortfall',
+                                data: dashboardSchoolStats.map((entry) => entry.shortfall),
+                                backgroundColor: '#c0392b',
+                            },
+                        ],
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                        },
+                    },
+                });
+            }
+
+            const inventoryCtx = document.getElementById('managerInventoryStatusChart');
+            if (inventoryCtx) {
+                new Chart(inventoryCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Available', 'Allocated (Pending Dispatch)', 'Dispatched'],
+                        datasets: [{
+                            data: [
+                                dashboardInventory.available ?? 0,
+                                dashboardInventory.allocated ?? 0,
+                                dashboardInventory.dispatched ?? 0,
+                            ],
+                            backgroundColor: ['#1a5c3a', '#f39c12', '#c0392b'],
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                        },
+                    },
+                });
+            }
+        })();
+    </script>
+@endpush

@@ -6,6 +6,7 @@ use App\Models\Inventory;
 use App\Models\ShortfallReport;
 use App\Models\User;
 use App\Models\Donation;
+use App\Models\Distribution;
 use Illuminate\Support\Facades\DB;
 
 class ManagerDashboardController extends Controller
@@ -46,9 +47,48 @@ class ManagerDashboardController extends Controller
             ->take(3)
             ->get();
 
+        $schoolStats = DB::table('schools as schools')
+            ->leftJoin('shortfall_reports as reports', function ($join) {
+                $join->on('reports.school_id', '=', 'schools.school_id')
+                    ->where(function ($query) {
+                        $query->where('reports.status', 'Submitted')
+                            ->orWhere('reports.status', 'Dispatched');
+                    });
+            })
+            ->select([
+                'schools.school_name as name',
+                DB::raw('COALESCE(SUM(reports.government_pads_received), 0) as received'),
+                DB::raw('COALESCE(SUM(reports.shortfall), 0) as shortfall'),
+            ])
+            ->groupBy('schools.school_id', 'schools.school_name')
+            ->orderByDesc('shortfall')
+            ->get()
+            ->map(fn ($row) => [
+                'name' => (string) $row->name,
+                'received' => (int) $row->received,
+                'shortfall' => (int) $row->shortfall,
+            ])
+            ->values()
+            ->all();
+
+        $dispatched = (int) Distribution::query()
+            ->where(function ($query) {
+                $query->where('status', 'Dispatched')
+                    ->orWhere('status', 'Received');
+            })
+            ->sum('quantity_distributed');
+
+        $inventoryStats = [
+            'available' => (int) ($warehouse->quantity_available ?? 0),
+            'allocated' => (int) ($warehouse->allocated_stock ?? 0),
+            'dispatched' => $dispatched,
+        ];
+
         return view('manager.dashboard', [
             'metrics' => $managerMetrics,
             'criticalNeeds' => $criticalNeeds,
+            'schoolStats' => $schoolStats,
+            'inventoryStats' => $inventoryStats,
             'active' => 'dashboard',
         ]);
     }

@@ -5,11 +5,63 @@
 @section('page_subtitle', 'Daily field operations and reporting overview.')
 
 @section('content')
+    @php
+        $dashboardInsights = array_merge([
+            'required_pads' => 0,
+            'covered_pads' => 0,
+            'remaining_pads' => 0,
+            'pending_confirmations' => 0,
+            'last_enrollment_date' => null,
+            'last_shortfall_date' => null,
+        ], $insights ?? []);
+    @endphp
+
     @if(session('error'))
         <div class="bg-rose-50 text-rose-800 p-3 rounded-lg text-xs font-semibold border border-rose-200">
             {{ session('error') }}
         </div>
     @endif
+
+    <div class="bg-white rounded-lg border border-gray-200 p-5">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+                <h3 class="text-sm font-bold text-gray-800">This Month Coverage Snapshot</h3>
+                <p class="text-xs text-gray-500 mt-1">What still needs action before learners are fully covered.</p>
+            </div>
+            <a href="{{ route('coordinator.distributions.index') }}" class="inline-flex items-center rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-[11px] font-bold text-amber-700 hover:bg-amber-100 transition">
+                {{ number_format((int) $dashboardInsights['pending_confirmations']) }} pending confirmations
+            </a>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <p class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Required Pads</p>
+                <p class="text-xl font-black text-slate-800 mt-1">{{ number_format((int) $dashboardInsights['required_pads']) }}</p>
+            </div>
+            <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+                <p class="text-[10px] uppercase tracking-wide text-emerald-700 font-bold">Covered So Far</p>
+                <p class="text-xl font-black text-emerald-700 mt-1">{{ number_format((int) $dashboardInsights['covered_pads']) }}</p>
+            </div>
+            <div class="rounded-lg border border-rose-200 bg-rose-50 p-3">
+                <p class="text-[10px] uppercase tracking-wide text-rose-700 font-bold">Still Needed</p>
+                <p class="text-xl font-black text-rose-700 mt-1">{{ number_format((int) $dashboardInsights['remaining_pads']) }}</p>
+            </div>
+        </div>
+
+        <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <p class="text-gray-500 sm:text-right sm:col-start-2">
+                Last enrollment:
+                <span class="font-semibold text-gray-700">
+                    {{ $dashboardInsights['last_enrollment_date'] ?? 'No submission yet' }}
+                </span>
+                |
+                Last shortfall:
+                <span class="font-semibold text-gray-700">
+                    {{ $dashboardInsights['last_shortfall_date'] ?? 'No submission yet' }}
+                </span>
+            </p>
+        </div>
+    </div>
 
     <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
         @if($school)

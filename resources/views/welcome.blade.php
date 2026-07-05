@@ -41,7 +41,13 @@
             'girls_enrolled' => 0,
             'packets_needed_monthly' => 0,
             'pads_needed_monthly' => 0,
+            'trend_month_labels' => [],
+            'money_received_monthly' => [],
+            'pads_pledged_monthly' => [],
         ];
+        $distributionSeries = collect($monthlyDistributions ?? []);
+        $girlsSupportStart = (int) ($girlsSupportStart ?? 0);
+        $girlsSupportCurrent = (int) ($girlsSupportCurrent ?? 0);
     @endphp
 
     <div class="relative overflow-hidden">
@@ -113,6 +119,59 @@
         </section>
     </div>
 
+    <section class="px-5 pb-10 md:px-10">
+        <div class="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white p-6 shadow-lg md:p-8">
+            <h3 class="brand-serif text-2xl text-slate-900">Girls Support Growth</h3>
+            <p class="mt-2 text-sm text-slate-600">A clear view of where the programme started and where it stands now.</p>
+
+            <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Girls Supported At Start</div>
+                    <div class="mt-1 text-3xl font-black text-slate-900">{{ number_format($girlsSupportStart) }}</div>
+                </div>
+                <div class="rounded-2xl border border-indigo-200 bg-indigo-50 p-4">
+                    <div class="text-xs font-bold uppercase tracking-wider text-indigo-700">Girls Supported Currently</div>
+                    <div class="mt-1 text-3xl font-black text-indigo-700">{{ number_format($girlsSupportCurrent) }}</div>
+                </div>
+            </div>
+
+            <div class="mt-5 rounded-lg border border-gray-200 bg-white p-5">
+                <h4 class="text-sm font-bold text-gray-800">Girls Supported: Start vs Current</h4>
+                <div class="mt-3 h-[280px] w-full">
+                    <canvas id="publicGirlsSupportGrowthChart" aria-label="Girls support growth chart" role="img"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="px-5 pb-10 md:px-10">
+        <div class="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white p-6 shadow-lg md:p-8">
+            <h3 class="brand-serif text-3xl text-slate-900">Programme at a Glance</h3>
+
+            <div class="mt-6 grid gap-4 md:grid-cols-3">
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Schools Supported</div>
+                    <div class="mt-1 text-3xl font-black text-slate-900">{{ number_format($impact['schools_supported']) }}</div>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Girls Supported</div>
+                    <div class="mt-1 text-3xl font-black text-slate-900">{{ number_format($impact['girls_enrolled']) }}</div>
+                </div>
+                <div class="rounded-2xl border border-fuchsia-200 bg-fuchsia-50 p-4">
+                    <div class="text-xs font-bold uppercase tracking-wider text-fuchsia-700">Packets Needed Monthly</div>
+                    <div class="mt-1 text-3xl font-black text-fuchsia-700">{{ number_format($impact['packets_needed_monthly'] ?? $impact['pads_needed_monthly']) }}</div>
+                </div>
+            </div>
+
+            <div class="mt-6 rounded-lg border border-gray-200 bg-white p-5">
+                <h4 class="text-sm font-bold text-gray-800">Pads Distributed Per Month</h4>
+                <div class="mt-3 h-[280px] w-full">
+                    <canvas id="publicMonthlyDistributionChart" aria-label="Pads distributed per month chart" role="img"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="px-5 pb-16 pt-6 md:px-10">
         <div class="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white p-6 shadow-lg md:p-8">
             <h3 class="brand-serif text-3xl text-slate-900">What Your Donation Does</h3>
@@ -138,5 +197,67 @@
             </div>
         </div>
     </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        (() => {
+            if (typeof window.Chart === 'undefined') {
+                return;
+            }
+
+            const distributionSeries = @json($distributionSeries);
+            const girlsSupportStart = @json($girlsSupportStart);
+            const girlsSupportCurrent = @json($girlsSupportCurrent);
+
+            const growthCtx = document.getElementById('publicGirlsSupportGrowthChart');
+            if (growthCtx) {
+                new Chart(growthCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Start of Programme', 'Current'],
+                        datasets: [{
+                            label: 'Girls Supported',
+                            data: [girlsSupportStart, girlsSupportCurrent],
+                            backgroundColor: ['#6a2fa0', '#3a1a5c'],
+                            borderRadius: 10,
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                        },
+                    },
+                });
+            }
+
+            const distributionCtx = document.getElementById('publicMonthlyDistributionChart');
+            if (distributionCtx) {
+                new Chart(distributionCtx, {
+                    type: 'line',
+                    data: {
+                        labels: distributionSeries.map((entry) => entry.month),
+                        datasets: [{
+                            label: 'Pads Distributed',
+                            data: distributionSeries.map((entry) => entry.total),
+                            borderColor: '#3a1a5c',
+                            backgroundColor: 'rgba(58, 26, 92, 0.12)',
+                            fill: false,
+                            tension: 0.35,
+                            pointRadius: 4,
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                        },
+                    },
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
