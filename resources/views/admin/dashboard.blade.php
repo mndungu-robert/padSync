@@ -149,7 +149,6 @@
                         <th class="px-6 py-3">Time</th>
                         <th class="px-6 py-3">User</th>
                         <th class="px-6 py-3">Action</th>
-                        <th class="px-6 py-3">Target</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-gray-600">
@@ -158,11 +157,10 @@
                         <td class="px-6 py-4 font-mono text-xs text-gray-400">{{ \Carbon\Carbon::parse($log->created_at)->format('H:i') }}</td>
                         <td class="px-6 py-4 font-medium text-gray-800">Admin1</td>
                         <td class="px-6 py-4">{{ $log->action_performed }}</td>
-                        <td class="px-6 py-4 text-xs text-gray-400 font-mono">{{ $log->ip_address }}</td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="px-6 py-8 text-center text-gray-400 font-medium">No system activity events recorded.</td>
+                        <td colspan="3" class="px-6 py-8 text-center text-gray-400 font-medium">No system activity events recorded.</td>
                     </tr>
                     @endforelse
                 </tbody>
