@@ -67,12 +67,13 @@ class ManagerDashboardController extends Controller
             ->values();
 
         $schoolStats = collect($networkCoverage['per_school'])
-            ->sortByDesc('remaining')
-            ->map(fn (array $row) => [
-                'name' => (string) $row['name'],
-                'received' => (int) $row['covered'],
-                'shortfall' => (int) $row['remaining'],
+            ->groupBy(fn (array $row) => (string) $row['name'])
+            ->map(fn ($rows, string $schoolName) => [
+                'name' => $schoolName,
+                'received' => (int) $rows->sum('covered'),
+                'shortfall' => (int) $rows->sum('remaining'),
             ])
+            ->sortByDesc('shortfall')
             ->values()
             ->all();
 
