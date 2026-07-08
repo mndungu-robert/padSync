@@ -155,7 +155,7 @@
                     @forelse($recentLogs as $log)
                     <tr class="hover:bg-gray-50/50 transition">
                         <td class="px-6 py-4 font-mono text-xs text-gray-400">{{ \Carbon\Carbon::parse($log->created_at)->format('H:i') }}</td>
-                        <td class="px-6 py-4 font-medium text-gray-800">Admin1</td>
+                        <td class="px-6 py-4 font-medium text-gray-800">{{ $log->actor_name ?? 'System' }}</td>
                         <td class="px-6 py-4">{{ $log->action_performed }}</td>
                     </tr>
                     @empty

@@ -115,7 +115,7 @@ class CoordinatorController extends Controller
         $fulfilmentPercent = $requiredPads > 0
             ? (int) round(($effectiveCovered / $requiredPads) * 100)
             : 0;
-        $fulfilmentLabel = number_format($totalCovered).' of '.number_format($requiredPads).' pads covered';
+        $fulfilmentLabel = number_format($effectiveCovered).' of '.number_format($requiredPads).' pads covered';
 
         $pendingConfirmations = Distribution::query()
             ->where('school_id', $school->school_id)
@@ -150,7 +150,7 @@ class CoordinatorController extends Controller
             'fulfilmentLabel' => $fulfilmentLabel,
             'insights' => [
                 'required_pads' => $requiredPads,
-                'covered_pads' => $totalCovered,
+                'covered_pads' => $effectiveCovered,
                 'remaining_pads' => max(0, $requiredPads - $effectiveCovered),
                 'pending_confirmations' => $pendingConfirmations,
                 'last_enrollment_date' => $lastEnrollmentDate,

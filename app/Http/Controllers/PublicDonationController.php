@@ -287,7 +287,8 @@ class PublicDonationController extends Controller
 
     private function girlsSupportJourney(): array
     {
-        $currentGirlsSupported = (int) DB::table('schools')->sum('enrollment');
+        // Keep public journey totals aligned with enrollment-based impact cards.
+        $currentGirlsSupported = (int) Enrollment::query()->sum('girl_count');
 
         $firstEnrollment = Enrollment::query()
             ->orderBy('created_at', 'asc')

@@ -31,7 +31,12 @@ class AdminDashboardController extends Controller
 
         $recentUsers = User::query()->orderBy('created_at', 'desc')->take(3)->get();
 
-        $recentLogs = DB::table('audit_logs')
+        $recentLogs = DB::table('audit_logs as logs')
+            ->leftJoin('users as users', 'users.id', '=', 'logs.user_id')
+            ->select([
+                'logs.*',
+                DB::raw("COALESCE(users.name, logs.user_role, 'System') as actor_name"),
+            ])
             ->orderBy('created_at', 'desc')
             ->take(2)
             ->get();

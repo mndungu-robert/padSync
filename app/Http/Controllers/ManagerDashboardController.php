@@ -55,6 +55,7 @@ class ManagerDashboardController extends Controller
             'schools_count' => (int) ($networkCoverage['schools_count'] ?? 0),
             'active_shortfalls' => $openShortfalls->count(),
             'pending_profiles' => User::query()->where('role', 'Coordinator')->where('status', 'Pending')->count(),
+            'girls_count' => (int) ($networkCoverage['girls_count'] ?? 0),
             'required_pads' => $networkCoverage['required_pads'],
             'covered_pads' => $networkCoverage['covered_pads'],
             'remaining_pads' => $networkCoverage['remaining_pads'],
@@ -116,6 +117,7 @@ class ManagerDashboardController extends Controller
         if ($schools->isEmpty()) {
             return [
                 'schools_count' => 0,
+                'girls_count' => 0,
                 'required_pads' => 0,
                 'covered_pads' => 0,
                 'remaining_pads' => 0,
@@ -184,34 +186,23 @@ class ManagerDashboardController extends Controller
                 ->filter(fn (Enrollment $enrollment) => in_array($enrollment->school_id, $schoolIdList, true))
                 ->values();
 
-            $currentEnrollment = $schoolEnrollmentRows->first(function (Enrollment $enrollment) use ($currentMonth, $currentAcademicYear) {
-                return $enrollment->month === $currentMonth
-                    && (string) $enrollment->academic_year === (string) $currentAcademicYear;
-            });
-
-            $latestEnrollment = $schoolEnrollmentRows->first();
-            $coverageEnrollment = $currentEnrollment ?? $latestEnrollment;
-
             $monthlyShortfall = $shortfallRows
                 ->first(fn (ShortfallReport $shortfall) => in_array($shortfall->school_id, $schoolIdList, true));
 
             $schoolReceivedRows = $receivedRows
                 ->filter(fn (Distribution $distribution) => in_array($distribution->school_id, $schoolIdList, true));
 
+            $girlsCount = (int) $schoolEnrollmentRows->sum('girl_count');
+
+            $requiredPads = $girlsCount * self::PACKETS_PER_GIRL_PER_MONTH;
+
             if ($monthlyShortfall) {
-                $requiredPads = (int) $monthlyShortfall->required_pads;
                 $baseCovered = max(0, $requiredPads - (int) $monthlyShortfall->shortfall);
                 $distributionCovered = (int) $schoolReceivedRows
                     ->filter(fn (Distribution $distribution) => $distribution->distribution_date >= $monthlyShortfall->report_date)
                     ->sum('quantity_distributed');
             } else {
-                $requiredPads = $coverageEnrollment
-                    ? ((int) $coverageEnrollment->girl_count * self::PACKETS_PER_GIRL_PER_MONTH)
-                    : 0;
-
-                $baseCovered = $coverageEnrollment
-                    ? (int) $coverageEnrollment->government_pads_received
-                    : 0;
+                $baseCovered = (int) $schoolEnrollmentRows->sum('government_pads_received');
 
                 $distributionCovered = (int) $schoolReceivedRows->sum('quantity_distributed');
             }
@@ -222,18 +213,21 @@ class ManagerDashboardController extends Controller
             return [
                 'school_id' => (int) ($schoolIdList[0] ?? 0),
                 'name' => $schoolName,
+                'girls' => $girlsCount,
                 'required' => $requiredPads,
                 'covered' => $coveredPads,
                 'remaining' => $remainingPads,
             ];
         })->values();
 
+        $girlsCount = (int) $perSchool->sum('girls');
         $requiredPads = (int) $perSchool->sum('required');
         $coveredPads = (int) $perSchool->sum('covered');
         $remainingPads = (int) $perSchool->sum('remaining');
 
         return [
             'schools_count' => (int) $perSchool->count(),
+            'girls_count' => $girlsCount,
             'required_pads' => $requiredPads,
             'covered_pads' => $coveredPads,
             'remaining_pads' => $remainingPads,
