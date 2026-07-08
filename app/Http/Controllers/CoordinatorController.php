@@ -62,8 +62,9 @@ class CoordinatorController extends Controller
 
         $latestEnrollmentCount = (int) optional($recentEnrollments->first())->girl_count;
 
-        $currentMonth = Carbon::now()->format('F');
-        $currentAcademicYear = Carbon::now()->format('Y');
+        $now = Carbon::now();
+        $currentMonth = $now->format('F');
+        $currentAcademicYear = $now->format('Y');
 
         $currentEnrollment = Enrollment::query()
             ->where('school_id', $school->school_id)
@@ -78,21 +79,41 @@ class CoordinatorController extends Controller
             ->first();
 
         $fulfilmentSource = $currentEnrollment ?? $latestEnrollmentRecord;
-        $requiredPads = $fulfilmentSource ? ((int) $fulfilmentSource->girl_count * self::PACKETS_PER_GIRL_PER_MONTH) : 0;
-        $governmentCovered = $fulfilmentSource ? (int) $fulfilmentSource->government_pads_received : 0;
 
-        $monthStart = Carbon::now()->startOfMonth()->toDateString();
-        $monthEnd = Carbon::now()->endOfMonth()->toDateString();
+        $monthStart = $now->copy()->startOfMonth()->toDateString();
+        $monthEnd = $now->copy()->endOfMonth()->toDateString();
 
-        $distributionCovered = (int) Distribution::query()
+        $monthlyShortfall = ShortfallReport::query()
             ->where('school_id', $school->school_id)
-            ->where('status', 'Received')
-            ->whereBetween('distribution_date', [$monthStart, $monthEnd])
-            ->sum('quantity_distributed');
+            ->whereBetween('report_date', [$monthStart, $monthEnd])
+            ->orderByDesc('report_date')
+            ->first();
 
-        $totalCovered = min($requiredPads, $governmentCovered + $distributionCovered);
+        if ($monthlyShortfall) {
+            $requiredPads = (int) $monthlyShortfall->required_pads;
+            $baseCovered = max(0, $requiredPads - (int) $monthlyShortfall->shortfall);
+
+            $distributionCovered = (int) Distribution::query()
+                ->where('school_id', $school->school_id)
+                ->where('status', 'Received')
+                ->whereBetween('distribution_date', [$monthStart, $monthEnd])
+                ->whereDate('distribution_date', '>=', $monthlyShortfall->report_date)
+                ->sum('quantity_distributed');
+        } else {
+            $requiredPads = $fulfilmentSource ? ((int) $fulfilmentSource->girl_count * self::PACKETS_PER_GIRL_PER_MONTH) : 0;
+            $baseCovered = $fulfilmentSource ? (int) $fulfilmentSource->government_pads_received : 0;
+
+            $distributionCovered = (int) Distribution::query()
+                ->where('school_id', $school->school_id)
+                ->where('status', 'Received')
+                ->whereBetween('distribution_date', [$monthStart, $monthEnd])
+                ->sum('quantity_distributed');
+        }
+
+        $totalCovered = max(0, $baseCovered + $distributionCovered);
+        $effectiveCovered = min($requiredPads, $totalCovered);
         $fulfilmentPercent = $requiredPads > 0
-            ? (int) round(($totalCovered / $requiredPads) * 100)
+            ? (int) round(($effectiveCovered / $requiredPads) * 100)
             : 0;
         $fulfilmentLabel = number_format($totalCovered).' of '.number_format($requiredPads).' pads covered';
 
@@ -130,7 +151,7 @@ class CoordinatorController extends Controller
             'insights' => [
                 'required_pads' => $requiredPads,
                 'covered_pads' => $totalCovered,
-                'remaining_pads' => max(0, $requiredPads - $totalCovered),
+                'remaining_pads' => max(0, $requiredPads - $effectiveCovered),
                 'pending_confirmations' => $pendingConfirmations,
                 'last_enrollment_date' => $lastEnrollmentDate,
                 'last_shortfall_date' => $lastShortfallDate,

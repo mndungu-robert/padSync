@@ -12,6 +12,10 @@
             'schools_count' => 0,
             'active_shortfalls' => 0,
             'pending_profiles' => 0,
+            'required_pads' => 0,
+            'covered_pads' => 0,
+            'remaining_pads' => 0,
+            'coverage_percent' => 0,
         ], $metrics ?? []);
         $dashboardSchoolStats = collect($schoolStats ?? []);
         $dashboardInventory = array_merge([
@@ -61,6 +65,30 @@
         <div class="bg-white border border-gray-200 p-5 rounded-xl shadow-sm">
             <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pending Coordinators</div>
             <div class="text-2xl font-bold text-teal-700 mt-2">{{ number_format($dashboardMetrics['pending_profiles']) }}</div>
+        </div>
+    </div>
+
+    <div class="mt-5 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-sm font-bold text-gray-800">Current Month Coverage Snapshot</h3>
+            <p class="text-xs font-semibold text-gray-500">
+                {{ number_format((int) $dashboardMetrics['coverage_percent']) }}% covered network-wide
+            </p>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <p class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Required Pads</p>
+                <p class="text-xl font-black text-slate-800 mt-1">{{ number_format((int) $dashboardMetrics['required_pads']) }}</p>
+            </div>
+            <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+                <p class="text-[10px] uppercase tracking-wide text-emerald-700 font-bold">Covered So Far</p>
+                <p class="text-xl font-black text-emerald-700 mt-1">{{ number_format((int) $dashboardMetrics['covered_pads']) }}</p>
+            </div>
+            <div class="rounded-lg border border-rose-200 bg-rose-50 p-3">
+                <p class="text-[10px] uppercase tracking-wide text-rose-700 font-bold">Still Needed</p>
+                <p class="text-xl font-black text-rose-700 mt-1">{{ number_format((int) $dashboardMetrics['remaining_pads']) }}</p>
+            </div>
         </div>
     </div>
 
@@ -137,7 +165,7 @@
                         labels: dashboardSchoolStats.map((entry) => entry.name),
                         datasets: [
                             {
-                                label: 'Government Received',
+                                label: 'Covered So Far',
                                 data: dashboardSchoolStats.map((entry) => entry.received),
                                 backgroundColor: '#1a5c3a',
                             },
