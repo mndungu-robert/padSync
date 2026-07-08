@@ -10,6 +10,7 @@
             'required_pads' => 0,
             'covered_pads' => 0,
             'remaining_pads' => 0,
+            'surplus_pads' => 0,
             'pending_confirmations' => 0,
             'last_enrollment_date' => null,
             'last_shortfall_date' => null,
@@ -41,6 +42,11 @@
             <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
                 <p class="text-[10px] uppercase tracking-wide text-emerald-700 font-bold">Covered So Far</p>
                 <p class="text-xl font-black text-emerald-700 mt-1">{{ number_format((int) $dashboardInsights['covered_pads']) }}</p>
+                @if((int) $dashboardInsights['surplus_pads'] > 0)
+                    <p class="mt-1 text-[11px] font-semibold text-emerald-800">
+                        {{ number_format((int) $dashboardInsights['surplus_pads']) }} extra pads above requirement
+                    </p>
+                @endif
             </div>
             <div class="rounded-lg border border-rose-200 bg-rose-50 p-3">
                 <p class="text-[10px] uppercase tracking-wide text-rose-700 font-bold">Still Needed</p>

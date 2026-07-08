@@ -41,6 +41,7 @@ class CoordinatorController extends Controller
                     'required_pads' => 0,
                     'covered_pads' => 0,
                     'remaining_pads' => 0,
+                    'surplus_pads' => 0,
                     'pending_confirmations' => 0,
                     'last_enrollment_date' => null,
                     'last_shortfall_date' => null,
@@ -112,6 +113,7 @@ class CoordinatorController extends Controller
 
         $totalCovered = max(0, $baseCovered + $distributionCovered);
         $effectiveCovered = min($requiredPads, $totalCovered);
+        $surplusPads = max(0, $totalCovered - $requiredPads);
         $fulfilmentPercent = $requiredPads > 0
             ? (int) round(($effectiveCovered / $requiredPads) * 100)
             : 0;
@@ -150,8 +152,9 @@ class CoordinatorController extends Controller
             'fulfilmentLabel' => $fulfilmentLabel,
             'insights' => [
                 'required_pads' => $requiredPads,
-                'covered_pads' => $effectiveCovered,
-                'remaining_pads' => max(0, $requiredPads - $effectiveCovered),
+                'covered_pads' => $totalCovered,
+                'remaining_pads' => max(0, $requiredPads - $totalCovered),
+                'surplus_pads' => $surplusPads,
                 'pending_confirmations' => $pendingConfirmations,
                 'last_enrollment_date' => $lastEnrollmentDate,
                 'last_shortfall_date' => $lastShortfallDate,
