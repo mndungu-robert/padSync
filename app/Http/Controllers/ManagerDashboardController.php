@@ -52,7 +52,7 @@ class ManagerDashboardController extends Controller
                 ->where('contribution_type', 'Donate Money')
                 ->where('payment_status', 'Successful')
                 ->sum('amount_kes'),
-            'schools_count' => DB::table('schools')->count('school_id'),
+            'schools_count' => (int) ($networkCoverage['schools_count'] ?? 0),
             'active_shortfalls' => $openShortfalls->count(),
             'pending_profiles' => User::query()->where('role', 'Coordinator')->where('status', 'Pending')->count(),
             'required_pads' => $networkCoverage['required_pads'],
@@ -115,6 +115,7 @@ class ManagerDashboardController extends Controller
 
         if ($schools->isEmpty()) {
             return [
+                'schools_count' => 0,
                 'required_pads' => 0,
                 'covered_pads' => 0,
                 'remaining_pads' => 0,
@@ -123,11 +124,14 @@ class ManagerDashboardController extends Controller
             ];
         }
 
-        $schoolIds = $schools->pluck('school_id')->all();
+        $schoolsByName = $schools
+            ->groupBy(fn (School $school) => trim((string) $school->school_name));
 
-        $enrollmentsBySchool = Enrollment::query()
-            ->where(function ($query) use ($schoolIds) {
-                foreach ($schoolIds as $index => $schoolId) {
+        $allSchoolIds = $schools->pluck('school_id')->all();
+
+        $enrollmentRows = Enrollment::query()
+            ->where(function ($query) use ($allSchoolIds) {
+                foreach ($allSchoolIds as $index => $schoolId) {
                     if ($index === 0) {
                         $query->where('school_id', '=', $schoolId);
                     } else {
@@ -136,12 +140,11 @@ class ManagerDashboardController extends Controller
                 }
             })
             ->orderByDesc('created_at')
-            ->get()
-            ->groupBy('school_id');
+            ->get();
 
-        $shortfallsBySchool = ShortfallReport::query()
-            ->where(function ($query) use ($schoolIds) {
-                foreach ($schoolIds as $index => $schoolId) {
+        $shortfallRows = ShortfallReport::query()
+            ->where(function ($query) use ($allSchoolIds) {
+                foreach ($allSchoolIds as $index => $schoolId) {
                     if ($index === 0) {
                         $query->where('school_id', '=', $schoolId);
                     } else {
@@ -151,12 +154,11 @@ class ManagerDashboardController extends Controller
             })
             ->whereBetween('report_date', [$monthStart, $monthEnd])
             ->orderByDesc('report_date')
-            ->get()
-            ->groupBy('school_id');
+            ->get();
 
-        $receivedBySchool = Distribution::query()
-            ->where(function ($query) use ($schoolIds) {
-                foreach ($schoolIds as $index => $schoolId) {
+        $receivedRows = Distribution::query()
+            ->where(function ($query) use ($allSchoolIds) {
+                foreach ($allSchoolIds as $index => $schoolId) {
                     if ($index === 0) {
                         $query->where('school_id', '=', $schoolId);
                     } else {
@@ -167,33 +169,39 @@ class ManagerDashboardController extends Controller
             ->where('status', 'Received')
             ->whereBetween('distribution_date', [$monthStart, $monthEnd])
             ->orderBy('distribution_date')
-            ->get()
-            ->groupBy('school_id');
+            ->get();
 
-        $perSchool = $schools->map(function (School $school) use (
-            $enrollmentsBySchool,
-            $shortfallsBySchool,
-            $receivedBySchool,
+        $perSchool = $schoolsByName->map(function ($schoolRows, string $schoolName) use (
+            $enrollmentRows,
+            $shortfallRows,
+            $receivedRows,
             $currentMonth,
             $currentAcademicYear
         ) {
-            $enrollmentRows = $enrollmentsBySchool->get($school->school_id, collect());
+            $schoolIdList = $schoolRows->pluck('school_id')->all();
 
-            $currentEnrollment = $enrollmentRows->first(function (Enrollment $enrollment) use ($currentMonth, $currentAcademicYear) {
+            $schoolEnrollmentRows = $enrollmentRows
+                ->filter(fn (Enrollment $enrollment) => in_array($enrollment->school_id, $schoolIdList, true))
+                ->values();
+
+            $currentEnrollment = $schoolEnrollmentRows->first(function (Enrollment $enrollment) use ($currentMonth, $currentAcademicYear) {
                 return $enrollment->month === $currentMonth
                     && (string) $enrollment->academic_year === (string) $currentAcademicYear;
             });
 
-            $latestEnrollment = $enrollmentRows->first();
+            $latestEnrollment = $schoolEnrollmentRows->first();
             $coverageEnrollment = $currentEnrollment ?? $latestEnrollment;
 
-            $monthlyShortfall = $shortfallsBySchool->get($school->school_id, collect())->first();
-            $receivedRows = $receivedBySchool->get($school->school_id, collect());
+            $monthlyShortfall = $shortfallRows
+                ->first(fn (ShortfallReport $shortfall) => in_array($shortfall->school_id, $schoolIdList, true));
+
+            $schoolReceivedRows = $receivedRows
+                ->filter(fn (Distribution $distribution) => in_array($distribution->school_id, $schoolIdList, true));
 
             if ($monthlyShortfall) {
                 $requiredPads = (int) $monthlyShortfall->required_pads;
                 $baseCovered = max(0, $requiredPads - (int) $monthlyShortfall->shortfall);
-                $distributionCovered = (int) $receivedRows
+                $distributionCovered = (int) $schoolReceivedRows
                     ->filter(fn (Distribution $distribution) => $distribution->distribution_date >= $monthlyShortfall->report_date)
                     ->sum('quantity_distributed');
             } else {
@@ -205,15 +213,15 @@ class ManagerDashboardController extends Controller
                     ? (int) $coverageEnrollment->government_pads_received
                     : 0;
 
-                $distributionCovered = (int) $receivedRows->sum('quantity_distributed');
+                $distributionCovered = (int) $schoolReceivedRows->sum('quantity_distributed');
             }
 
             $coveredPads = min($requiredPads, $baseCovered + $distributionCovered);
             $remainingPads = max(0, $requiredPads - $coveredPads);
 
             return [
-                'school_id' => (int) $school->school_id,
-                'name' => (string) $school->school_name,
+                'school_id' => (int) ($schoolIdList[0] ?? 0),
+                'name' => $schoolName,
                 'required' => $requiredPads,
                 'covered' => $coveredPads,
                 'remaining' => $remainingPads,
@@ -225,6 +233,7 @@ class ManagerDashboardController extends Controller
         $remainingPads = (int) $perSchool->sum('remaining');
 
         return [
+            'schools_count' => (int) $perSchool->count(),
             'required_pads' => $requiredPads,
             'covered_pads' => $coveredPads,
             'remaining_pads' => $remainingPads,
