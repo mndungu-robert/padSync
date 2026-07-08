@@ -17,7 +17,7 @@ class AdminDashboardController extends Controller
         $metrics = [
             'program_managers' => User::query()->where('role', '=', 'Program Manager')->count(),
             'school_coordinators' => User::query()->where('role', '=', 'Coordinator')->count(),
-            'schools_registered' => DB::table('schools')->count('school_id'),
+            'schools_registered' => DB::table('schools')->distinct()->count('school_name'),
             'pending_approvals' => User::query()->where('role', '=', 'Coordinator')->where('status', '=', 'Pending')->count(),
             'money_received' => (float) Donation::query()
                 ->where('contribution_type', 'Donate Money')
