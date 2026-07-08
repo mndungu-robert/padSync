@@ -18,44 +18,52 @@ class UserSeeder extends Seeder
         $schoolOneId = $schoolIds->get(0);
         $schoolTwoId = $schoolIds->get(1) ?? $schoolOneId;
 
-        User::create([
-            'name' => 'System Admin One',
-            'email' => 'admin1@padsync.com',
-            'username' => 'admin1',
-            'password' => Hash::make('password123'),
-            'role' => 'Admin',
-            'status' => 'Approved',
-            'school_id' => null,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin1@padsync.com'],
+            [
+                'name' => 'System Admin One',
+                'username' => 'admin1',
+                'password' => Hash::make('password123'),
+                'role' => 'Admin',
+                'status' => 'Approved',
+                'school_id' => null,
+            ]
+        );
 
-        User::create([
-            'name' => 'Program Manager One',
-            'email' => 'pm1@padsync.com',
-            'username' => 'pm1',
-            'password' => Hash::make('password123'),
-            'role' => 'Program Manager',
-            'status' => 'Approved',
-            'school_id' => null,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'pm1@padsync.com'],
+            [
+                'name' => 'Program Manager One',
+                'username' => 'pm1',
+                'password' => Hash::make('password123'),
+                'role' => 'Program Manager',
+                'status' => 'Approved',
+                'school_id' => null,
+            ]
+        );
 
-        User::create([
-            'name' => 'Coordinator One',
-            'email' => 'coordinator1@padsync.com',
-            'username' => 'coordinator1',
-            'password' => Hash::make('password123'),
-            'role' => 'Coordinator',
-            'status' => 'Approved',
-            'school_id' => $schoolOneId,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'coordinator1@padsync.com'],
+            [
+                'name' => 'Coordinator One',
+                'username' => 'coordinator1',
+                'password' => Hash::make('password123'),
+                'role' => 'Coordinator',
+                'status' => 'Approved',
+                'school_id' => $schoolOneId,
+            ]
+        );
 
-        User::create([
-            'name' => 'Coordinator Two',
-            'email' => 'coordinator2@padsync.com',
-            'username' => 'coordinator2',
-            'password' => Hash::make('password123'),
-            'role' => 'Coordinator',
-            'status' => 'Pending',
-            'school_id' => $schoolTwoId,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'coordinator2@padsync.com'],
+            [
+                'name' => 'Coordinator Two',
+                'username' => 'coordinator2',
+                'password' => Hash::make('password123'),
+                'role' => 'Coordinator',
+                'status' => 'Pending',
+                'school_id' => $schoolTwoId,
+            ]
+        );
     }
 }

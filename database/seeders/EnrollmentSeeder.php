@@ -17,34 +17,46 @@ class EnrollmentSeeder extends Seeder
         $schoolTwoId = $schoolIds->get(1) ?? $schoolOneId;
         $schoolThreeId = $schoolIds->get(2) ?? $schoolTwoId;
 
-        DB::table('enrollments')->insert([
+        DB::table('enrollments')->updateOrInsert(
             [
                 'school_id' => $schoolOneId,
+                'academic_year' => '2026',
+                'month' => 'June',
+            ],
+            [
                 'girl_count' => 320,
                 'government_pads_received' => 80,
-                'academic_year' => '2026',
-                'month' => 'June',
-                'created_at' => now(),
                 'updated_at' => now(),
-            ],
+                'created_at' => now(),
+            ]
+        );
+
+        DB::table('enrollments')->updateOrInsert(
             [
                 'school_id' => $schoolTwoId,
-                'girl_count' => 240,
-                'government_pads_received' => 60,
                 'academic_year' => '2026',
                 'month' => 'June',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
+                'girl_count' => 240,
+                'government_pads_received' => 60,
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
+
+        DB::table('enrollments')->updateOrInsert(
+            [
                 'school_id' => $schoolThreeId,
-                'girl_count' => 290,
-                'government_pads_received' => 75,
                 'academic_year' => '2026',
                 'month' => 'June',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
-        ]);
+            [
+                'girl_count' => 290,
+                'government_pads_received' => 75,
+                'updated_at' => now(),
+                'created_at' => now(),
+            ]
+        );
     }
 }

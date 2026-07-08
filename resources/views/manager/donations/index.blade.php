@@ -78,7 +78,7 @@
                         </td>
 
                         <td class="px-6 py-4 text-right">
-                            @if(($pledge->contribution_type ?? 'Donate Pads') === 'Donate Pads' && $fulfillmentState === 'Pledged' && (($pledge->payment_status ?? 'Completed') === 'Completed' || ($pledge->payment_status ?? '') === 'Not Required'))
+                            @if(($pledge->contribution_type ?? 'Donate Pads') === 'Donate Pads' && $fulfillmentState === 'Pledged' && (($pledge->payment_status ?? 'Successful') === 'Successful' || ($pledge->payment_status ?? '') === 'Not Required'))
                                 <form method="POST" action="{{ route('manager.donations.receive', $pledge) }}" class="inline">
                                     @csrf
                                     @method('PATCH')
@@ -145,7 +145,7 @@
                             @php
                                 $paymentState = $donation->payment_status ?? 'Failed';
                             @endphp
-                            <span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border {{ $paymentState === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' }}">
+                            <span class="inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border {{ $paymentState === 'Successful' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' }}">
                                 {{ $paymentState }}
                             </span>
                         </td>

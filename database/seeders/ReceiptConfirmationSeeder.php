@@ -26,25 +26,31 @@ class ReceiptConfirmationSeeder extends Seeder
         $coordinatorOneId = $coordinatorIds->get(0);
         $coordinatorTwoId = $coordinatorIds->get(1) ?? $coordinatorOneId;
 
-        ReceiptConfirmation::create([
-            'distribution_id' => $distributionOneId,
-            'coordinator_id' => $coordinatorOneId,
-            'received_quantity' => 175,
-            'confirmation_date' => now(),
-        ]);
+        ReceiptConfirmation::updateOrCreate(
+            ['distribution_id' => $distributionOneId],
+            [
+                'coordinator_id' => $coordinatorOneId,
+                'received_quantity' => 175,
+                'confirmation_date' => now(),
+            ]
+        );
 
-        ReceiptConfirmation::create([
-            'distribution_id' => $distributionTwoId,
-            'coordinator_id' => $coordinatorTwoId,
-            'received_quantity' => 210,
-            'confirmation_date' => now()->subHours(6),
-        ]);
+        ReceiptConfirmation::updateOrCreate(
+            ['distribution_id' => $distributionTwoId],
+            [
+                'coordinator_id' => $coordinatorTwoId,
+                'received_quantity' => 210,
+                'confirmation_date' => now()->subHours(6),
+            ]
+        );
 
-        ReceiptConfirmation::create([
-            'distribution_id' => $distributionThreeId,
-            'coordinator_id' => $coordinatorOneId,
-            'received_quantity' => 198,
-            'confirmation_date' => now()->subHours(12),
-        ]);
+        ReceiptConfirmation::updateOrCreate(
+            ['distribution_id' => $distributionThreeId],
+            [
+                'coordinator_id' => $coordinatorOneId,
+                'received_quantity' => 198,
+                'confirmation_date' => now()->subHours(12),
+            ]
+        );
     }
 }

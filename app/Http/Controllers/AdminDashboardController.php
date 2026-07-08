@@ -21,7 +21,7 @@ class AdminDashboardController extends Controller
             'pending_approvals' => User::query()->where('role', '=', 'Coordinator')->where('status', '=', 'Pending')->count(),
             'money_received' => (float) Donation::query()
                 ->where('contribution_type', 'Donate Money')
-                ->where('payment_status', 'Completed')
+                ->where('payment_status', 'Successful')
                 ->sum('amount_kes'),
             'money_failed' => (float) Donation::query()
                 ->where('contribution_type', 'Donate Money')

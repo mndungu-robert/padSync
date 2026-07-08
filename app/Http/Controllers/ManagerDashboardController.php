@@ -18,6 +18,9 @@ class ManagerDashboardController extends Controller
 
     public function index()
     {
+        $monthStart = now()->startOfMonth()->toDateString();
+        $monthEnd = now()->endOfMonth()->toDateString();
+
         $warehouse = Inventory::query()->first() ?? new Inventory([
             'quantity_available' => 0,
             'reorder_level' => 100,
@@ -29,7 +32,7 @@ class ManagerDashboardController extends Controller
             'available_stock' => $warehouse->quantity_available,
             'money_received' => (float) Donation::query()
                 ->where('contribution_type', 'Donate Money')
-                ->where('payment_status', 'Completed')
+                ->where('payment_status', 'Successful')
                 ->sum('amount_kes'),
             'schools_count' => DB::table('schools')->count('school_id'),
             'active_shortfalls' => ShortfallReport::query()
@@ -68,17 +71,18 @@ class ManagerDashboardController extends Controller
             ->values()
             ->all();
 
-        $dispatched = (int) Distribution::query()
+        $dispatchedThisMonth = (int) Distribution::query()
             ->where(function ($query) {
                 $query->where('status', 'Dispatched')
                     ->orWhere('status', 'Received');
             })
+            ->whereBetween('distribution_date', [$monthStart, $monthEnd])
             ->sum('quantity_distributed');
 
         $inventoryStats = [
             'available' => (int) ($warehouse->quantity_available ?? 0),
             'allocated' => (int) ($warehouse->allocated_stock ?? 0),
-            'dispatched' => $dispatched,
+            'dispatched_this_month' => $dispatchedThisMonth,
         ];
 
         return view('manager.dashboard', [
@@ -113,23 +117,47 @@ class ManagerDashboardController extends Controller
             ];
         }
 
-        $schoolIds = $schools->pluck('school_id');
+        $schoolIds = $schools->pluck('school_id')->all();
 
         $enrollmentsBySchool = Enrollment::query()
-            ->whereIn('school_id', $schoolIds)
+            ->where(function ($query) use ($schoolIds) {
+                foreach ($schoolIds as $index => $schoolId) {
+                    if ($index === 0) {
+                        $query->where('school_id', '=', $schoolId);
+                    } else {
+                        $query->orWhere('school_id', '=', $schoolId);
+                    }
+                }
+            })
             ->orderByDesc('created_at')
             ->get()
             ->groupBy('school_id');
 
         $shortfallsBySchool = ShortfallReport::query()
-            ->whereIn('school_id', $schoolIds)
+            ->where(function ($query) use ($schoolIds) {
+                foreach ($schoolIds as $index => $schoolId) {
+                    if ($index === 0) {
+                        $query->where('school_id', '=', $schoolId);
+                    } else {
+                        $query->orWhere('school_id', '=', $schoolId);
+                    }
+                }
+            })
             ->whereBetween('report_date', [$monthStart, $monthEnd])
             ->orderByDesc('report_date')
             ->get()
             ->groupBy('school_id');
 
         $receivedBySchool = Distribution::query()
-            ->whereIn('school_id', $schoolIds)
+            ->where(function ($query) use ($schoolIds) {
+                foreach ($schoolIds as $index => $schoolId) {
+                    if ($index === 0) {
+                        $query->where('school_id', '=', $schoolId);
+                    } else {
+                        $query->orWhere('school_id', '=', $schoolId);
+                    }
+                }
+            })
             ->where('status', 'Received')
             ->whereBetween('distribution_date', [$monthStart, $monthEnd])
             ->orderBy('distribution_date')

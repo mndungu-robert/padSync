@@ -43,11 +43,11 @@ class MpesaCallbackController extends Controller
 
         $metadataItems = data_get($callback, 'CallbackMetadata.Item', []);
         $meta = $this->metadataToMap($metadataItems);
-        $wasCompleted = $donation->payment_status === 'Completed';
+        $wasSuccessful = $donation->payment_status === 'Successful';
 
         if ($resultCode === 0) {
             $donation->update([
-                'payment_status' => 'Completed',
+                'payment_status' => 'Successful',
                 'payment_reference' => $meta['MpesaReceiptNumber'] ?? null,
                 'payer_phone' => isset($meta['PhoneNumber'])
                     ? PhonePrivacy::hash((string) $meta['PhoneNumber'])
@@ -55,13 +55,13 @@ class MpesaCallbackController extends Controller
                 'amount_kes' => isset($meta['Amount']) ? (float) $meta['Amount'] : $donation->amount_kes,
                 'paid_at' => $this->parseTransactionDate($meta['TransactionDate'] ?? null),
                 'callback_payload' => $sanitizedPayload,
-                'notes' => 'Payment completed via M-Pesa.',
+                'notes' => 'Payment successful via M-Pesa.',
             ]);
 
             $this->recordPaymentAudit(
-                action: 'M-Pesa payment completed',
+                action: 'M-Pesa payment successful',
                 details: sprintf(
-                    'Donation #%d completed. Amount %.2f KES. Receipt %s.',
+                    'Donation #%d successful. Amount %.2f KES. Receipt %s.',
                     $donation->donation_id,
                     (float) ($donation->amount_kes ?? 0),
                     (string) ($donation->payment_reference ?? 'N/A')
@@ -69,17 +69,17 @@ class MpesaCallbackController extends Controller
                 ipAddress: $request->ip()
             );
 
-            if (!$wasCompleted && $donation->donor) {
+            if (!$wasSuccessful && $donation->donor) {
                 $donation->donor->update([
                     'pad_count' => Donation::query()
                         ->where('donor_id', $donation->donor_id)
-                        ->where('payment_status', 'Completed')
+                        ->where('payment_status', 'Successful')
                         ->sum('pad_count'),
                 ]);
             }
         } else {
-            if ($wasCompleted) {
-                Log::warning('Ignoring failed callback for already completed donation', [
+            if ($wasSuccessful) {
+                Log::warning('Ignoring failed callback for already successful donation', [
                     'donation_id' => $donation->donation_id,
                     'result_code' => $resultCode,
                     'result_desc' => $resultDesc,

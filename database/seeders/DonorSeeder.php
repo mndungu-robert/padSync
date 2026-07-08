@@ -12,34 +12,40 @@ class DonorSeeder extends Seeder
      */
     public function run(): void
     {
-        Donor::create([
-            'name' => 'Jane Doe',
-            'email' => 'jane.doe@example.com',
-            'pad_count' => 100,
-            'donor_type' => 'Individual',
-            'organization_name' => null,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        Donor::updateOrCreate(
+            ['email' => 'jane.doe@example.com'],
+            [
+                'name' => 'Jane Doe',
+                'pad_count' => 100,
+                'donor_type' => 'Individual',
+                'organization_name' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
 
-        Donor::create([
-            'name' => 'Rotary Club Nairobi',
-            'email' => 'rotary@example.com',
-            'pad_count' => 500,
-            'donor_type' => 'Organization',
-            'organization_name' => 'Rotary Club',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        Donor::updateOrCreate(
+            ['email' => 'rotary@example.com'],
+            [
+                'name' => 'Rotary Club Nairobi',
+                'pad_count' => 500,
+                'donor_type' => 'Organization',
+                'organization_name' => 'Rotary Club',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
 
-        Donor::create([
-            'name' => 'Safi Foundation',
-            'email' => 'safi.foundation@example.com',
-            'pad_count' => 350,
-            'donor_type' => 'Organization',
-            'organization_name' => 'Safi Foundation',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        Donor::updateOrCreate(
+            ['email' => 'safi.foundation@example.com'],
+            [
+                'name' => 'Safi Foundation',
+                'pad_count' => 350,
+                'donor_type' => 'Organization',
+                'organization_name' => 'Safi Foundation',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
     }
 }

@@ -23,7 +23,7 @@ class ManagerReportController extends Controller
             'cumulative_pledges'  => Donation::query()->sum('pad_count'),
             'money_received'      => (float) Donation::query()
                 ->where('contribution_type', 'Donate Money')
-                ->where('payment_status', 'Completed')
+                ->where('payment_status', 'Successful')
                 ->sum('amount_kes'),
             'total_dispatched'    => Distribution::query()->where('status', 'Dispatched')->sum('quantity_distributed'),
             'total_delivered'     => Distribution::query()->where('status', 'Received')->sum('quantity_distributed'),
@@ -73,7 +73,7 @@ class ManagerReportController extends Controller
 
         $summary = [
             'total_count' => $moneyRows->count(),
-            'total_received' => (float) $moneyRows->where('payment_status', 'Completed')->sum('amount_kes'),
+            'total_received' => (float) $moneyRows->where('payment_status', 'Successful')->sum('amount_kes'),
             'total_failed' => (float) $moneyRows->where('payment_status', 'Failed')->sum('amount_kes'),
         ];
 

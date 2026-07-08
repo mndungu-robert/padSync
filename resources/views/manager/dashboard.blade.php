@@ -21,7 +21,7 @@
         $dashboardInventory = array_merge([
             'available' => 0,
             'allocated' => 0,
-            'dispatched' => 0,
+            'dispatched_this_month' => 0,
         ], $inventoryStats ?? []);
         $criticalNeedRows = collect($criticalNeeds ?? []);
         $hasActiveEmergency = ((int) $dashboardMetrics['active_shortfalls']) > 0;
@@ -192,12 +192,12 @@
                 new Chart(inventoryCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Available', 'Allocated (Pending Dispatch)', 'Dispatched'],
+                        labels: ['Available (Now)', 'Allocated (Now)', 'Dispatched (This Month)'],
                         datasets: [{
                             data: [
                                 dashboardInventory.available ?? 0,
                                 dashboardInventory.allocated ?? 0,
-                                dashboardInventory.dispatched ?? 0,
+                                dashboardInventory.dispatched_this_month ?? 0,
                             ],
                             backgroundColor: ['#1a5c3a', '#f39c12', '#c0392b'],
                         }],

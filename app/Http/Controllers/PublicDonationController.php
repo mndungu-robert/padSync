@@ -164,7 +164,7 @@ class PublicDonationController extends Controller
             'contribution_type' => 'Donate Money',
             'amount_kes' => (float) $request->input('amount_kes'),
             'payment_method' => 'M-Pesa',
-            'payment_status' => 'Pending',
+            'payment_status' => 'Failed',
             'payer_phone' => PhonePrivacy::hash($normalizedPhone),
             'notes' => 'Awaiting M-Pesa confirmation.',
         ]);
@@ -231,7 +231,7 @@ class PublicDonationController extends Controller
                 DB::raw('SUM(amount_kes) as total'),
             ])
             ->where('contribution_type', 'Donate Money')
-            ->where('payment_status', 'Completed')
+            ->where('payment_status', 'Successful')
             ->whereDate('created_at', '>=', $startDate)
             ->groupBy('bucket')
             ->pluck('total', 'bucket');

@@ -59,7 +59,7 @@ class ManagerDonationController extends Controller
                 ->withErrors(['received_date' => 'Only pad pledges can be moved into inventory.']);
         }
 
-        if (!in_array(($donation->payment_status ?? 'Completed'), ['Completed', 'Not Required'], true)) {
+        if (!in_array(($donation->payment_status ?? 'Successful'), ['Successful', 'Not Required'], true)) {
             return redirect()->route('manager.donations.index')
                 ->withErrors(['received_date' => 'Only paid donations can be marked as received in inventory.']);
         }
