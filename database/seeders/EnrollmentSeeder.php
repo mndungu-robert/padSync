@@ -17,46 +17,36 @@ class EnrollmentSeeder extends Seeder
         $schoolTwoId = $schoolIds->get(1) ?? $schoolOneId;
         $schoolThreeId = $schoolIds->get(2) ?? $schoolTwoId;
 
-        DB::table('enrollments')->updateOrInsert(
+        $timestamp = now();
+
+        DB::table('enrollments')->upsert([
             [
                 'school_id' => $schoolOneId,
-                'academic_year' => '2026',
-                'month' => 'June',
-            ],
-            [
                 'girl_count' => 320,
                 'government_pads_received' => 80,
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
-
-        DB::table('enrollments')->updateOrInsert(
+                'academic_year' => '2026',
+                'month' => 'June',
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
             [
                 'school_id' => $schoolTwoId,
-                'academic_year' => '2026',
-                'month' => 'June',
-            ],
-            [
                 'girl_count' => 240,
                 'government_pads_received' => 60,
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
-
-        DB::table('enrollments')->updateOrInsert(
-            [
-                'school_id' => $schoolThreeId,
                 'academic_year' => '2026',
                 'month' => 'June',
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
             ],
             [
+                'school_id' => $schoolThreeId,
                 'girl_count' => 290,
                 'government_pads_received' => 75,
-                'updated_at' => now(),
-                'created_at' => now(),
-            ]
-        );
+                'academic_year' => '2026',
+                'month' => 'June',
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ],
+        ], ['school_id', 'academic_year', 'month'], ['girl_count', 'government_pads_received', 'updated_at']);
     }
 }

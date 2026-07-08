@@ -38,7 +38,8 @@ class InventoryController extends Controller
                      ->join('donors', 'donations.donor_id', '=', 'donors.id')
                  ->where('donations.pad_count', '>', 0)
                 ->selectRaw("CASE WHEN donations.fulfillment_date IS NULL THEN 'Pledged' ELSE 'Fully Received' END as fulfillment_state")
-                     ->orderBy('donations.created_at', 'desc')
+                     ->orderBy('donations.pledge_date', 'asc')
+                     ->orderBy('donations.created_at', 'asc')
                      ->get();
 
         return view('manager.inventory.index', [

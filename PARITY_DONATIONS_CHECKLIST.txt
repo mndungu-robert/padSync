@@ -1,0 +1,70 @@
+PadSync Program Manager Donations Parity Checklist
+Date: 2026-07-08
+
+Run this on both machines from the repository root.
+
+STEP 1: Code parity
+1) git fetch --all --prune
+2) git rev-parse --short HEAD
+3) git status --short --branch
+
+Expected on this machine:
+- HEAD short commit: 247076f
+- Branch status: main...origin/main
+- Local change currently present: package-lock.json
+
+STEP 2: Clear stale cache/build artifacts
+1) php artisan optimize:clear
+2) npm run build
+
+STEP 3: Runtime environment fingerprint
+Run:
+php artisan tinker --execute='echo json_encode(["db"=>config("database.default"),"app_url"=>config("app.url"),"timezone"=>config("app.timezone")], JSON_PRETTY_PRINT).PHP_EOL;'
+
+Expected on this machine:
+{
+  "db": "mysql",
+  "app_url": "http://localhost",
+  "timezone": "UTC"
+}
+
+STEP 4: Confirm manager donations routes
+Run:
+php artisan route:list | grep -E "manager/donations|manager\.donations"
+
+Expected endpoints:
+- GET|HEAD manager/donations manager.donations.index
+- PATCH manager/donations/{donation}/receive manager.donations.receive
+
+STEP 5: Donations aggregate parity (table behavior driver)
+Run:
+php artisan tinker --execute='$agg=DB::table("donations")->selectRaw("contribution_type, payment_status, COUNT(*) as total_rows, SUM(COALESCE(pad_count,0)) as total_pads, SUM(COALESCE(amount_kes,0)) as total_amount")->groupBy("contribution_type","payment_status")->orderBy("contribution_type")->orderBy("payment_status")->get(); echo json_encode($agg, JSON_PRETTY_PRINT).PHP_EOL;'
+
+Expected on this machine:
+- Donate Money / Completed: total_rows=2, total_amount=3.00
+- Donate Money / Failed: total_rows=10, total_amount=16.00
+- Donate Money / Pending: total_rows=1, total_amount=1.00
+- Donate Pads / Failed: total_rows=5, total_pads=2406
+- Donate Pads / Pending: total_rows=1, total_pads=1150
+
+STEP 6: Physical donations action-eligibility parity
+Run:
+php artisan tinker --execute='$pads=DB::table("donations")->where("contribution_type","Donate Pads")->selectRaw("COUNT(*) as total_rows, SUM(CASE WHEN fulfillment_date IS NULL THEN 1 ELSE 0 END) as pledged_rows, SUM(CASE WHEN fulfillment_date IS NOT NULL THEN 1 ELSE 0 END) as received_rows, SUM(CASE WHEN fulfillment_date IS NULL AND payment_status IN (\"Completed\",\"Not Required\") THEN 1 ELSE 0 END) as eligible_mark_received")->first(); echo json_encode($pads, JSON_PRETTY_PRINT).PHP_EOL;'
+
+Expected on this machine:
+- total_rows=6
+- pledged_rows=5
+- received_rows=1
+- eligible_mark_received=0
+
+STEP 7: Recent rows parity (spot differences fast)
+Run:
+php artisan tinker --execute='$recent=DB::table("donations")->select("donation_id","contribution_type","payment_status","pad_count","amount_kes","fulfillment_date","payment_reference","paid_at","created_at")->orderByDesc("created_at")->limit(12)->get(); echo json_encode($recent, JSON_PRETTY_PRINT).PHP_EOL;'
+
+Key expected top rows on this machine:
+- donation_id 19: Donate Money, Completed, amount_kes 2.00
+- donation_id 18: Donate Money, Completed, amount_kes 1.00
+- donation_id 15: Donate Pads, Pending, pad_count 1150, fulfillment_date 2026-07-05
+
+Interpretation rule:
+If code parity matches but aggregates differ, Program Manager donations table differences are data-driven, not branch/pull driven.

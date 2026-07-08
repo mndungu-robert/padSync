@@ -26,6 +26,24 @@ class ManagerDashboardController extends Controller
             'reorder_level' => 100,
         ]);
 
+        $openShortfalls = ShortfallReport::query()
+            ->with('school')
+            ->where('status', 'Submitted')
+            ->where('shortfall', '>', 0)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('distributions')
+                    ->whereColumn('distributions.school_id', 'shortfall_reports.school_id')
+                    ->whereRaw("DATE_FORMAT(distributions.distribution_date, '%Y-%m') = DATE_FORMAT(shortfall_reports.report_date, '%Y-%m')");
+            })
+            ->orderByDesc('report_date')
+            ->orderByDesc('created_at')
+            ->get()
+            ->unique(function (ShortfallReport $report) {
+                return $report->school_id.'-'.Carbon::parse($report->report_date)->format('Y-m');
+            })
+            ->values();
+
         $networkCoverage = $this->buildNetworkCoverage();
 
         $managerMetrics = [
@@ -35,13 +53,7 @@ class ManagerDashboardController extends Controller
                 ->where('payment_status', 'Successful')
                 ->sum('amount_kes'),
             'schools_count' => DB::table('schools')->count('school_id'),
-            'active_shortfalls' => ShortfallReport::query()
-                ->where(function ($query) {
-                    $query->where('status', 'Submitted')
-                        ->orWhere('status', 'Dispatched');
-                })
-                ->where('shortfall', '>', 0)
-                ->count(),
+            'active_shortfalls' => $openShortfalls->count(),
             'pending_profiles' => User::query()->where('role', 'Coordinator')->where('status', 'Pending')->count(),
             'required_pads' => $networkCoverage['required_pads'],
             'covered_pads' => $networkCoverage['covered_pads'],
@@ -49,17 +61,10 @@ class ManagerDashboardController extends Controller
             'coverage_percent' => $networkCoverage['coverage_percent'],
         ];
 
-        $criticalNeeds = ShortfallReport::query()
-            ->with('school')
-            ->where(function ($query) {
-                $query->where('status', 'Submitted')
-                    ->orWhere('status', 'Dispatched');
-            })
-            ->where('shortfall', '>', 0)
-            ->orderBy('shortfall', 'desc')
-            ->orderByDesc('report_date')
+        $criticalNeeds = $openShortfalls
+            ->sortByDesc('shortfall')
             ->take(3)
-            ->get();
+            ->values();
 
         $schoolStats = collect($networkCoverage['per_school'])
             ->sortByDesc('remaining')

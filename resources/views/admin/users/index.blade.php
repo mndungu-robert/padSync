@@ -81,23 +81,27 @@
                                             </button>
                                         @endif
 
-                                        <form method="POST" action="{{ route('admin.users.coordinator-status', $systemUser) }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="status" value="Approved">
-                                            <button type="submit" class="bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold px-3 py-1.5 rounded transition shadow-sm">
-                                                Approve
-                                            </button>
-                                        </form>
+                                        @if ($systemUser->status === 'Pending')
+                                            <form method="POST" action="{{ route('admin.users.coordinator-status', $systemUser) }}">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="Approved">
+                                                <button type="submit" class="bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold px-3 py-1.5 rounded transition shadow-sm">
+                                                    Approve
+                                                </button>
+                                            </form>
 
-                                        <form method="POST" action="{{ route('admin.users.coordinator-status', $systemUser) }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="status" value="Rejected">
-                                            <button type="submit" class="bg-white hover:bg-rose-50 border border-gray-200 text-rose-600 text-xs font-bold px-3 py-1.5 rounded transition">
-                                                Reject
-                                            </button>
-                                        </form>
+                                            <form method="POST" action="{{ route('admin.users.coordinator-status', $systemUser) }}">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="Rejected">
+                                                <button type="submit" class="bg-white hover:bg-rose-50 border border-gray-200 text-rose-600 text-xs font-bold px-3 py-1.5 rounded transition">
+                                                    Reject
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="text-[11px] font-semibold text-gray-400">No action required</span>
+                                        @endif
 
                                         @if (auth()->id() !== $systemUser->id)
                                             <form method="POST" action="{{ route('admin.users.destroy', $systemUser) }}" onsubmit="return confirm('Delete this user account? This action cannot be undone.');">

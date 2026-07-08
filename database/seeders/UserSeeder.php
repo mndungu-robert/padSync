@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         $schoolOneId = $schoolIds->get(0);
         $schoolTwoId = $schoolIds->get(1) ?? $schoolOneId;
 
-        User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => 'admin1@padsync.com'],
             [
                 'name' => 'System Admin One',
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => 'pm1@padsync.com'],
             [
                 'name' => 'Program Manager One',
@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => 'coordinator1@padsync.com'],
             [
                 'name' => 'Coordinator One',
@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => 'coordinator2@padsync.com'],
             [
                 'name' => 'Coordinator Two',

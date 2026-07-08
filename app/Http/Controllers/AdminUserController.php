@@ -16,7 +16,7 @@ class AdminUserController extends Controller
     {
         $allUsers = User::query()
             ->with('school')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->get();
 
         return view('admin.users.index', compact('allUsers'));

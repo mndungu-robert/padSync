@@ -22,8 +22,21 @@ class DistributionController extends Controller
         // 1. Fetch pending school shortfalls reported by coordinators
         $pendingReports = ShortfallReport::with('school')
             ->where('status', 'Submitted')
-            ->orderBy('shortfall', 'desc') // Rank schools with the highest shortfall first
-            ->get();
+            ->where('shortfall', '>', 0)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('distributions')
+                    ->whereColumn('distributions.school_id', 'shortfall_reports.school_id')
+                    ->whereRaw("DATE_FORMAT(distributions.distribution_date, '%Y-%m') = DATE_FORMAT(shortfall_reports.report_date, '%Y-%m')");
+            })
+            ->orderByDesc('report_date')
+            ->orderByDesc('created_at')
+            ->get()
+            ->unique(function (ShortfallReport $report) {
+                return $report->school_id.'-'.Carbon::parse($report->report_date)->format('Y-m');
+            })
+            ->sortByDesc('shortfall') // Rank schools with the highest shortfall first
+            ->values();
 
         // 2. Fetch central available warehouse stock pool balance
         $warehouse = Inventory::query()->first() ?? new Inventory(['quantity_available' => 0]);

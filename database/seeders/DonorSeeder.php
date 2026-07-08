@@ -19,8 +19,6 @@ class DonorSeeder extends Seeder
                 'pad_count' => 100,
                 'donor_type' => 'Individual',
                 'organization_name' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
             ]
         );
 
@@ -31,8 +29,6 @@ class DonorSeeder extends Seeder
                 'pad_count' => 500,
                 'donor_type' => 'Organization',
                 'organization_name' => 'Rotary Club',
-                'created_at' => now(),
-                'updated_at' => now(),
             ]
         );
 
@@ -43,8 +39,6 @@ class DonorSeeder extends Seeder
                 'pad_count' => 350,
                 'donor_type' => 'Organization',
                 'organization_name' => 'Safi Foundation',
-                'created_at' => now(),
-                'updated_at' => now(),
             ]
         );
     }

@@ -16,7 +16,7 @@ class ManagerCoordinatorController extends Controller
         $coordinators = User::with('school')
             ->where('role', 'Coordinator')
             ->orderByRaw("FIELD(status, 'Pending', 'Approved', 'Rejected')")
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->get();
 
         return view('manager.coordinators.index', [
