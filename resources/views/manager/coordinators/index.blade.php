@@ -66,29 +66,33 @@
                         
                         <!-- Management Form Submissions Triggers -->
                         <td class="px-6 py-4 text-center">
-                            @if($coordinator->status === 'Pending')
-                                <div class="flex items-center justify-center space-x-2">
-                                    <!-- Approve Form -->
-                                    <form method="POST" action="{{ route('manager.coordinators.status', $coordinator->id) }}">
-                                        @csrf
-                                        <input type="hidden" name="status" value="Approved">
-                                        <button type="submit" class="bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold px-3 py-1.5 rounded transition shadow-sm">
-                                            Approve
-                                        </button>
-                                    </form>
+                            <div class="flex items-center justify-center space-x-2">
+                                <!-- Approve Form -->
+                                <form method="POST" action="{{ route('manager.coordinators.status', $coordinator->id) }}">
+                                    @csrf
+                                    <input type="hidden" name="status" value="Approved">
+                                    <button
+                                        type="submit"
+                                        class="text-xs font-bold px-3 py-1.5 rounded transition shadow-sm {{ $coordinator->status === 'Approved' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-teal-700 hover:bg-teal-800 text-white' }}"
+                                        {{ $coordinator->status === 'Approved' ? 'disabled' : '' }}
+                                    >
+                                        {{ $coordinator->status === 'Approved' ? 'Approved' : 'Approve' }}
+                                    </button>
+                                </form>
 
-                                    <!-- Reject Form -->
-                                    <form method="POST" action="{{ route('manager.coordinators.status', $coordinator->id) }}">
-                                        @csrf
-                                        <input type="hidden" name="status" value="Rejected">
-                                        <button type="submit" class="bg-white hover:bg-rose-50 border border-gray-200 text-rose-600 text-xs font-bold px-3 py-1.5 rounded transition">
-                                            Reject
-                                        </button>
-                                    </form>
-                                </div>
-                            @else
-                                <span class="text-[11px] font-semibold text-gray-400">No action required</span>
-                            @endif
+                                <!-- Reject Form -->
+                                <form method="POST" action="{{ route('manager.coordinators.status', $coordinator->id) }}">
+                                    @csrf
+                                    <input type="hidden" name="status" value="Rejected">
+                                    <button
+                                        type="submit"
+                                        class="text-xs font-bold px-3 py-1.5 rounded transition border {{ $coordinator->status === 'Rejected' ? 'bg-rose-100 text-rose-700 border-rose-200' : 'bg-white hover:bg-rose-50 border-gray-200 text-rose-600' }}"
+                                        {{ $coordinator->status === 'Rejected' ? 'disabled' : '' }}
+                                    >
+                                        {{ $coordinator->status === 'Rejected' ? 'Rejected' : 'Reject' }}
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty
